@@ -1,0 +1,198 @@
+/* Admin-only night palette. Scoped so the student workspace keeps its theme. */
+
+.dark body.admin-mode {
+  --canvas: 5 6 7;
+  --surface: 17 20 25;
+  --elevated: 11 13 16;
+  --chart-muted: 57 64 75;
+  --ink: 241 243 245;
+  --muted: 143 151 162;
+  --line: 37 42 50;
+  --accent: 121 71 255;
+  --success: 52 211 153;
+  --warning: 251 191 36;
+  --danger: 248 113 113;
+  color-scheme: dark;
+  background-color: #050607;
+  accent-color: #ff7800;
+}
+
+.dark body.admin-mode .admin-shell {
+  background-color: #050607;
+  color: rgb(var(--ink));
+}
+
+.dark body.admin-mode .admin-sidebar {
+  background-color: #0b0d10;
+  border-color: #252a32;
+}
+
+.dark body.admin-mode .admin-topbar {
+  background-color: rgb(5 6 7 / 0.94);
+  border-color: #252a32;
+}
+
+.dark body.admin-mode .admin-shell .surface-card,
+.dark body.admin-mode .admin-shell .chart-card {
+  border-color: #252a32;
+  background-color: #111419;
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.025) inset,
+    0 18px 44px rgb(0 0 0 / 0.16);
+}
+
+.dark body.admin-mode .modal-panel {
+  border-color: #252a32;
+  background-color: #111419;
+}
+
+.dark body.admin-mode .modal-backdrop {
+  background: rgb(0 0 0 / 0.68);
+}
+
+.dark body.admin-mode .admin-console-badge {
+  border: 1px solid rgb(121 71 255 / 0.28);
+  background: rgb(121 71 255 / 0.13);
+  color: #bda9ff;
+}
+
+/* Navigation */
+.dark body.admin-mode .admin-sidebar a[aria-current='page'] {
+  background-color: #ff7800;
+  color: #050607;
+  box-shadow: 0 10px 26px rgb(255 120 0 / 0.24);
+}
+
+.dark body.admin-mode .admin-sidebar a[aria-current='page'] svg {
+  color: #050607;
+}
+
+.dark body.admin-mode .admin-sidebar a:hover {
+  color: rgb(var(--ink));
+}
+
+/* Accent remap: orange primary, purple secondary */
+.dark body.admin-mode .admin-shell .bg-brand-500,
+.dark body.admin-mode .modal-panel .bg-brand-500 {
+  background-color: #ff7800;
+  color: #050607;
+}
+
+.dark body.admin-mode .admin-shell .bg-brand-500:hover,
+.dark body.admin-mode .modal-panel .bg-brand-500:hover {
+  background-color: #e96d00;
+}
+
+.dark body.admin-mode .admin-shell [class*='text-brand-'],
+.dark body.admin-mode .modal-panel [class*='text-brand-'] {
+  color: #ff8a1f;
+}
+
+.dark body.admin-mode .admin-shell [class~='bg-brand-50'],
+.dark body.admin-mode .admin-shell [class*='dark:bg-brand-900/'],
+.dark body.admin-mode .modal-panel [class~='bg-brand-50'],
+.dark body.admin-mode .modal-panel [class*='dark:bg-brand-900/'] {
+  background-color: rgb(255 120 0 / 0.12);
+}
+
+.dark body.admin-mode .admin-shell [class*='border-brand-'],
+.dark body.admin-mode .modal-panel [class*='border-brand-'] {
+  border-color: rgb(255 120 0 / 0.34);
+}
+
+/* Icon chips: a tinted badge keeps the glyph visible on the night canvas
+   instead of relying on the card's position in the row. */
+.dark body.admin-mode .admin-shell .dashboard-card-icon {
+  background-color: rgb(255 120 0 / 0.13);
+  color: #ff8a1f;
+  box-shadow: inset 0 0 0 1px rgb(255 120 0 / 0.22);
+}
+
+/* Admin stat accents map onto the console palette (orange, purple, green). */
+.dark body.admin-mode .admin-shell .stat-card {
+  --stat-accent: 255 120 0;
+}
+
+.dark body.admin-mode .admin-shell .stat-card[data-accent='navy'],
+.dark body.admin-mode .admin-shell .stat-card[data-accent='info'] {
+  --stat-accent: 121 71 255;
+}
+
+.dark body.admin-mode .admin-shell .stat-card[data-accent='success'] {
+  --stat-accent: 52 211 153;
+}
+
+.dark body.admin-mode .admin-shell .stat-card[data-accent='danger'] {
+  --stat-accent: 248 113 113;
+}
+
+.dark body.admin-mode .admin-shell .stat-card .dashboard-card-icon {
+  background-color: rgb(var(--stat-accent) / 0.16);
+  color: rgb(var(--stat-accent));
+  box-shadow: inset 0 0 0 1px rgb(var(--stat-accent) / 0.26);
+}
+
+.dark body.admin-mode .admin-shell .stat-card .stat-sparkline {
+  color: rgb(var(--stat-accent));
+}
+
+/* Tables */
+.dark body.admin-mode .admin-shell table thead tr {
+  background-color: #0b0d10;
+  border-color: #252a32;
+}
+
+.dark body.admin-mode .admin-shell table thead th {
+  color: #8f97a2;
+}
+
+.dark body.admin-mode .admin-shell table tbody tr {
+  border-color: #252a32;
+}
+
+.dark body.admin-mode .admin-shell table tbody tr:hover {
+  background-color: #171b21;
+}
+
+/* Inputs, dropdowns and segmented controls */
+.dark body.admin-mode .admin-shell .input-base,
+.dark body.admin-mode .modal-panel .input-base,
+.dark body.admin-mode .admin-shell select,
+.dark body.admin-mode .admin-shell textarea,
+.dark body.admin-mode .admin-shell input:not([type='checkbox']):not([type='radio']):not([type='range']),
+.dark body.admin-mode .modal-panel select,
+.dark body.admin-mode .modal-panel textarea,
+.dark body.admin-mode .modal-panel input:not([type='checkbox']):not([type='radio']):not([type='range']) {
+  border-color: #252a32;
+  background-color: #0b0d10;
+  color: #f1f3f5;
+}
+
+.dark body.admin-mode .admin-shell select option,
+.dark body.admin-mode .modal-panel select option {
+  background-color: #0b0d10;
+  color: #f1f3f5;
+}
+
+.dark body.admin-mode .admin-shell .input-base:focus,
+.dark body.admin-mode .modal-panel .input-base:focus {
+  border-color: #ff7800;
+  box-shadow: 0 0 0 3px rgb(255 120 0 / 0.15);
+}
+
+.dark body.admin-mode .admin-shell .period-select {
+  border: 1px solid #252a32;
+  background-color: #0b0d10;
+}
+
+.dark body.admin-mode .admin-shell .period-select:hover {
+  background-color: #171b21;
+}
+
+/* Badges and pills */
+.dark body.admin-mode .admin-shell .chip,
+.dark body.admin-mode .admin-shell .rounded-full.bg-elevated {
+  border-color: #252a32;
+  background-color: #0b0d10;
+  color: #aab2bd;
+}

@@ -1,0 +1,470 @@
+/* ------------------------------------------------------------------
+   Auth screens: illustrated scene on the left, floating form card on
+   the right. Day and night variants share one set of rules; only the
+   scene image and the field tint change.
+   ------------------------------------------------------------------ */
+
+.auth-page {
+  --auth-field: 249 248 246;
+  --auth-glow: 242 107 58;
+  position: relative;
+  min-height: 100svh;
+  overflow-x: hidden;
+  background-color: #f79c3f;
+  background-image:
+    var(--auth-scene-day, none),
+    url('/images/auth/scene-day.png'),
+    url('/images/auth/scene-day.jpg'),
+    radial-gradient(120% 90% at 10% 6%, #ffd489 0%, #ffa54c 42%, #ef7427 100%);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: scroll;
+}
+
+.dark .auth-page {
+  --auth-field: 12 15 19;
+  background-color: #100a06;
+  background-image:
+    var(--auth-scene-night, none),
+    url('/images/auth/scene-night.png'),
+    url('/images/auth/scene-night.jpg'),
+    radial-gradient(120% 90% at 10% 6%, #3d1e0c 0%, #1d1108 45%, #080605 100%);
+}
+
+/* Warm light pools so the page still reads as a scene before the artwork
+   lands (or on very narrow screens where only the card is shown). */
+.auth-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(42% 46% at 74% 20%, rgb(255 255 255 / 0.26), transparent 70%),
+    radial-gradient(38% 42% at 14% 84%, rgb(255 138 46 / 0.34), transparent 72%);
+  pointer-events: none;
+}
+
+.dark .auth-page::before {
+  background:
+    radial-gradient(42% 46% at 74% 20%, rgb(255 132 66 / 0.14), transparent 70%),
+    radial-gradient(38% 42% at 14% 84%, rgb(255 116 40 / 0.16), transparent 72%);
+}
+
+.auth-shell {
+  position: relative;
+  display: grid;
+  width: 100%;
+  max-width: 1680px;
+  min-height: 100svh;
+  margin-inline: auto;
+  align-content: center;
+  gap: 1.5rem;
+  padding: 1.25rem clamp(1rem, 4vw, 3.5rem);
+}
+
+@media (min-width: 1024px) {
+  /* Desktop fills the viewport: no page scrollbar, the illustration is the
+     backdrop and the card scrolls internally only on very short screens. */
+  .auth-page {
+    height: 100svh;
+    overflow: hidden;
+    background-attachment: fixed;
+  }
+
+  .auth-shell {
+    height: 100%;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr) minmax(430px, 520px);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 6rem);
+    padding-block: 0.9rem;
+  }
+}
+
+/* Left: logo, headline, frosted caption over the illustration. */
+.auth-scene {
+  display: none;
+  color: #40210f;
+}
+
+@media (min-width: 1024px) {
+  .auth-scene {
+    display: flex;
+    min-height: min(760px, calc(100svh - 5rem));
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
+
+.auth-scene-logo {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 0.55);
+  background: rgb(255 255 255 / 0.72);
+  padding: 0.4rem 0.9rem;
+  box-shadow: 0 18px 40px -28px rgb(77 32 0 / 0.8);
+  backdrop-filter: blur(14px);
+}
+
+/* Compact frosted caption so the illustration stays the hero. */
+.auth-scene-copy {
+  max-width: 330px;
+  border-radius: 20px;
+  border: 1px solid rgb(255 255 255 / 0.45);
+  background: rgb(255 255 255 / 0.5);
+  padding: 0.95rem 1.1rem;
+  box-shadow: 0 24px 60px -46px rgb(77 32 0 / 0.85);
+  backdrop-filter: blur(16px);
+}
+
+.auth-scene-kicker {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #b8541f;
+}
+
+.auth-scene-title {
+  margin-top: 0.5rem;
+  font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
+  font-size: clamp(1.35rem, 1.7vw, 1.7rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: #3a1a08;
+}
+
+.auth-scene-text {
+  margin-top: 0.5rem;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #6b3a1d;
+}
+
+.dark .auth-scene {
+  color: #f7e7d9;
+}
+
+.dark .auth-scene-logo {
+  border-color: rgb(255 255 255 / 0.08);
+  background: rgb(18 12 8 / 0.66);
+  box-shadow: 0 18px 40px -26px rgb(0 0 0 / 0.9);
+}
+
+.dark .auth-scene-copy {
+  border-color: rgb(255 255 255 / 0.07);
+  background: rgb(14 10 7 / 0.45);
+}
+
+.dark .auth-scene-kicker {
+  color: #ff9b62;
+}
+
+.dark .auth-scene-title {
+  color: #fdf3ec;
+}
+
+.dark .auth-scene-text {
+  color: #c9b3a4;
+}
+
+/* Right: the form card. */
+.auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  margin-inline: auto;
+  border-radius: 30px;
+  border: 1px solid rgb(var(--line));
+  background: rgb(var(--surface));
+  padding: clamp(1.3rem, 2.5vw, 2.1rem) clamp(1.15rem, 2.3vw, 1.9rem);
+  box-shadow:
+    0 30px 80px -46px rgb(80 34 6 / 0.7),
+    0 2px 8px rgb(80 34 6 / 0.08);
+  transition: box-shadow 0.4s ease;
+}
+
+.dark .auth-card {
+  box-shadow:
+    0 34px 90px -40px rgb(0 0 0 / 0.95),
+    0 0 60px -30px rgb(242 107 58 / 0.35);
+}
+
+/* The whole panel glows while a field has focus. */
+.auth-card:focus-within {
+  box-shadow:
+    0 0 0 1px rgb(var(--auth-glow) / 0.35),
+    0 0 0 6px rgb(var(--auth-glow) / 0.12),
+    0 34px 80px -46px rgb(80 34 6 / 0.6);
+}
+
+/* Only a genuinely short viewport makes the card scroll, and then inside it. */
+@media (min-width: 1024px) {
+  .auth-card {
+    max-height: calc(100svh - 1.8rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--line)) transparent;
+  }
+}
+
+.auth-card::-webkit-scrollbar {
+  width: 8px;
+}
+
+.auth-card::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgb(var(--line));
+}
+
+/* Sliding Sign in / Sign up switch. */
+.auth-toggle {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--line));
+  background: rgb(var(--elevated));
+  padding: 0.25rem;
+}
+
+.auth-toggle-thumb {
+  position: absolute;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 0.25rem;
+  width: calc(50% - 0.375rem);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f87a45, #e2542b);
+  box-shadow:
+    0 10px 22px -10px rgb(var(--auth-glow) / 0.95),
+    0 0 0 1px rgb(255 255 255 / 0.18) inset;
+  transition: transform 0.45s cubic-bezier(0.34, 1.32, 0.42, 1);
+  will-change: transform;
+}
+
+.auth-toggle[data-mode='register'] .auth-toggle-thumb {
+  transform: translateX(calc(100% + 0.25rem));
+}
+
+.auth-toggle button {
+  position: relative;
+  z-index: 1;
+  height: 38px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgb(var(--muted));
+  transition:
+    color 0.25s ease,
+    transform 0.2s ease;
+}
+
+.auth-toggle button:hover {
+  color: rgb(var(--ink));
+}
+
+.auth-toggle button:active {
+  transform: scale(0.98);
+}
+
+.auth-toggle button[data-active='true'] {
+  color: #fff;
+}
+
+.auth-toggle button[data-active='true']:hover {
+  color: #fff;
+}
+
+/* Labelled field with a leading icon and a touch glow. */
+.auth-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgb(var(--ink));
+}
+
+.auth-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 13px;
+  border: 1px solid rgb(var(--line));
+  background: rgb(var(--auth-field));
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.3s ease,
+    background-color 0.2s ease;
+}
+
+.auth-control:hover {
+  border-color: rgb(var(--muted) / 0.55);
+}
+
+.auth-control:focus-within {
+  border-color: rgb(var(--auth-glow) / 0.75);
+  background: rgb(var(--surface));
+  box-shadow:
+    0 0 0 4px rgb(var(--auth-glow) / 0.16),
+    0 12px 26px -18px rgb(var(--auth-glow) / 0.9);
+}
+
+.auth-control[data-invalid='true'] {
+  border-color: rgb(var(--danger) / 0.75);
+}
+
+.auth-control[data-invalid='true']:focus-within {
+  box-shadow: 0 0 0 4px rgb(var(--danger) / 0.14);
+}
+
+.auth-control-icon {
+  position: absolute;
+  left: 0.9rem;
+  color: rgb(var(--muted));
+  transition: color 0.2s ease;
+  pointer-events: none;
+}
+
+.auth-control:focus-within .auth-control-icon {
+  color: rgb(var(--auth-glow));
+}
+
+.auth-input {
+  width: 100%;
+  height: 47px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  padding: 0 0.9rem;
+  font-size: 13.5px;
+  color: rgb(var(--ink));
+  outline: none;
+}
+
+.auth-input.has-icon {
+  padding-left: 2.6rem;
+}
+
+.auth-input.has-action {
+  padding-right: 2.75rem;
+}
+
+.auth-input::placeholder {
+  color: rgb(var(--muted) / 0.75);
+}
+
+/* Two classes so the shared .ripple-host button base cannot reset it to
+   position: relative and float the eye above the field. */
+.auth-control .auth-action {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  display: inline-flex;
+  height: 32px;
+  width: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  color: rgb(var(--muted));
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.25s ease;
+}
+
+.auth-control .auth-action:hover {
+  color: rgb(var(--ink));
+  background: rgb(var(--elevated));
+}
+
+.auth-control .auth-action:active {
+  color: rgb(var(--auth-glow));
+  box-shadow: 0 0 0 4px rgb(var(--auth-glow) / 0.18);
+}
+
+.auth-hint {
+  margin-top: 0.35rem;
+  font-size: 11px;
+  color: rgb(var(--muted));
+}
+
+.auth-error {
+  margin-top: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: rgb(var(--danger));
+}
+
+/* Submit button: warm gradient with a press glow. */
+.auth-submit {
+  height: 50px;
+  width: 100%;
+  border-radius: 13px;
+  background-image: linear-gradient(135deg, #f87a45, #e2542b);
+  box-shadow: 0 16px 32px -16px rgb(var(--auth-glow) / 0.9);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.3s ease,
+    filter 0.2s ease;
+}
+
+.auth-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+  box-shadow: 0 20px 38px -16px rgb(var(--auth-glow) / 1);
+}
+
+.auth-submit:active:not(:disabled) {
+  transform: translateY(0) scale(0.995);
+  box-shadow:
+    0 0 0 6px rgb(var(--auth-glow) / 0.18),
+    0 10px 24px -14px rgb(var(--auth-glow) / 0.9);
+}
+
+/* Dashed demo-account block. */
+.auth-note {
+  border-radius: 16px;
+  border: 1px dashed rgb(var(--line));
+  background: rgb(var(--canvas) / 0.65);
+  padding: 0.85rem 0.95rem;
+}
+
+.dark .auth-note {
+  background: rgb(var(--elevated) / 0.7);
+}
+
+/* Short desktop windows: trim the decorative rows so the whole form still
+   fits without a scrollbar. */
+@media (min-width: 1024px) and (max-height: 1000px) {
+  .auth-card {
+    max-height: calc(100svh - 1.2rem);
+    padding-block: 1.15rem;
+  }
+
+  .auth-card-top,
+  .auth-card-note {
+    display: none;
+  }
+
+  .auth-input {
+    height: 43px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-toggle-thumb,
+  .auth-submit,
+  .auth-control {
+    transition-duration: 0.01ms;
+  }
+}

@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Local database and logs
+*.db
+*.sqlite3
+*.log
+
+# Uploaded content (keep the folders, never commit user files)
+backend/uploads/public/*
+backend/uploads/private/*
+!backend/uploads/public/.gitkeep
+!backend/uploads/private/.gitkeep
+
+# Node / Vite
+node_modules/
+dist/
+.vite/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Frontend env
+frontend/.env
+frontend/.env.local
+
+# Tooling and OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Local tooling
+.freebuff/
+.cloud-attachments/
