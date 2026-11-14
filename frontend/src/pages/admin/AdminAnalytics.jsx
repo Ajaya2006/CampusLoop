@@ -15,6 +15,7 @@ import {
 import { adminService } from '../../services';
 import { apiError } from '../../services/api';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
+import { useCountUp, useReplayKey } from '../../hooks/useChartMotion';
 import { useAuth } from '../../context/AuthContext';
 import Avatar from '../../components/common/Avatar';
 import ProductImage from '../../components/common/ProductImage';
@@ -133,6 +134,9 @@ function UsageChart({ transactionSeries, listingSeries }) {
   const listings = listingSeries || [];
   const count = Math.max(points.length, listings.length);
   const [activeIndex, setActiveIndex] = useState(null);
+  const replay = useReplayKey(
+    `${points.map((point) => point.count).join(',')}|${listings.map((point) => point.count).join(',')}`,
+  );
 
   if (!count) {
     return <div className="flex h-[230px] items-center justify-center text-sm text-muted">No activity in this window.</div>;
@@ -180,6 +184,7 @@ function UsageChart({ transactionSeries, listingSeries }) {
         </span>
       </div>
       <svg
+        key={replay}
         viewBox={`0 0 ${W} ${H}`}
         className="mt-2 w-full"
         role="img"
@@ -267,6 +272,7 @@ function UsageChart({ transactionSeries, listingSeries }) {
 
 function ValueChart({ series }) {
   const buckets = bucketSeries(series || []);
+  const replay = useReplayKey((series || []).map((point) => point.value).join(','));
   const rawMax = Math.max(0, ...buckets.map((point) => point.value));
   if (!buckets.length || !rawMax) {
     return (
@@ -293,7 +299,13 @@ function ValueChart({ series }) {
 
   return (
     <div className="mt-4">
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="Completed deal revenue chart">
+      <svg
+        key={replay}
+        viewBox={`0 0 ${W} ${H}`}
+        className="w-full"
+        role="img"
+        aria-label="Completed deal revenue chart"
+      >
         {ticks.map((ratio) => (
           <g key={ratio}>
             <line x1={padLeft} x2={W - padRight} y1={y(max * ratio)} y2={y(max * ratio)} stroke="rgb(var(--line))" />
@@ -373,6 +385,7 @@ function CategoryBars({ items }) {
   const [hover, setHover] = useState(null);
   const all = items || [];
   const total = all.reduce((sum, item) => sum + Number(item.count || 0), 0);
+  const replay = useReplayKey(all.map((item) => `${item.name}:${item.count}`).join('|'));
   if (!all.length || !total) {
     return <p className="mt-6 text-sm text-muted">No category activity yet.</p>;
   }
@@ -404,7 +417,7 @@ function CategoryBars({ items }) {
       <div className="relative mt-5 flex min-h-[84px] flex-1 items-stretch gap-[3px]" role="img" aria-label="Listings by category">
         {bars.map((bar, index) => (
           <span
-            key={`${bar.category}-${index}`}
+            key={`${bar.category}-${index}-${replay}`}
             className="chart-bar min-w-0 flex-1 rounded-[1.5px]"
             style={{ backgroundColor: bar.color, animationDelay: `${index * 8}ms` }}
             onMouseEnter={() => setHover(index)}
@@ -452,6 +465,8 @@ function OfferPipeline({ items }) {
   const rows = (items || []).filter((item) => Number(item.count) > 0).sort((a, b) => b.count - a.count);
   const total = rows.reduce((sum, item) => sum + Number(item.count || 0), 0);
   const [hover, setHover] = useState(null);
+  const replay = useReplayKey(rows.map((item) => `${item.status}:${item.count}`).join('|'));
+  const animatedTotal = useCountUp(total);
   const hovered = hover === null ? null : rows[hover];
   const before = hover === null ? 0 : rows.slice(0, hover).reduce((sum, item) => sum + Number(item.count || 0), 0);
   const midAngle = hovered ? (((before + Number(hovered.count) / 2) / total) * 360 - 90) * (Math.PI / 180) : 0;
@@ -486,7 +501,7 @@ function OfferPipeline({ items }) {
                 offset += percent;
                 return (
                   <circle
-                    key={item.status}
+                    key={`${item.status}-${replay}`}
                     className={`chart-donut ${hover === index ? 'is-hover' : ''}`}
                     cx="60"
                     cy="60"
@@ -503,7 +518,7 @@ function OfferPipeline({ items }) {
               })}
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <p className="font-display text-[19px] font-bold leading-none text-ink">{total.toLocaleString('en-IN')}</p>
+              <p className="font-display text-[19px] font-bold leading-none text-ink">{Math.round(animatedTotal).toLocaleString('en-IN')}</p>
               <p className="mt-1 text-[8.5px] text-muted">offers</p>
             </div>
             <ChartTooltip
@@ -568,6 +583,9 @@ function StatusDonut({ items }) {
   const [hover, setHover] = useState(null);
   const rows = (items || []).filter((item) => Number(item.count) > 0).sort((a, b) => b.count - a.count);
   const total = rows.reduce((sum, item) => sum + Number(item.count || 0), 0);
+  const replay = useReplayKey(rows.map((item) => `${item.status}:${item.count}`).join('|'));
+  const animatedTotal = useCountUp(total);
+
   if (!rows.length || !total) {
     return <p className="mt-6 text-sm text-muted">No listings to break down yet.</p>;
   }
@@ -590,7 +608,7 @@ function StatusDonut({ items }) {
             offset += percent;
             return (
               <circle
-                key={item.status}
+                key={`${item.status}-${replay}`}
                 className={`chart-donut ${hover === index ? 'is-hover' : ''}`}
                 cx="60"
                 cy="60"
@@ -607,7 +625,7 @@ function StatusDonut({ items }) {
           })}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p className="font-display text-[19px] font-bold leading-none text-ink">{total.toLocaleString('en-IN')}</p>
+          <p className="font-display text-[19px] font-bold leading-none text-ink">{Math.round(animatedTotal).toLocaleString('en-IN')}</p>
           <p className="mt-1 text-[8.5px] text-muted">listings</p>
         </div>
         <ChartTooltip

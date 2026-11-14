@@ -6,6 +6,7 @@ import ChartTooltip from '../../components/common/ChartTooltip';
 import { adminService } from '../../services';
 import { apiError } from '../../services/api';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
+import { useCountUp, useReplayKey } from '../../hooks/useChartMotion';
 import Tabs from '../../components/common/Tabs';
 import { StatusBadge } from '../../components/common/Badge';
 import Pagination from '../../components/common/Pagination';
@@ -47,6 +48,7 @@ function DealCard({ title, subtitle, action, children }) {
 function DealTrend({ series }) {
   const [hover, setHover] = useState(null);
   const data = series || [];
+  const replay = useReplayKey(data.map((point) => point.count).join(','));
   const max = Math.max(1, ...data.map((point) => Number(point.count || 0)));
   const points = data.map((point, index) => ({
     x: data.length > 1 ? (index / (data.length - 1)) * 100 : 50,
@@ -66,6 +68,7 @@ function DealTrend({ series }) {
     <div className="flex h-full min-h-[120px] w-full flex-col">
       <div className="relative min-h-0 flex-1">
         <svg
+          key={replay}
           viewBox="0 0 100 100"
           preserveAspectRatio="none"
           className="absolute inset-0 h-full w-full"
@@ -138,6 +141,8 @@ function DealTrend({ series }) {
 function StatusSplit({ items }) {
   const [hover, setHover] = useState(null);
   const total = items.reduce((sum, item) => sum + item.count, 0);
+  const replay = useReplayKey(items.map((item) => `${item.status}:${item.count}`).join('|'));
+  const animatedTotal = useCountUp(total);
   const hovered = hover === null ? null : items[hover];
   const before = hover === null ? 0 : items.slice(0, hover).reduce((sum, item) => sum + item.count, 0);
   const midAngle = hovered ? (((before + hovered.count / 2) / total) * 360 - 90) * (Math.PI / 180) : 0;
@@ -154,7 +159,7 @@ function StatusSplit({ items }) {
             offset += percent;
             return (
               <circle
-                key={item.status}
+                key={`${item.status}-${replay}`}
                 className={`chart-donut ${hover === index ? 'is-hover' : ''}`}
                 cx="60"
                 cy="60"
@@ -171,7 +176,7 @@ function StatusSplit({ items }) {
           })}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p className="font-display text-lg font-bold leading-none text-ink">{total}</p>
+          <p className="font-display text-lg font-bold leading-none text-ink">{Math.round(animatedTotal).toLocaleString('en-IN')}</p>
           <p className="mt-1 text-[9px] text-muted">deals</p>
         </div>
         <ChartTooltip

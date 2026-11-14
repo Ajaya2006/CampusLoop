@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { inr, parseDate } from '../../utils/format';
+import { useCountUp, useReplayKey } from '../../hooks/useChartMotion';
 
 const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const WEEKDAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -195,6 +196,9 @@ function RevenueChart({ series, days, onDaysChange }) {
   const [activeIndex, setActiveIndex] = useState(null);
   const buckets = useMemo(() => buildRevenueBuckets(series, days <= 7 ? 7 : days <= 30 ? 6 : 8), [days, series]);
   const totalValue = buckets.reduce((sum, item) => sum + item.value, 0);
+  // Replays the bar growth whenever the series or the period changes.
+  const replay = useReplayKey(`${days}:${buckets.map((item) => item.value).join(',')}`);
+  const animatedTotal = useCountUp(totalValue, { duration: 760 });
   const maxValue = Math.max(1, ...buckets.map((item) => item.value));
   const axisMax = niceCeil(maxValue);
   const yAxis = [1, 0.75, 0.5, 0.25, 0].map((ratio) => compactInr(axisMax * ratio));
@@ -215,7 +219,7 @@ function RevenueChart({ series, days, onDaysChange }) {
       <div className="legend" aria-label="Revenue summary">
         <span>
           Completed deal value
-          <b className="legend-value">{inr(totalValue)}</b>
+          <b className="legend-value">{inr(Math.round(animatedTotal))}</b>
         </span>
       </div>
 
@@ -233,7 +237,7 @@ function RevenueChart({ series, days, onDaysChange }) {
                 <i key={index} />
               ))}
             </div>
-            <div className="revenue-bars" key={`revenue-${days}`} onMouseLeave={() => setActiveIndex(null)}>
+            <div className="revenue-bars" key={`revenue-${days}-${replay}`} onMouseLeave={() => setActiveIndex(null)}>
               {buckets.map((item, index) => {
                 const active = safeActive === index;
                 return (
@@ -286,6 +290,7 @@ function Legend() {
 function UsageChart({ listingSeries, transactionSeries, days, onDaysChange }) {
   const [activeIndex, setActiveIndex] = useState(null);
   const usage = useMemo(() => buildUsageBuckets(listingSeries, transactionSeries), [listingSeries, transactionSeries]);
+  const replay = useReplayKey(`${days}:${usage.map((item) => `${item.visitors}/${item.borrowers}`).join(',')}`);
   const maxValue = Math.max(1, ...usage.map((item) => Math.max(item.visitors, item.borrowers)));
   const axisMax = Math.max(4, Math.ceil(maxValue / 4) * 4);
   const yAxis = [1, 0.75, 0.5, 0.25, 0].map((ratio) => Math.round(axisMax * ratio));
@@ -314,7 +319,7 @@ function UsageChart({ listingSeries, transactionSeries, days, onDaysChange }) {
               ))}
             </div>
 
-            <div className="usage-bars" key={`usage-${days}`} onMouseLeave={() => setActiveIndex(null)}>
+            <div className="usage-bars" key={`usage-${days}-${replay}`} onMouseLeave={() => setActiveIndex(null)}>
               {usage.map((item, index) => {
                 const active = safeActive === index;
                 const outerValue = Math.max(item.visitors, item.borrowers);
@@ -330,6 +335,7 @@ function UsageChart({ listingSeries, transactionSeries, days, onDaysChange }) {
                     onBlur={() => setActiveIndex(null)}
                     onClick={() => setActiveIndex(index)}
                     aria-label={`${item.date}: ${item.visitors} listings added and ${item.borrowers} deals started`}
+                    style={{ '--chart-index': index }}
                   >
                     <span
                       className="visitor-bar"

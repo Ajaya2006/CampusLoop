@@ -2,6 +2,7 @@ import { useId } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
 import { trendOf } from '../../utils/series';
+import { useCountUp, useReplayKey } from '../../hooks/useChartMotion';
 
 function smoothPath(values) {
   const min = Math.min(...values);
@@ -65,6 +66,9 @@ function Sparkline({ points, label }) {
 export default function StatCard({ label, value, icon: Icon, hint, to, points = [], accent = 'brand' }) {
   const trend = trendOf(points);
   const positive = trend !== null && trend >= 0;
+  const numeric = typeof value === 'number' ? value : null;
+  const counted = useCountUp(numeric ?? 0, { delay: 80 });
+  const replay = useReplayKey(points.join(','));
   const content = (
     <>
       <div className="flex min-w-0 items-center gap-2">
@@ -87,11 +91,11 @@ export default function StatCard({ label, value, icon: Icon, hint, to, points = 
       </div>
 
       <p className="mt-2 min-w-0 truncate font-display text-[21px] font-bold leading-none tracking-tight text-ink">
-        {typeof value === 'number' ? value.toLocaleString('en-IN') : value}
+        {numeric !== null ? Math.round(counted).toLocaleString('en-IN') : value}
       </p>
 
       <div className="mt-2 min-w-0">
-        <Sparkline points={points} label={label} />
+        <Sparkline key={`spark-${replay}`} points={points} label={label} />
       </div>
 
       {hint ? <p className="mt-1.5 truncate text-[9.5px] leading-tight text-muted">{hint}</p> : null}

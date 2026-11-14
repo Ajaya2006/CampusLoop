@@ -15,6 +15,7 @@ import { authService } from '../services';
 import { apiError } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+import { useCountUp, useReplayKey } from '../hooks/useChartMotion';
 import StatCard from '../components/dashboard/StatCard';
 import ChartTooltip from '../components/common/ChartTooltip';
 import { ErrorState, InlineAlert, LoadingPage } from '../components/common/Feedback';
@@ -116,6 +117,8 @@ function ListingActivity({ series }) {
 
 function Donut({ items, total, value, caption }) {
   const [hover, setHover] = useState(null);
+  const replay = useReplayKey(items.map((item) => `${item.label}:${item.value}`).join('|'));
+  const animatedValue = useCountUp(Number(value ?? total) || 0, { duration: 780 });
   const hovered = hover === null ? null : items[hover];
   const before = hover === null ? 0 : items.slice(0, hover).reduce((sum, item) => sum + item.value, 0);
   const midAngle = hovered ? (((before + hovered.value / 2) / total) * 360 - 90) * (Math.PI / 180) : 0;
@@ -133,7 +136,7 @@ function Donut({ items, total, value, caption }) {
                 offset += percent;
                 return (
                   <circle
-                    key={item.label}
+                    key={`${item.label}-${replay}`}
                     className={`chart-donut ${hover === index ? 'is-hover' : ''}`}
                     cx="60"
                     cy="60"
@@ -151,7 +154,7 @@ function Donut({ items, total, value, caption }) {
             : null}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <p className="font-display text-2xl font-bold leading-none text-ink">{value ?? total}</p>
+          <p className="font-display text-2xl font-bold leading-none text-ink">{Math.round(animatedValue).toLocaleString('en-IN')}</p>
           <p className="mt-1 text-[9.5px] text-muted">{caption}</p>
         </div>
         <ChartTooltip
