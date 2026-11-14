@@ -48,7 +48,19 @@ async function refreshTokens() {
 }
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // A static host answers unknown /api paths with index.html. Reject it so the
+    // pages show their error state instead of receiving HTML as data.
+    const type = String(response.headers?.['content-type'] || '');
+    if (typeof response.data === 'string' && type.includes('text/html')) {
+      const misconfigured = new Error(
+        'The API is not reachable from this build. Point VITE_API_BASE_URL at the deployed API.',
+      );
+      misconfigured.isApiMisconfigured = true;
+      return Promise.reject(misconfigured);
+    }
+    return response;
+  },
   async (error) => {
     const original = error.config || {};
     const status = error.response?.status;
@@ -88,8 +100,11 @@ export function apiError(error, fallback = 'Something went wrong. Please try aga
     });
   }
   const isNetwork = !error?.response;
+  const message = error?.isApiMisconfigured
+    ? error.message
+    : 'Cannot reach the server. Check your connection and try again.';
   return {
-    message: isNetwork ? 'Cannot reach the server. Check your connection and try again.' : detail || fallback,
+    message: isNetwork ? message : detail || fallback,
     fields,
     status: error?.response?.status,
     code: data?.code,

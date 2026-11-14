@@ -50,7 +50,7 @@ export default function Home() {
           productService.list({ sort: 'latest', page_size: 8 }),
         ]);
         if (!active) return;
-        setCategories(cats);
+        setCategories(Array.isArray(cats) ? cats : []);
         setProducts(page.items || []);
       } catch (err) {
         if (active) setError(apiError(err, 'Could not load the marketplace right now.').message);
