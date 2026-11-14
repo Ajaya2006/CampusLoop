@@ -36,64 +36,6 @@ def upgrade() -> None:
     with op.batch_alter_table('categories', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('ix_categories_slug'), ['slug'], unique=True)
 
-    op.create_table('meetings',
-    sa.Column('conversation_id', sa.String(length=36), nullable=False),
-    sa.Column('product_id', sa.String(length=36), nullable=False),
-    sa.Column('proposed_by_id', sa.String(length=36), nullable=True),
-    sa.Column('scheduled_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('location', sa.String(length=200), nullable=False),
-    sa.Column('notes', sa.Text(), nullable=True),
-    sa.Column('status', sa.Enum('proposed', 'confirmed', 'rescheduled', 'cancelled', 'completed', name='meetingstatus', native_enum=False, length=32), nullable=False),
-    sa.Column('responded_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('confirmed_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('cancel_reason', sa.Text(), nullable=True),
-    sa.Column('transaction_id', sa.String(length=36), nullable=True),
-    sa.Column('id', sa.String(length=36), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
-    sa.ForeignKeyConstraint(['conversation_id'], ['conversations.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['product_id'], ['products.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['proposed_by_id'], ['users.id'], ondelete='SET NULL'),
-    sa.ForeignKeyConstraint(['transaction_id'], ['transactions.id'], ondelete='SET NULL'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    with op.batch_alter_table('meetings', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_meetings_conversation_id'), ['conversation_id'], unique=False)
-        batch_op.create_index(batch_op.f('ix_meetings_product_id'), ['product_id'], unique=False)
-        batch_op.create_index(batch_op.f('ix_meetings_status'), ['status'], unique=False)
-        batch_op.create_index('ix_meetings_status_scheduled', ['status', 'scheduled_at'], unique=False)
-
-    op.create_table('transactions',
-    sa.Column('product_id', sa.String(length=36), nullable=False),
-    sa.Column('buyer_id', sa.String(length=36), nullable=False),
-    sa.Column('seller_id', sa.String(length=36), nullable=False),
-    sa.Column('offer_id', sa.String(length=36), nullable=True),
-    sa.Column('meeting_id', sa.String(length=36), nullable=True),
-    sa.Column('agreed_price', sa.Numeric(precision=12, scale=2), nullable=False),
-    sa.Column('status', sa.Enum('pending', 'meeting_scheduled', 'completion_requested', 'completed', 'cancelled', name='transactionstatus', native_enum=False, length=32), nullable=False),
-    sa.Column('buyer_confirmed_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('seller_confirmed_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('completed_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('cancelled_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('cancel_reason', sa.Text(), nullable=True),
-    sa.Column('id', sa.String(length=36), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
-    sa.CheckConstraint('agreed_price > 0', name='ck_transactions_price_positive'),
-    sa.ForeignKeyConstraint(['buyer_id'], ['users.id'], ondelete='RESTRICT'),
-    sa.ForeignKeyConstraint(['meeting_id'], ['meetings.id'], ondelete='SET NULL'),
-    sa.ForeignKeyConstraint(['offer_id'], ['offers.id'], ondelete='SET NULL'),
-    sa.ForeignKeyConstraint(['product_id'], ['products.id'], ondelete='RESTRICT'),
-    sa.ForeignKeyConstraint(['seller_id'], ['users.id'], ondelete='RESTRICT'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    with op.batch_alter_table('transactions', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_transactions_buyer_id'), ['buyer_id'], unique=False)
-        batch_op.create_index(batch_op.f('ix_transactions_product_id'), ['product_id'], unique=False)
-        batch_op.create_index(batch_op.f('ix_transactions_seller_id'), ['seller_id'], unique=False)
-        batch_op.create_index(batch_op.f('ix_transactions_status'), ['status'], unique=False)
-        batch_op.create_index('ix_transactions_status_created', ['status', 'created_at'], unique=False)
-
     op.create_table('users',
     sa.Column('full_name', sa.String(length=120), nullable=False),
     sa.Column('email', sa.String(length=255), nullable=False),
@@ -123,43 +65,6 @@ def upgrade() -> None:
         batch_op.create_index(batch_op.f('ix_users_email'), ['email'], unique=True)
         batch_op.create_index(batch_op.f('ix_users_role'), ['role'], unique=False)
         batch_op.create_index(batch_op.f('ix_users_verification_status'), ['verification_status'], unique=False)
-
-    op.create_table('admin_audit_logs',
-    sa.Column('admin_id', sa.String(length=36), nullable=True),
-    sa.Column('action', sa.String(length=80), nullable=False),
-    sa.Column('entity_type', sa.String(length=60), nullable=False),
-    sa.Column('entity_id', sa.String(length=36), nullable=True),
-    sa.Column('detail', sa.Text(), nullable=True),
-    sa.Column('ip_address', sa.String(length=60), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('id', sa.String(length=36), nullable=False),
-    sa.ForeignKeyConstraint(['admin_id'], ['users.id'], ondelete='SET NULL'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    with op.batch_alter_table('admin_audit_logs', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_admin_audit_logs_action'), ['action'], unique=False)
-        batch_op.create_index(batch_op.f('ix_admin_audit_logs_admin_id'), ['admin_id'], unique=False)
-        batch_op.create_index(batch_op.f('ix_admin_audit_logs_created_at'), ['created_at'], unique=False)
-
-    op.create_table('notifications',
-    sa.Column('user_id', sa.String(length=36), nullable=False),
-    sa.Column('type', sa.String(length=60), nullable=False),
-    sa.Column('title', sa.String(length=160), nullable=False),
-    sa.Column('body', sa.Text(), nullable=True),
-    sa.Column('link', sa.String(length=300), nullable=True),
-    sa.Column('is_read', sa.Boolean(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('read_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('id', sa.String(length=36), nullable=False),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    with op.batch_alter_table('notifications', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_notifications_created_at'), ['created_at'], unique=False)
-        batch_op.create_index(batch_op.f('ix_notifications_is_read'), ['is_read'], unique=False)
-        batch_op.create_index(batch_op.f('ix_notifications_type'), ['type'], unique=False)
-        batch_op.create_index(batch_op.f('ix_notifications_user_id'), ['user_id'], unique=False)
-        batch_op.create_index('ix_notifications_user_read', ['user_id', 'is_read'], unique=False)
 
     op.create_table('products',
     sa.Column('seller_id', sa.String(length=36), nullable=False),
@@ -195,55 +100,6 @@ def upgrade() -> None:
         batch_op.create_index('ix_products_status_created', ['status', 'created_at'], unique=False)
         batch_op.create_index(batch_op.f('ix_products_title'), ['title'], unique=False)
 
-    op.create_table('reports',
-    sa.Column('reporter_id', sa.String(length=36), nullable=False),
-    sa.Column('target_type', sa.Enum('product', 'user', name='reporttargettype', native_enum=False, length=32), nullable=False),
-    sa.Column('target_id', sa.String(length=36), nullable=False),
-    sa.Column('reason', sa.String(length=80), nullable=False),
-    sa.Column('details', sa.Text(), nullable=True),
-    sa.Column('status', sa.Enum('pending', 'under_review', 'resolved', 'rejected', name='reportstatus', native_enum=False, length=32), nullable=False),
-    sa.Column('resolution_note', sa.Text(), nullable=True),
-    sa.Column('reviewed_by_id', sa.String(length=36), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('id', sa.String(length=36), nullable=False),
-    sa.ForeignKeyConstraint(['reporter_id'], ['users.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['reviewed_by_id'], ['users.id'], ondelete='SET NULL'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    with op.batch_alter_table('reports', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_reports_created_at'), ['created_at'], unique=False)
-        batch_op.create_index(batch_op.f('ix_reports_reporter_id'), ['reporter_id'], unique=False)
-        batch_op.create_index(batch_op.f('ix_reports_status'), ['status'], unique=False)
-        batch_op.create_index('ix_reports_status_created', ['status', 'created_at'], unique=False)
-        batch_op.create_index(batch_op.f('ix_reports_target_id'), ['target_id'], unique=False)
-        batch_op.create_index(batch_op.f('ix_reports_target_type'), ['target_type'], unique=False)
-
-    op.create_table('student_verifications',
-    sa.Column('user_id', sa.String(length=36), nullable=False),
-    sa.Column('college', sa.String(length=180), nullable=False),
-    sa.Column('student_id_number', sa.String(length=80), nullable=False),
-    sa.Column('department', sa.String(length=120), nullable=True),
-    sa.Column('course', sa.String(length=120), nullable=True),
-    sa.Column('year', sa.Integer(), nullable=True),
-    sa.Column('note', sa.Text(), nullable=True),
-    sa.Column('document_path', sa.String(length=500), nullable=True),
-    sa.Column('document_name', sa.String(length=255), nullable=True),
-    sa.Column('status', sa.Enum('unsubmitted', 'pending', 'verified', 'rejected', name='verificationstate', native_enum=False, length=32), nullable=False),
-    sa.Column('reviewer_id', sa.String(length=36), nullable=True),
-    sa.Column('review_note', sa.Text(), nullable=True),
-    sa.Column('reviewed_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('id', sa.String(length=36), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
-    sa.ForeignKeyConstraint(['reviewer_id'], ['users.id'], ondelete='SET NULL'),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    with op.batch_alter_table('student_verifications', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_student_verifications_status'), ['status'], unique=False)
-        batch_op.create_index(batch_op.f('ix_student_verifications_user_id'), ['user_id'], unique=False)
-
     op.create_table('conversations',
     sa.Column('product_id', sa.String(length=36), nullable=False),
     sa.Column('buyer_id', sa.String(length=36), nullable=False),
@@ -263,55 +119,6 @@ def upgrade() -> None:
         batch_op.create_index(batch_op.f('ix_conversations_last_message_at'), ['last_message_at'], unique=False)
         batch_op.create_index(batch_op.f('ix_conversations_product_id'), ['product_id'], unique=False)
         batch_op.create_index(batch_op.f('ix_conversations_seller_id'), ['seller_id'], unique=False)
-
-    op.create_table('product_images',
-    sa.Column('product_id', sa.String(length=36), nullable=False),
-    sa.Column('url', sa.String(length=500), nullable=False),
-    sa.Column('position', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('id', sa.String(length=36), nullable=False),
-    sa.ForeignKeyConstraint(['product_id'], ['products.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    with op.batch_alter_table('product_images', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_product_images_product_id'), ['product_id'], unique=False)
-
-    op.create_table('reviews',
-    sa.Column('transaction_id', sa.String(length=36), nullable=False),
-    sa.Column('reviewer_id', sa.String(length=36), nullable=False),
-    sa.Column('reviewee_id', sa.String(length=36), nullable=False),
-    sa.Column('product_id', sa.String(length=36), nullable=True),
-    sa.Column('rating', sa.Integer(), nullable=False),
-    sa.Column('comment', sa.Text(), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('id', sa.String(length=36), nullable=False),
-    sa.CheckConstraint('rating >= 1 AND rating <= 5', name='ck_reviews_rating_range'),
-    sa.ForeignKeyConstraint(['product_id'], ['products.id'], ondelete='SET NULL'),
-    sa.ForeignKeyConstraint(['reviewee_id'], ['users.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['reviewer_id'], ['users.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['transaction_id'], ['transactions.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('transaction_id', 'reviewer_id', name='uq_review_transaction_reviewer')
-    )
-    with op.batch_alter_table('reviews', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_reviews_created_at'), ['created_at'], unique=False)
-        batch_op.create_index(batch_op.f('ix_reviews_reviewee_id'), ['reviewee_id'], unique=False)
-        batch_op.create_index(batch_op.f('ix_reviews_reviewer_id'), ['reviewer_id'], unique=False)
-        batch_op.create_index(batch_op.f('ix_reviews_transaction_id'), ['transaction_id'], unique=False)
-
-    op.create_table('wishlists',
-    sa.Column('user_id', sa.String(length=36), nullable=False),
-    sa.Column('product_id', sa.String(length=36), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('id', sa.String(length=36), nullable=False),
-    sa.ForeignKeyConstraint(['product_id'], ['products.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('user_id', 'product_id', name='uq_wishlist_user_product')
-    )
-    with op.batch_alter_table('wishlists', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_wishlists_product_id'), ['product_id'], unique=False)
-        batch_op.create_index(batch_op.f('ix_wishlists_user_id'), ['user_id'], unique=False)
 
     op.create_table('conversation_participants',
     sa.Column('conversation_id', sa.String(length=36), nullable=False),
@@ -376,8 +183,207 @@ def upgrade() -> None:
         batch_op.create_index(batch_op.f('ix_offers_seller_id'), ['seller_id'], unique=False)
         batch_op.create_index(batch_op.f('ix_offers_status'), ['status'], unique=False)
 
-    # ### end Alembic commands ###
+    op.create_table('meetings',
+    sa.Column('conversation_id', sa.String(length=36), nullable=False),
+    sa.Column('product_id', sa.String(length=36), nullable=False),
+    sa.Column('proposed_by_id', sa.String(length=36), nullable=True),
+    sa.Column('scheduled_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('location', sa.String(length=200), nullable=False),
+    sa.Column('notes', sa.Text(), nullable=True),
+    sa.Column('status', sa.Enum('proposed', 'confirmed', 'rescheduled', 'cancelled', 'completed', name='meetingstatus', native_enum=False, length=32), nullable=False),
+    sa.Column('responded_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('confirmed_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('cancel_reason', sa.Text(), nullable=True),
+    sa.Column('transaction_id', sa.String(length=36), nullable=True),
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+    sa.ForeignKeyConstraint(['conversation_id'], ['conversations.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['product_id'], ['products.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['proposed_by_id'], ['users.id'], ondelete='SET NULL'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('meetings', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_meetings_conversation_id'), ['conversation_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_meetings_product_id'), ['product_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_meetings_status'), ['status'], unique=False)
+        batch_op.create_index('ix_meetings_status_scheduled', ['status', 'scheduled_at'], unique=False)
 
+    op.create_table('transactions',
+    sa.Column('product_id', sa.String(length=36), nullable=False),
+    sa.Column('buyer_id', sa.String(length=36), nullable=False),
+    sa.Column('seller_id', sa.String(length=36), nullable=False),
+    sa.Column('offer_id', sa.String(length=36), nullable=True),
+    sa.Column('meeting_id', sa.String(length=36), nullable=True),
+    sa.Column('agreed_price', sa.Numeric(precision=12, scale=2), nullable=False),
+    sa.Column('status', sa.Enum('pending', 'meeting_scheduled', 'completion_requested', 'completed', 'cancelled', name='transactionstatus', native_enum=False, length=32), nullable=False),
+    sa.Column('buyer_confirmed_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('seller_confirmed_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('completed_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('cancelled_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('cancel_reason', sa.Text(), nullable=True),
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+    sa.CheckConstraint('agreed_price > 0', name='ck_transactions_price_positive'),
+    sa.ForeignKeyConstraint(['buyer_id'], ['users.id'], ondelete='RESTRICT'),
+    sa.ForeignKeyConstraint(['meeting_id'], ['meetings.id'], ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['offer_id'], ['offers.id'], ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['product_id'], ['products.id'], ondelete='RESTRICT'),
+    sa.ForeignKeyConstraint(['seller_id'], ['users.id'], ondelete='RESTRICT'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('transactions', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_transactions_buyer_id'), ['buyer_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_transactions_product_id'), ['product_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_transactions_seller_id'), ['seller_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_transactions_status'), ['status'], unique=False)
+        batch_op.create_index('ix_transactions_status_created', ['status', 'created_at'], unique=False)
+
+
+    # Cyclic: meetings -> transactions. Both tables exist now, so the
+    # constraint is added afterwards (portable on PostgreSQL and SQLite).
+    with op.batch_alter_table('meetings', schema=None) as batch_op:
+        batch_op.create_foreign_key(
+            'fk_meetings_transaction_id', 'transactions',
+            ['transaction_id'], ['id'], ondelete='SET NULL',
+        )
+    op.create_table('product_images',
+    sa.Column('product_id', sa.String(length=36), nullable=False),
+    sa.Column('url', sa.String(length=500), nullable=False),
+    sa.Column('position', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.ForeignKeyConstraint(['product_id'], ['products.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('product_images', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_product_images_product_id'), ['product_id'], unique=False)
+
+    op.create_table('reviews',
+    sa.Column('transaction_id', sa.String(length=36), nullable=False),
+    sa.Column('reviewer_id', sa.String(length=36), nullable=False),
+    sa.Column('reviewee_id', sa.String(length=36), nullable=False),
+    sa.Column('product_id', sa.String(length=36), nullable=True),
+    sa.Column('rating', sa.Integer(), nullable=False),
+    sa.Column('comment', sa.Text(), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.CheckConstraint('rating >= 1 AND rating <= 5', name='ck_reviews_rating_range'),
+    sa.ForeignKeyConstraint(['product_id'], ['products.id'], ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['reviewee_id'], ['users.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['reviewer_id'], ['users.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['transaction_id'], ['transactions.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('transaction_id', 'reviewer_id', name='uq_review_transaction_reviewer')
+    )
+    with op.batch_alter_table('reviews', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_reviews_created_at'), ['created_at'], unique=False)
+        batch_op.create_index(batch_op.f('ix_reviews_reviewee_id'), ['reviewee_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_reviews_reviewer_id'), ['reviewer_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_reviews_transaction_id'), ['transaction_id'], unique=False)
+
+    op.create_table('wishlists',
+    sa.Column('user_id', sa.String(length=36), nullable=False),
+    sa.Column('product_id', sa.String(length=36), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.ForeignKeyConstraint(['product_id'], ['products.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('user_id', 'product_id', name='uq_wishlist_user_product')
+    )
+    with op.batch_alter_table('wishlists', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_wishlists_product_id'), ['product_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_wishlists_user_id'), ['user_id'], unique=False)
+
+    op.create_table('reports',
+    sa.Column('reporter_id', sa.String(length=36), nullable=False),
+    sa.Column('target_type', sa.Enum('product', 'user', name='reporttargettype', native_enum=False, length=32), nullable=False),
+    sa.Column('target_id', sa.String(length=36), nullable=False),
+    sa.Column('reason', sa.String(length=80), nullable=False),
+    sa.Column('details', sa.Text(), nullable=True),
+    sa.Column('status', sa.Enum('pending', 'under_review', 'resolved', 'rejected', name='reportstatus', native_enum=False, length=32), nullable=False),
+    sa.Column('resolution_note', sa.Text(), nullable=True),
+    sa.Column('reviewed_by_id', sa.String(length=36), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.ForeignKeyConstraint(['reporter_id'], ['users.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['reviewed_by_id'], ['users.id'], ondelete='SET NULL'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('reports', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_reports_created_at'), ['created_at'], unique=False)
+        batch_op.create_index(batch_op.f('ix_reports_reporter_id'), ['reporter_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_reports_status'), ['status'], unique=False)
+        batch_op.create_index('ix_reports_status_created', ['status', 'created_at'], unique=False)
+        batch_op.create_index(batch_op.f('ix_reports_target_id'), ['target_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_reports_target_type'), ['target_type'], unique=False)
+
+    op.create_table('notifications',
+    sa.Column('user_id', sa.String(length=36), nullable=False),
+    sa.Column('type', sa.String(length=60), nullable=False),
+    sa.Column('title', sa.String(length=160), nullable=False),
+    sa.Column('body', sa.Text(), nullable=True),
+    sa.Column('link', sa.String(length=300), nullable=True),
+    sa.Column('is_read', sa.Boolean(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('read_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('notifications', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_notifications_created_at'), ['created_at'], unique=False)
+        batch_op.create_index(batch_op.f('ix_notifications_is_read'), ['is_read'], unique=False)
+        batch_op.create_index(batch_op.f('ix_notifications_type'), ['type'], unique=False)
+        batch_op.create_index(batch_op.f('ix_notifications_user_id'), ['user_id'], unique=False)
+        batch_op.create_index('ix_notifications_user_read', ['user_id', 'is_read'], unique=False)
+
+    op.create_table('admin_audit_logs',
+    sa.Column('admin_id', sa.String(length=36), nullable=True),
+    sa.Column('action', sa.String(length=80), nullable=False),
+    sa.Column('entity_type', sa.String(length=60), nullable=False),
+    sa.Column('entity_id', sa.String(length=36), nullable=True),
+    sa.Column('detail', sa.Text(), nullable=True),
+    sa.Column('ip_address', sa.String(length=60), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.ForeignKeyConstraint(['admin_id'], ['users.id'], ondelete='SET NULL'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('admin_audit_logs', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_admin_audit_logs_action'), ['action'], unique=False)
+        batch_op.create_index(batch_op.f('ix_admin_audit_logs_admin_id'), ['admin_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_admin_audit_logs_created_at'), ['created_at'], unique=False)
+
+    op.create_table('student_verifications',
+    sa.Column('user_id', sa.String(length=36), nullable=False),
+    sa.Column('college', sa.String(length=180), nullable=False),
+    sa.Column('student_id_number', sa.String(length=80), nullable=False),
+    sa.Column('department', sa.String(length=120), nullable=True),
+    sa.Column('course', sa.String(length=120), nullable=True),
+    sa.Column('year', sa.Integer(), nullable=True),
+    sa.Column('note', sa.Text(), nullable=True),
+    sa.Column('document_path', sa.String(length=500), nullable=True),
+    sa.Column('document_name', sa.String(length=255), nullable=True),
+    sa.Column('status', sa.Enum('unsubmitted', 'pending', 'verified', 'rejected', name='verificationstate', native_enum=False, length=32), nullable=False),
+    sa.Column('reviewer_id', sa.String(length=36), nullable=True),
+    sa.Column('review_note', sa.Text(), nullable=True),
+    sa.Column('reviewed_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+    sa.ForeignKeyConstraint(['reviewer_id'], ['users.id'], ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('student_verifications', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_student_verifications_status'), ['status'], unique=False)
+        batch_op.create_index(batch_op.f('ix_student_verifications_user_id'), ['user_id'], unique=False)
+
+    # ### end Alembic commands ###
 
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
@@ -389,22 +395,6 @@ def downgrade() -> None:
         batch_op.drop_index(batch_op.f('ix_offers_conversation_id'))
         batch_op.drop_index(batch_op.f('ix_offers_buyer_id'))
 
-    op.drop_table('offers')
-    with op.batch_alter_table('messages', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_messages_created_at'))
-        batch_op.drop_index(batch_op.f('ix_messages_conversation_id'))
-
-    op.drop_table('messages')
-    with op.batch_alter_table('conversation_participants', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_conversation_participants_user_id'))
-        batch_op.drop_index(batch_op.f('ix_conversation_participants_conversation_id'))
-
-    op.drop_table('conversation_participants')
-    with op.batch_alter_table('wishlists', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_wishlists_user_id'))
-        batch_op.drop_index(batch_op.f('ix_wishlists_product_id'))
-
-    op.drop_table('wishlists')
     with op.batch_alter_table('reviews', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_reviews_transaction_id'))
         batch_op.drop_index(batch_op.f('ix_reviews_reviewer_id'))
@@ -412,22 +402,15 @@ def downgrade() -> None:
         batch_op.drop_index(batch_op.f('ix_reviews_created_at'))
 
     op.drop_table('reviews')
+    with op.batch_alter_table('wishlists', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_wishlists_user_id'))
+        batch_op.drop_index(batch_op.f('ix_wishlists_product_id'))
+
+    op.drop_table('wishlists')
     with op.batch_alter_table('product_images', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_product_images_product_id'))
 
     op.drop_table('product_images')
-    with op.batch_alter_table('conversations', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_conversations_seller_id'))
-        batch_op.drop_index(batch_op.f('ix_conversations_product_id'))
-        batch_op.drop_index(batch_op.f('ix_conversations_last_message_at'))
-        batch_op.drop_index(batch_op.f('ix_conversations_buyer_id'))
-
-    op.drop_table('conversations')
-    with op.batch_alter_table('student_verifications', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_student_verifications_user_id'))
-        batch_op.drop_index(batch_op.f('ix_student_verifications_status'))
-
-    op.drop_table('student_verifications')
     with op.batch_alter_table('reports', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_reports_target_type'))
         batch_op.drop_index(batch_op.f('ix_reports_target_id'))
@@ -437,17 +420,6 @@ def downgrade() -> None:
         batch_op.drop_index(batch_op.f('ix_reports_created_at'))
 
     op.drop_table('reports')
-    with op.batch_alter_table('products', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_products_title'))
-        batch_op.drop_index('ix_products_status_created')
-        batch_op.drop_index(batch_op.f('ix_products_status'))
-        batch_op.drop_index(batch_op.f('ix_products_seller_id'))
-        batch_op.drop_index('ix_products_price')
-        batch_op.drop_index(batch_op.f('ix_products_condition'))
-        batch_op.drop_index('ix_products_category_status')
-        batch_op.drop_index(batch_op.f('ix_products_category_id'))
-
-    op.drop_table('products')
     with op.batch_alter_table('notifications', schema=None) as batch_op:
         batch_op.drop_index('ix_notifications_user_read')
         batch_op.drop_index(batch_op.f('ix_notifications_user_id'))
@@ -462,13 +434,25 @@ def downgrade() -> None:
         batch_op.drop_index(batch_op.f('ix_admin_audit_logs_action'))
 
     op.drop_table('admin_audit_logs')
-    with op.batch_alter_table('users', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_users_verification_status'))
-        batch_op.drop_index(batch_op.f('ix_users_role'))
-        batch_op.drop_index(batch_op.f('ix_users_email'))
-        batch_op.drop_index('ix_users_college')
+    with op.batch_alter_table('student_verifications', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_student_verifications_user_id'))
+        batch_op.drop_index(batch_op.f('ix_student_verifications_status'))
 
-    op.drop_table('users')
+    op.drop_table('student_verifications')
+    with op.batch_alter_table('conversation_participants', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_conversation_participants_user_id'))
+        batch_op.drop_index(batch_op.f('ix_conversation_participants_conversation_id'))
+
+    op.drop_table('conversation_participants')
+    with op.batch_alter_table('messages', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_messages_created_at'))
+        batch_op.drop_index(batch_op.f('ix_messages_conversation_id'))
+
+    op.drop_table('messages')
+    # Remove the deferred cyclic constraint before dropping the pair.
+    with op.batch_alter_table('meetings', schema=None) as batch_op:
+        batch_op.drop_constraint('fk_meetings_transaction_id', type_='foreignkey')
+
     with op.batch_alter_table('transactions', schema=None) as batch_op:
         batch_op.drop_index('ix_transactions_status_created')
         batch_op.drop_index(batch_op.f('ix_transactions_status'))
@@ -477,6 +461,7 @@ def downgrade() -> None:
         batch_op.drop_index(batch_op.f('ix_transactions_buyer_id'))
 
     op.drop_table('transactions')
+    op.drop_table('offers')
     with op.batch_alter_table('meetings', schema=None) as batch_op:
         batch_op.drop_index('ix_meetings_status_scheduled')
         batch_op.drop_index(batch_op.f('ix_meetings_status'))
@@ -484,8 +469,34 @@ def downgrade() -> None:
         batch_op.drop_index(batch_op.f('ix_meetings_conversation_id'))
 
     op.drop_table('meetings')
+    with op.batch_alter_table('conversations', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_conversations_seller_id'))
+        batch_op.drop_index(batch_op.f('ix_conversations_product_id'))
+        batch_op.drop_index(batch_op.f('ix_conversations_last_message_at'))
+        batch_op.drop_index(batch_op.f('ix_conversations_buyer_id'))
+
+    op.drop_table('conversations')
+    with op.batch_alter_table('products', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_products_title'))
+        batch_op.drop_index('ix_products_status_created')
+        batch_op.drop_index(batch_op.f('ix_products_status'))
+        batch_op.drop_index(batch_op.f('ix_products_seller_id'))
+        batch_op.drop_index('ix_products_price')
+        batch_op.drop_index(batch_op.f('ix_products_condition'))
+        batch_op.drop_index('ix_products_category_status')
+        batch_op.drop_index(batch_op.f('ix_products_category_id'))
+
+    op.drop_table('products')
+    with op.batch_alter_table('users', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_users_verification_status'))
+        batch_op.drop_index(batch_op.f('ix_users_role'))
+        batch_op.drop_index(batch_op.f('ix_users_email'))
+        batch_op.drop_index('ix_users_college')
+
+    op.drop_table('users')
     with op.batch_alter_table('categories', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_categories_slug'))
 
     op.drop_table('categories')
+
     # ### end Alembic commands ###
