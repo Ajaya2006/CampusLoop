@@ -581,6 +581,34 @@
   }
 }
 
+/* Per-chart loading state: the card keeps its height and shows a pulsing
+   placeholder until that window's numbers arrive. */
+.admin-trend-charts .chart-loading {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: flex-end;
+  gap: 9px;
+  padding: 22px 6px 24px 34px;
+}
+
+.admin-trend-charts .chart-loading i {
+  flex: 1 1 0;
+  min-height: 6px;
+  border-radius: 8px 8px 3px 3px;
+  background: rgb(var(--chart-muted) / 0.6);
+  animation: chart-loading-pulse 1.15s ease-in-out infinite;
+}
+
+@keyframes chart-loading-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
 @keyframes cl-fade-in {
   from {
     opacity: 0;

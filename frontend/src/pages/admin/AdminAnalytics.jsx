@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ChevronDown,
@@ -29,6 +29,9 @@ import { formatDateTime, inr, timeAgo } from '../../utils/format';
 import { sumSeries, toPoints } from '../../utils/series';
 
 const RANGES = [7, 14, 30, 90];
+
+/* The headline cards keep their own window so the chart dropdowns stay local. */
+const KPI_DAYS = 30;
 
 const CATEGORY_COLORS = ['#FF7800', '#7947FF', '#6B7280', '#A78BFA', '#FFA94D', '#4B5563'];
 
@@ -671,11 +674,48 @@ function StatusDonut({ items }) {
   );
 }
 
+/* One analytics request per window, cached by its day count, so every chart can
+   load its own period without refetching or showing another period's bars. */
+function useAnalyticsCache(windows, refreshKey = 0) {
+  const [cache, setCache] = useState({});
+  const [loading, setLoading] = useState({});
+  const [error, setError] = useState('');
+  const requested = useRef(new Set());
+
+  useEffect(() => {
+    let active = true;
+    setError('');
+    windows.forEach((days) => {
+      const key = `${refreshKey}:${days}`;
+      if (requested.current.has(key)) return;
+      requested.current.add(key);
+      setLoading((prev) => ({ ...prev, [days]: true }));
+      adminService
+        .analytics(days)
+        .then((result) => {
+          if (active) setCache((prev) => ({ ...prev, [days]: result }));
+        })
+        .catch((err) => {
+          if (active) setError(apiError(err, 'Could not load analytics for this period.').message);
+        })
+        .finally(() => {
+          if (active) setLoading((prev) => ({ ...prev, [days]: false }));
+        });
+    });
+    return () => {
+      active = false;
+    };
+  }, [windows, refreshKey]);
+
+  return { cache, loading, error };
+}
+
 export default function AdminAnalytics() {
   useDocumentTitle('Admin dashboard');
   const { user } = useAuth();
-  const [days, setDays] = useState(30);
-  const [data, setData] = useState(null);
+  const [usageDays, setUsageDays] = useState(30);
+  const [revenueDays, setRevenueDays] = useState(30);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [stats, setStats] = useState(null);
   const [listings, setListings] = useState({ items: [], total: 0 });
   const [recentUsers, setRecentUsers] = useState([]);
@@ -684,20 +724,24 @@ export default function AdminAnalytics() {
   const [error, setError] = useState('');
   const [query, setQuery] = useState('');
 
+  const windows = useMemo(
+    () => [...new Set([KPI_DAYS, usageDays, revenueDays])],
+    [usageDays, revenueDays],
+  );
+  const { cache, loading: analyticsLoading, error: analyticsError } = useAnalyticsCache(windows, refreshKey);
+
   useEffect(() => {
     let active = true;
     setLoading(true);
     setError('');
     Promise.all([
-      adminService.analytics(days),
       adminService.stats(),
       adminService.listings({ status: 'all', page: 1, page_size: 100 }).catch(() => ({ items: [], total: 0 })),
       adminService.users({ page: 1, page_size: 8 }).catch(() => ({ items: [], total: 0 })),
       adminService.transactions({ status: 'all', page: 1, page_size: 100 }).catch(() => ({ items: [], total: 0 })),
     ])
-      .then(([analytics, statsResult, listingsResult, usersResult, transactionsResult]) => {
+      .then(([statsResult, listingsResult, usersResult, transactionsResult]) => {
         if (!active) return;
-        setData(analytics);
         setStats(statsResult);
         setListings(listingsResult);
         setRecentUsers(usersResult.items || []);
@@ -712,7 +756,7 @@ export default function AdminAnalytics() {
     return () => {
       active = false;
     };
-  }, [days]);
+  }, [refreshKey]);
 
   const filteredListings = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -798,18 +842,25 @@ export default function AdminAnalytics() {
       .slice(0, 5);
   }, [listings.items, recentUsers, transactions.items]);
 
-  if (loading && !data) return <LoadingPage label="Loading admin dashboard…" />;
-  if (error) return <ErrorState message={error} onRetry={() => setDays(days)} />;
-  if (!data) return null;
+  const baseline = cache[KPI_DAYS] || null;
+  const usageData = cache[usageDays] || null;
+  const revenueData = cache[revenueDays] || null;
+  const retry = () => {
+    setError('');
+    setRefreshKey((key) => key + 1);
+  };
 
-  const listingsSeries = data.listings_series || [];
-  const usersSeries = data.users_series || [];
-  const pendingSeries = data.pending_listings_series || [];
-  const viewsSeries = data.views_series || [];
-  const transactionSeries = data.transactions_series || [];
-  const valueSeries = data.completed_value_series || [];
+  if (error || analyticsError) return <ErrorState message={error || analyticsError} onRetry={retry} />;
+  if (!baseline) return <LoadingPage label="Loading admin dashboard…" />;
+
+  const listingsSeries = baseline.listings_series || [];
+  const usersSeries = baseline.users_series || [];
+  const pendingSeries = baseline.pending_listings_series || [];
+  const viewsSeries = baseline.views_series || [];
+  const usageListingSeries = usageData?.listings_series || [];
+  const usageTransactionSeries = usageData?.transactions_series || [];
+  const valueSeries = revenueData?.completed_value_series || [];
   const firstName = user?.full_name?.split(' ')[0] || 'Admin';
-  const rangeLabel = `Last ${days} days`;
 
   return (
     <div className="space-y-4">
@@ -837,7 +888,7 @@ export default function AdminAnalytics() {
         <StatCard
           label="Live listings"
           value={stats?.approved_listings ?? '—'}
-          hint={`${sumSeries(listingsSeries)} added in ${rangeLabel.toLowerCase()}`}
+          hint={`${sumSeries(listingsSeries)} added in last ${KPI_DAYS} days`}
           icon={Tag}
           points={toPoints(listingsSeries, 'count')}
           accent="brand"
@@ -871,11 +922,15 @@ export default function AdminAnalytics() {
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_318px] xl:items-start">
         <div className="min-w-0 space-y-4">
           <AdminTrendCharts
-            listingSeries={listingsSeries}
-            transactionSeries={transactionSeries}
+            listingSeries={usageListingSeries}
+            transactionSeries={usageTransactionSeries}
             valueSeries={valueSeries}
-            days={days}
-            onDaysChange={setDays}
+            usageDays={usageDays}
+            revenueDays={revenueDays}
+            onUsageDaysChange={setUsageDays}
+            onRevenueDaysChange={setRevenueDays}
+            usageLoading={!usageData && !!analyticsLoading[usageDays]}
+            revenueLoading={!revenueData && !!analyticsLoading[revenueDays]}
           />
 
           <div className="grid items-stretch gap-4 lg:grid-cols-[1.08fr_1fr]">
@@ -887,7 +942,7 @@ export default function AdminAnalytics() {
                 </div>
                 <Link to="/admin/listings" className="text-[10px] font-semibold text-brand-600">All listings</Link>
               </div>
-              <CategoryBars items={data.listings_by_category} />
+              <CategoryBars items={baseline.listings_by_category} />
             </section>
 
             <section className="surface-card flex h-full min-w-0 flex-col p-4 sm:p-5">
@@ -898,11 +953,11 @@ export default function AdminAnalytics() {
                 </div>
                 <Link to="/admin/listing-health" className="text-[10px] font-semibold text-brand-600">Health</Link>
               </div>
-              <StatusDonut items={data.listings_by_status} />
+              <StatusDonut items={baseline.listings_by_status} />
             </section>
           </div>
 
-          <OfferPipeline items={data.offers_by_status} />
+          <OfferPipeline items={baseline.offers_by_status} />
         </div>
 
         <aside className="min-w-0 space-y-4 xl:row-span-2 xl:self-start xl:sticky xl:top-[90px]">

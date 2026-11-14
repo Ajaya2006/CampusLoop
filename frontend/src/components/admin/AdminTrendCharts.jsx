@@ -122,7 +122,14 @@ function PeriodSelect({ label, value, onChange }) {
   );
 }
 
-function buildUsageBuckets(listingSeries = [], transactionSeries = []) {
+function bucketLabel(value, days) {
+  const date = parseDate(value);
+  if (!date || Number.isNaN(date.getTime())) return '';
+  if (days <= 7) return WEEKDAYS_SHORT[date.getDay()];
+  return `${date.getDate()} ${MONTHS_SHORT[date.getMonth()]}`;
+}
+
+function buildUsageBuckets(listingSeries = [], transactionSeries = [], days = 30) {
   const rows = new Map();
   const add = (series, key) => {
     (series || []).forEach((point) => {
@@ -145,7 +152,7 @@ function buildUsageBuckets(listingSeries = [], transactionSeries = []) {
     const slice = dates.slice(start, Math.max(end, start + 1));
     const date = slice[slice.length - 1];
     return {
-      day: formatDayDate(date).split(',')[0],
+      day: bucketLabel(date, days),
       date: formatDayDate(date),
       visitors: slice.reduce((sum, item) => sum + rows.get(item).listings, 0),
       borrowers: slice.reduce((sum, item) => sum + rows.get(item).deals, 0),
@@ -192,7 +199,19 @@ function EmptyChart({ title }) {
   );
 }
 
-function RevenueChart({ series, days, onDaysChange }) {
+/* Keeps the card height while its own window is loading, so the previous
+   window's bars can never sit under the new label. */
+function ChartSkeleton() {
+  return (
+    <div className="chart-loading" aria-hidden="true">
+      {[42, 68, 51, 84, 60, 94, 47, 72].map((height, index) => (
+        <i key={index} style={{ height: `${height}%`, animationDelay: `${index * 60}ms` }} />
+      ))}
+    </div>
+  );
+}
+
+function RevenueChart({ series, days, onDaysChange, loading = false }) {
   const [activeIndex, setActiveIndex] = useState(null);
   const buckets = useMemo(() => buildRevenueBuckets(series, days <= 7 ? 7 : days <= 30 ? 6 : 8), [days, series]);
   const totalValue = buckets.reduce((sum, item) => sum + item.value, 0);
@@ -223,7 +242,9 @@ function RevenueChart({ series, days, onDaysChange }) {
         </span>
       </div>
 
-      {buckets.length ? (
+      {loading ? (
+        <ChartSkeleton />
+      ) : buckets.length ? (
         <div className="revenue-plot">
           <div className="y-axis" aria-hidden="true">
             {yAxis.map((label) => (
@@ -287,9 +308,12 @@ function Legend() {
   );
 }
 
-function UsageChart({ listingSeries, transactionSeries, days, onDaysChange }) {
+function UsageChart({ listingSeries, transactionSeries, days, onDaysChange, loading = false }) {
   const [activeIndex, setActiveIndex] = useState(null);
-  const usage = useMemo(() => buildUsageBuckets(listingSeries, transactionSeries), [listingSeries, transactionSeries]);
+  const usage = useMemo(
+    () => buildUsageBuckets(listingSeries, transactionSeries, days),
+    [days, listingSeries, transactionSeries],
+  );
   const replay = useReplayKey(`${days}:${usage.map((item) => `${item.visitors}/${item.borrowers}`).join(',')}`);
   const maxValue = Math.max(1, ...usage.map((item) => Math.max(item.visitors, item.borrowers)));
   const axisMax = Math.max(4, Math.ceil(maxValue / 4) * 4);
@@ -304,7 +328,9 @@ function UsageChart({ listingSeries, transactionSeries, days, onDaysChange }) {
       </header>
       <Legend />
 
-      {usage.length ? (
+      {loading ? (
+        <ChartSkeleton />
+      ) : usage.length ? (
         <div className="usage-plot">
           <div className="y-axis usage-y-axis" aria-hidden="true">
             {yAxis.map((label) => (
@@ -376,18 +402,28 @@ export default function AdminTrendCharts({
   listingSeries,
   transactionSeries,
   valueSeries,
-  days,
-  onDaysChange,
+  usageDays,
+  revenueDays,
+  onUsageDaysChange,
+  onRevenueDaysChange,
+  usageLoading = false,
+  revenueLoading = false,
 }) {
   return (
     <div className="admin-trend-charts">
       <UsageChart
         listingSeries={listingSeries}
         transactionSeries={transactionSeries}
-        days={days}
-        onDaysChange={onDaysChange}
+        days={usageDays}
+        onDaysChange={onUsageDaysChange}
+        loading={usageLoading}
       />
-      <RevenueChart series={valueSeries} days={days} onDaysChange={onDaysChange} />
+      <RevenueChart
+        series={valueSeries}
+        days={revenueDays}
+        onDaysChange={onRevenueDaysChange}
+        loading={revenueLoading}
+      />
     </div>
   );
 }
