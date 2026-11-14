@@ -45,3 +45,7 @@ Thumbs.db
 # Local tooling
 .freebuff/
 .cloud-attachments/
+
+# Vercel CLI link
+.vercel/
+frontend/.vercel/
