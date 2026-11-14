@@ -2,6 +2,15 @@ import axios from 'axios';
 
 export const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
+// Uploaded files (avatars, listing photos) live on the API host. Without this
+// they resolve against the site's own domain and 404 when the two are split.
+export const API_ORIGIN = /^https?:\/\//i.test(API_BASE) ? API_BASE.replace(/\/api\/v1\/?$/, '') : '';
+
+export function mediaUrl(url) {
+  if (!url || !url.startsWith('/uploads/')) return url;
+  return `${API_ORIGIN}${url}`;
+}
+
 const ACCESS_KEY = 'campusloop.access';
 const REFRESH_KEY = 'campusloop.refresh';
 export const USER_KEY = 'campusloop.user';

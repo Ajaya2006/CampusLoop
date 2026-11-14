@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { ImagePlus, Loader2, Sparkles, Trash2, UploadCloud, Wand2 } from 'lucide-react';
 import { categoryService, productService } from '../../services';
-import { apiError } from '../../services/api';
+import { apiError, mediaUrl } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import Button from '../common/Button';
 import { Checkbox, Input, Select, Textarea } from '../common/Form';
@@ -222,7 +222,7 @@ export default function ListingForm({ initial, mode = 'create', onSubmit, busy =
           <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4">
             {form.image_urls.map((url, index) => (
               <div key={url} className="group relative overflow-hidden rounded-control border border-line">
-                <img src={url} alt={`Listing image ${index + 1}`} className="aspect-square w-full object-cover" />
+                <img src={mediaUrl(url)} alt={`Listing image ${index + 1}`} className="aspect-square w-full object-cover" />
                 {index === 0 ? (
                   <span className="absolute left-1.5 top-1.5 rounded bg-ink/70 px-1.5 py-0.5 text-[10px] font-medium text-white">Cover</span>
                 ) : null}

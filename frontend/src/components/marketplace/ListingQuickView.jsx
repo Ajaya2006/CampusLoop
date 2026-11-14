@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { Eye, Heart, MapPin, X } from 'lucide-react';
 import { productService } from '../../services';
-import { apiError } from '../../services/api';
+import { apiError, mediaUrl } from '../../services/api';
 import ProductImage from '../common/ProductImage';
 import Avatar from '../common/Avatar';
 import { Skeleton } from '../common/Feedback';
@@ -112,7 +112,7 @@ export default function ListingQuickView({ product, onClose, onToggleWishlist, w
               <div className="mt-2.5 grid grid-cols-4 gap-2">
                 {detail.images.slice(0, 4).map((image) => (
                   <div key={image.id} className="overflow-hidden rounded-[7px] border border-line">
-                    <img src={image.url} alt="" className="aspect-square h-full w-full object-cover" />
+                    <img src={mediaUrl(image.url)} alt="" className="aspect-square h-full w-full object-cover" />
                   </div>
                 ))}
               </div>

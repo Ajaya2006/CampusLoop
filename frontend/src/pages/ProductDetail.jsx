@@ -21,7 +21,7 @@ import {
   Truck,
 } from 'lucide-react';
 import { chatService, offerService, productService, reportService, wishlistService } from '../services';
-import { apiError } from '../services/api';
+import { apiError, mediaUrl } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import useDocumentTitle from '../hooks/useDocumentTitle';
@@ -318,7 +318,7 @@ export default function ProductDetail() {
                   }`}
                   aria-label={`View image ${index + 1}`}
                 >
-                  <img src={image.url} alt="" className="aspect-square h-full w-full object-cover" />
+                  <img src={mediaUrl(image.url)} alt="" className="aspect-square h-full w-full object-cover" />
                 </button>
               ))}
             </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { cx } from '../../utils/format';
 import { DEFAULT_CATEGORY_IMAGE } from '../../utils/categoryImages';
+import { mediaUrl } from '../../services/api';
 
 /** Product photo that falls back to a matching category shot instead of an icon. */
 export default function ProductImage({
@@ -10,10 +11,10 @@ export default function ProductImage({
   className = '',
   imgClassName = '',
 }) {
-  const [current, setCurrent] = useState(src || fallback);
+  const [current, setCurrent] = useState(mediaUrl(src) || fallback);
 
   useEffect(() => {
-    setCurrent(src || fallback);
+    setCurrent(mediaUrl(src) || fallback);
   }, [src, fallback]);
 
   return (
