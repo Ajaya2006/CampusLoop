@@ -36,7 +36,7 @@ export function useCountUp(value, { duration = 720, delay = 0 } = {}) {
   displayRef.current = display;
 
   useEffect(() => {
-    if (reducedMotion()) {
+    if (reducedMotion() || typeof document === 'undefined' || document.visibilityState !== 'visible') {
       displayRef.current = target;
       setDisplay(target);
       return undefined;
@@ -44,6 +44,13 @@ export function useCountUp(value, { duration = 720, delay = 0 } = {}) {
 
     const from = displayRef.current;
     if (from === target) return undefined;
+
+    // A background tab throttles requestAnimationFrame, so a timer settles the
+    // figure even if the frames never arrive.
+    const settle = window.setTimeout(() => {
+      displayRef.current = target;
+      setDisplay(target);
+    }, delay + duration + 160);
 
     const handle = { frame: 0 };
     const start = performance.now() + delay;
@@ -58,7 +65,10 @@ export function useCountUp(value, { duration = 720, delay = 0 } = {}) {
     };
 
     handle.frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(handle.frame);
+    return () => {
+      cancelAnimationFrame(handle.frame);
+      window.clearTimeout(settle);
+    };
   }, [target, duration, delay]);
 
   return display;
