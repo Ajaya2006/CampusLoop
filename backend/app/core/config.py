@@ -4,6 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import List
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -26,6 +27,16 @@ class Settings(BaseSettings):
     # PostgreSQL is the target database. The fallback keeps local development
     # and the automated test-suite working on machines without a PG server.
     DATABASE_URL: str = "sqlite:///./campusloop.db"
+
+    @field_validator("DATABASE_URL")
+    @classmethod
+    def normalize_database_url(cls, value: str) -> str:
+        """Hosting panels hand out `postgres://` URLs; SQLAlchemy needs the driver."""
+        if value.startswith("postgres://"):
+            return "postgresql+psycopg://" + value[len("postgres://") :]
+        if value.startswith("postgresql://"):
+            return "postgresql+psycopg://" + value[len("postgresql://") :]
+        return value
 
     # ---- auth --------------------------------------------------------------
     SECRET_KEY: str = "insecure-development-secret-change-me"

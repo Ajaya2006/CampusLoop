@@ -1,0 +1,38 @@
+# Render blueprint: the CampusLoop API plus a managed PostgreSQL instance.
+#
+# Deploy with Render → New → Blueprint, pointed at this repository. The
+# frontend lives on Vercel (see frontend/vercel.json) and talks to this
+# service through VITE_API_BASE_URL.
+services:
+  - type: web
+    name: campusloop-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    # Migrations run at boot: Render free instances have no pre-deploy hook.
+    startCommand: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: ENVIRONMENT
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: campusloop-db
+          property: connectionString
+      - key: RATE_LIMIT_ENABLED
+        value: "true"
+      - key: AUTO_APPROVE_LISTINGS
+        value: "false"
+      # Set this to the deployed Vercel origin, e.g. https://campusloop.vercel.app
+      - key: ALLOWED_ORIGINS
+        sync: false
+
+databases:
+  - name: campusloop-db
+    plan: free
+    databaseName: campusloop
+    user: campusloop
