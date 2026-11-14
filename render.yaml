@@ -9,6 +9,9 @@ services:
     runtime: python
     plan: free
     rootDir: backend
+    # Without an explicit build command Render skips the build entirely and the
+    # start command finds no alembic/uvicorn on PATH.
+    buildCommand: pip install -r requirements.txt
     # Migrations run at boot: Render free instances have no pre-deploy hook.
     startCommand: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     healthCheckPath: /api/v1/health
