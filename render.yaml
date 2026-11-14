@@ -13,7 +13,9 @@ services:
     # start command finds no alembic/uvicorn on PATH.
     buildCommand: pip install -r requirements.txt
     # Migrations run at boot: Render free instances have no pre-deploy hook.
-    startCommand: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    # Seeds categories, the admin account and demo listings once; both seed
+    # steps are idempotent, so re-running on every boot is a no-op.
+    startCommand: sh -c "alembic upgrade head && (python -m app.db.seed --demo || echo 'seed skipped') && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     healthCheckPath: /api/v1/health
     envVars:
       - key: PYTHON_VERSION
