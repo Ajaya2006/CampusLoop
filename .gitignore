@@ -15,6 +15,7 @@ env/
 # Local database and logs
 *.db
 *.sqlite3
+backend/backups/
 *.log
 
 # Uploaded content (keep the folders, never commit user files)
