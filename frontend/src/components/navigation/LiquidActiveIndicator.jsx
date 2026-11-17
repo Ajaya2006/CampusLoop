@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 /**
  * The signature selection capsule.
@@ -10,6 +10,7 @@ import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
  */
 export default function LiquidActiveIndicator({ containerRef, index, dependencies = [], selector = '[data-nav-item]' }) {
   const [box, setBox] = useState({ left: 0, width: 0, ready: false });
+  const retry = useRef({ frames: 0 });
 
   const measure = useCallback(() => {
     const container = containerRef.current;
@@ -17,6 +18,16 @@ export default function LiquidActiveIndicator({ containerRef, index, dependencie
     const items = container.querySelectorAll(selector);
     const target = items[index];
     if (!target) return;
+
+    // A nav that mounted inside a hidden breakpoint has no layout yet; keep
+    // asking for a frame or two until it gains width.
+    if (!target.offsetWidth && retry.current.frames < 20) {
+      retry.current.frames += 1;
+      requestAnimationFrame(measure);
+      return;
+    }
+
+    retry.current.frames = 0;
     const next = { left: target.offsetLeft, width: target.offsetWidth, ready: true };
     setBox((current) =>
       current.left === next.left && current.width === next.width && current.ready === next.ready ? current : next,
