@@ -7,6 +7,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
 import { AuthProvider } from './context/AuthContext';
 import './styles/index.css';
+import './styles/liquid-glass.css';
 import './styles/adminTrendCharts.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(

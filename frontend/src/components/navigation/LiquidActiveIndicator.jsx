@@ -1,0 +1,64 @@
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+
+/**
+ * The signature selection capsule.
+ *
+ * It measures the active item inside `containerRef` and animates its own
+ * transform/width to sit behind it, so the glass container never moves while
+ * the highlight travels. Measurements are refreshed on resize and on any
+ * change of `dependencies` (route, tab list, fonts loading).
+ */
+export default function LiquidActiveIndicator({ containerRef, index, dependencies = [], selector = '[data-nav-item]' }) {
+  const [box, setBox] = useState({ left: 0, width: 0, ready: false });
+
+  const measure = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const items = container.querySelectorAll(selector);
+    const target = items[index];
+    if (!target) return;
+    const next = { left: target.offsetLeft, width: target.offsetWidth, ready: true };
+    setBox((current) =>
+      current.left === next.left && current.width === next.width && current.ready === next.ready ? current : next,
+    );
+  }, [containerRef, index, selector]);
+
+  useLayoutEffect(() => {
+    measure();
+  }, [measure]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return undefined;
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(container);
+    const mutations = new MutationObserver(measure);
+    mutations.observe(container, { childList: true, subtree: true });
+
+    window.addEventListener('resize', measure);
+    // Re-measure once webfonts settle; label widths change with the font swap.
+    document.fonts?.ready?.then(measure).catch(() => {});
+    const frame = requestAnimationFrame(measure);
+
+    return () => {
+      observer.disconnect();
+      mutations.disconnect();
+      window.removeEventListener('resize', measure);
+      cancelAnimationFrame(frame);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [measure, containerRef, ...dependencies]);
+
+  return (
+    <span
+      aria-hidden="true"
+      className="liquid-indicator"
+      style={{
+        transform: `translate3d(${box.left}px, 0, 0)`,
+        width: box.width ? `${box.width}px` : '0px',
+        opacity: box.ready ? 1 : 0,
+      }}
+    />
+  );
+}

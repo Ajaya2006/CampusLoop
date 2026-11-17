@@ -11,7 +11,7 @@
     --ink: 27 42 64;
     --muted: 120 130 143;
     --line: 232 229 223;
-    --accent: 32 51 81;
+    --accent: 59 130 246;
     --success: 31 157 121;
     --warning: 199 131 30;
     --danger: 201 79 63;
@@ -28,7 +28,7 @@
     --ink: 241 243 245;
     --muted: 143 151 162;
     --line: 37 42 50;
-    --accent: 151 174 203;
+    --accent: 96 165 250;
     --success: 52 211 153;
     --warning: 251 191 36;
     --danger: 248 113 113;
@@ -46,7 +46,7 @@
   }
 
   html {
-    accent-color: #f26b3a;
+    accent-color: #6d4aff;
   }
 
   body {

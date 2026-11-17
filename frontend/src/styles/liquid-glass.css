@@ -1,0 +1,316 @@
+/* ------------------------------------------------------------------
+   Liquid Glass material + navigation system (CampusLoop)
+
+   Two layers everywhere:
+     1. a persistent translucent container (blur, border, top highlight)
+     2. a separate selection indicator that slides inside it
+
+   Glass is deliberately limited to floating chrome — navigation, overlays,
+   dropdowns, selected controls — so product cards and text stay solid.
+   ------------------------------------------------------------------ */
+
+:root {
+  --glass-surface: 255 255 255 / 0.66;
+  --glass-surface-strong: 255 255 255 / 0.82;
+  --glass-border: 255 255 255 / 0.7;
+  --glass-edge: 23 23 37 / 0.08;
+  --glass-highlight: 255 255 255 / 0.95;
+  --glass-shadow: 23 30 60 / 0.14;
+  --glass-tint: 109 74 255 / 0.08;
+  --indicator-from: 109 74 255;
+  --indicator-to: 59 130 246;
+  --nav-ink: 23 23 37;
+  --nav-muted: 102 112 133;
+
+  --motion-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --motion-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-exit: cubic-bezier(0.4, 0, 1, 1);
+  --motion-spring: cubic-bezier(0.24, 1.04, 0.32, 1);
+  --motion-indicator: 460ms;
+}
+
+.dark {
+  --glass-surface: 21 27 41 / 0.72;
+  --glass-surface-strong: 21 27 41 / 0.88;
+  --glass-border: 255 255 255 / 0.1;
+  --glass-edge: 255 255 255 / 0.06;
+  --glass-highlight: 255 255 255 / 0.16;
+  --glass-shadow: 0 0 0 / 0.55;
+  --glass-tint: 109 74 255 / 0.16;
+  --nav-ink: 245 246 250;
+  --nav-muted: 170 179 197;
+}
+
+/* ---------------------------------------------------------------- */
+/* Material                                                          */
+/* ---------------------------------------------------------------- */
+
+.liquid-glass {
+  position: relative;
+  background: rgb(var(--glass-surface));
+  border: 1px solid rgb(var(--glass-border));
+  box-shadow:
+    0 10px 32px -18px rgb(var(--glass-shadow)),
+    0 1px 2px rgb(var(--glass-edge)),
+    inset 0 1px 0 rgb(var(--glass-highlight));
+  -webkit-backdrop-filter: blur(22px) saturate(165%);
+  backdrop-filter: blur(22px) saturate(165%);
+}
+
+/* Readable fallback where backdrop-filter is unsupported. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .liquid-glass {
+    background: rgb(var(--glass-surface-strong));
+  }
+}
+
+.liquid-glass-nav {
+  border-radius: 999px;
+  padding: 7px;
+}
+
+.liquid-glass-dropdown {
+  border-radius: 16px;
+  background: rgb(var(--glass-surface-strong));
+}
+
+.liquid-glass-panel {
+  border-radius: 18px;
+}
+
+/* Reflection sweep along the top edge of nav chrome. */
+.liquid-glass-nav::before {
+  content: '';
+  position: absolute;
+  inset: 1px 12px auto;
+  height: 1px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgb(var(--glass-highlight)), transparent);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------- */
+/* Navigation shell                                                  */
+/* ---------------------------------------------------------------- */
+
+.liquid-nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.liquid-nav__item {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgb(var(--nav-muted));
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 180ms var(--motion-standard),
+    opacity 180ms var(--motion-standard);
+}
+
+.liquid-nav__item:hover {
+  color: rgb(var(--nav-ink));
+}
+
+.liquid-nav__item[aria-current='page'],
+.liquid-nav__item[data-active='true'] {
+  color: rgb(255 255 255);
+}
+
+.dark .liquid-nav__item[aria-current='page'],
+.dark .liquid-nav__item[data-active='true'] {
+  color: #fff;
+}
+
+.liquid-nav__icon {
+  display: inline-flex;
+  transition: transform 200ms var(--motion-enter);
+}
+
+.liquid-nav__item[data-active='true'] .liquid-nav__icon {
+  transform: scale(1.08);
+}
+
+.liquid-nav__badge {
+  position: absolute;
+  top: 3px;
+  right: 8px;
+  display: inline-flex;
+  min-width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 700;
+}
+
+/* The travelling selection lives behind the items. */
+.liquid-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgb(var(--indicator-from)), rgb(var(--indicator-to)));
+  box-shadow:
+    0 6px 18px -8px rgb(var(--indicator-from) / 0.65),
+    inset 0 1px 0 rgb(255 255 255 / 0.35);
+  transition:
+    transform var(--motion-indicator) var(--motion-spring),
+    width var(--motion-indicator) var(--motion-spring),
+    opacity 220ms var(--motion-standard);
+  will-change: transform, width;
+  pointer-events: none;
+}
+
+/* Mobile bottom capsule */
+.liquid-nav-mobile {
+  position: fixed;
+  left: 50%;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  z-index: 45;
+  width: min(94vw, 460px);
+  transform: translateX(-50%);
+}
+
+.liquid-nav-mobile .liquid-nav {
+  justify-content: space-between;
+  gap: 0;
+}
+
+.liquid-nav-mobile .liquid-nav__item {
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 52px;
+  padding: 5px 4px 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.liquid-nav-mobile .liquid-nav__badge {
+  top: 2px;
+  right: 12px;
+}
+
+/* Desktop capsule hides on small viewports; mobile capsule hides above md. */
+.liquid-nav-desktop {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .liquid-nav-desktop {
+    display: inline-flex;
+  }
+
+  .liquid-nav-mobile {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* Segmented control (LiquidTabBar)                                  */
+/* ---------------------------------------------------------------- */
+
+.liquid-tabs {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-radius: 999px;
+  padding: 5px;
+  background: rgb(var(--glass-surface));
+  border: 1px solid rgb(var(--glass-border));
+  box-shadow: inset 0 1px 0 rgb(var(--glass-highlight));
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+}
+
+.liquid-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.liquid-tabs__tab {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgb(var(--nav-muted));
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 180ms var(--motion-standard);
+}
+
+.liquid-tabs__tab:hover {
+  color: rgb(var(--nav-ink));
+}
+
+.liquid-tabs__tab[data-active='true'] {
+  color: #fff;
+}
+
+.liquid-tabs__count {
+  border-radius: 999px;
+  padding: 0 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  background: rgb(var(--nav-ink) / 0.08);
+  color: inherit;
+}
+
+.liquid-tabs__tab[data-active='true'] .liquid-tabs__count {
+  background: rgb(255 255 255 / 0.24);
+}
+
+.liquid-tabs .liquid-indicator {
+  background: linear-gradient(135deg, rgb(var(--indicator-from)), rgb(var(--indicator-to)));
+}
+
+/* ---------------------------------------------------------------- */
+/* Motion preferences                                                */
+/* ---------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-indicator {
+    transition: none;
+  }
+
+  .liquid-nav__icon,
+  .liquid-nav__item,
+  .liquid-tabs__tab {
+    transition: none;
+  }
+}

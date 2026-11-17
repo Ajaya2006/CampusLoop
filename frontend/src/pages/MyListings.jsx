@@ -6,7 +6,7 @@ import { apiError } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import PageHeader from '../components/layout/PageHeader';
-import Tabs from '../components/common/Tabs';
+import LiquidTabBar from '../components/navigation/LiquidTabBar';
 import ProductImage from '../components/common/ProductImage';
 import Badge, { StatusBadge } from '../components/common/Badge';
 import Button, { buttonStyles } from '../components/common/Button';
@@ -118,7 +118,7 @@ export default function MyListings() {
         }
       />
 
-      <Tabs items={tabs} value={status} onChange={changeTab} className="mb-4 w-full sm:w-fit" />
+      <LiquidTabBar items={tabs} value={status} onChange={changeTab} ariaLabel="Listing status" className="mb-4 w-full sm:w-auto" />
 
       {error ? (
         <ErrorState message={error} onRetry={load} />

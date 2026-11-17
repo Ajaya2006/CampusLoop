@@ -16,6 +16,7 @@ import ProductCard from '../components/marketplace/ProductCard';
 import ListingQuickView from '../components/marketplace/ListingQuickView';
 import FilterPanel from '../components/marketplace/FilterPanel';
 import SearchBar from '../components/common/SearchBar';
+import LiquidTabBar from '../components/navigation/LiquidTabBar';
 import Pagination from '../components/common/Pagination';
 import Modal from '../components/common/Modal';
 import Avatar from '../components/common/Avatar';
@@ -248,6 +249,13 @@ export default function Marketplace() {
       ? state.sort
       : '';
 
+  // Category tabs come straight from the filters endpoint, so they always match
+  // the slugs the API accepts; "All" simply clears the category filter.
+  const categoryTabs = useMemo(() => {
+    const flat = (filters?.categories || []).flatMap((category) => [category, ...(category.children || [])]);
+    return [{ value: 'all', label: 'All' }, ...flat.slice(0, 5).map((category) => ({ value: category.slug, label: category.name }))];
+  }, [filters]);
+
   const setQuickTab = (value) => {
     if (value === 'popular') update({ sort: 'popular', verified_only: false, page: 1 });
     else if (value === 'verified') update({ sort: 'latest', verified_only: true, page: 1 });
@@ -367,22 +375,21 @@ export default function Marketplace() {
             </div>
           </div>
 
-          <div className="mt-3 flex gap-1 rounded-[9px] bg-[#F2F1EE] p-1 dark:bg-elevated sm:w-fit">
-            {QUICK_TABS.map((tab) => (
-              <button
-                key={tab.value}
-                type="button"
-                onClick={() => setQuickTab(tab.value)}
-                className={cx(
-                  'flex-1 rounded-[7px] px-3 py-1.5 text-[12px] font-medium transition sm:flex-none',
-                  quickTab === tab.value
-                    ? 'bg-navy text-white shadow-sm'
-                    : 'text-muted hover:text-ink',
-                )}
-              >
-                {tab.label}
-              </button>
-            ))}
+          <div className="mt-3 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+            <LiquidTabBar
+              items={categoryTabs}
+              value={state.category || 'all'}
+              onChange={(value) => update({ category: value === 'all' ? '' : value, page: 1 })}
+              ariaLabel="Marketplace categories"
+              className="max-w-full"
+            />
+            <LiquidTabBar
+              items={QUICK_TABS}
+              value={quickTab || 'latest'}
+              onChange={setQuickTab}
+              ariaLabel="Listing sort"
+              className="max-w-full lg:ml-auto"
+            />
           </div>
 
           {activeChips.length ? (

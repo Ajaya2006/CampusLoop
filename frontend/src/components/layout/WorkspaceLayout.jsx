@@ -1,145 +1,56 @@
-import { useState } from 'react';
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import {
-  ArrowRight,
   Bell,
   HandCoins,
   Heart,
-  LayoutDashboard,
   LogOut,
   Mail,
-  Menu,
+  MoreHorizontal,
   Moon,
-  Plus,
   ReceiptText,
   Search,
   Settings,
   ShieldCheck,
   SlidersHorizontal,
-  Store,
   Sun,
   Tag,
-  X,
+  User,
 } from 'lucide-react';
 import Logo from './Logo';
 import PageTransition from './PageTransition';
+import LiquidNavigation from '../navigation/LiquidNavigation';
 import Avatar from '../common/Avatar';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import useUnreadCounts from '../../hooks/useUnreadCounts';
 import { cx } from '../../utils/format';
 
-const primaryLinks = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/marketplace', label: 'Marketplace', icon: Store },
-  { to: '/messages', label: 'Inbox', icon: Mail },
+const MORE_LINKS = [
   { to: '/my-listings', label: 'My listings', icon: Tag },
   { to: '/offers', label: 'Offers', icon: HandCoins },
   { to: '/transactions', label: 'Transactions', icon: ReceiptText },
+  { to: '/meetings', label: 'Meetings', icon: Mail },
   { to: '/wishlist', label: 'Wishlist', icon: Heart },
+  { to: '/settings', label: 'Settings', icon: Settings },
 ];
 
-function SidebarLink({ to, label, icon: Icon, count, onNavigate, end = false }) {
-  return (
-    <NavLink
-      to={to}
-      end={end}
-      onClick={onNavigate}
-      className={({ isActive }) =>
-        cx(
-          'group flex items-center gap-3 rounded-[9px] px-3 py-2.5 text-[13px] font-medium transition',
-          isActive
-            ? 'bg-brand-500 text-white shadow-sm'
-            : 'text-ink/75 hover:bg-elevated hover:text-ink',
-        )
-      }
-    >
-      <Icon size={17} strokeWidth={1.8} className="shrink-0" />
-      <span className="flex-1">{label}</span>
-      {count ? (
-        <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-navy px-1.5 text-[10px] font-bold text-white">
-          {count > 9 ? '9+' : count}
-        </span>
-      ) : null}
-    </NavLink>
-  );
-}
-
-function Sidebar({ onNavigate, messages = 0 }) {
-  const { user, isAdmin, logout } = useAuth();
-  const navigate = useNavigate();
-
-  const signOut = async () => {
-    await logout();
-    navigate('/');
-  };
-
-  return (
-    <div className="flex h-full flex-col">
-      <div className="flex h-[74px] items-center px-5">
-        <Logo />
-      </div>
-
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 pb-4" aria-label="Workspace">
-        {primaryLinks.map((link) => (
-          <SidebarLink
-            key={link.to}
-            {...link}
-            count={link.to === '/messages' ? messages : 0}
-            onNavigate={onNavigate}
-          />
-        ))}
-
-        <div className="my-4 border-t border-line" />
-        <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">Account</p>
-        <SidebarLink to="/settings" label="Settings" icon={Settings} onNavigate={onNavigate} />
-        {isAdmin ? <SidebarLink to="/admin" label="Admin panel" icon={ShieldCheck} onNavigate={onNavigate} /> : null}
-        <button
-          type="button"
-          onClick={signOut}
-          className="group flex w-full items-center gap-3 rounded-[9px] px-3 py-2.5 text-left text-[13px] font-medium text-ink/75 transition hover:bg-elevated hover:text-ink"
-        >
-          <LogOut size={17} strokeWidth={1.8} />
-          Sign out
-        </button>
-      </nav>
-
-      <div className="p-3">
-        <div className="rounded-[14px] bg-elevated p-4">
-          <p className="font-display text-[17px] font-bold leading-snug text-ink">Sell what you don’t use</p>
-          <p className="mt-1.5 text-[11.5px] leading-relaxed text-muted">
-            Turn old books, gadgets and hostel gear into cash for the next semester.
-          </p>
-          <Link
-            to="/sell"
-            onClick={onNavigate}
-            className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-[9px] bg-brand-500 px-3 py-2.5 text-xs font-semibold text-white transition hover:bg-brand-600"
-          >
-            <Plus size={14} /> Create a listing
-          </Link>
-        </div>
-        {user?.verification_status !== 'verified' ? (
-          <Link
-            to="/verify"
-            onClick={onNavigate}
-            className="mt-2 flex items-center gap-2 rounded-[10px] border border-warning/25 bg-warning/5 px-3 py-2.5 text-[11.5px] font-medium text-warning"
-          >
-            <ShieldCheck size={14} /> Verify your student account
-            <ArrowRight size={13} className="ml-auto" />
-          </Link>
-        ) : null}
-      </div>
-    </div>
-  );
-}
-
 export default function WorkspaceLayout() {
-  const { user } = useAuth();
+  const { user, isAdmin, logout } = useAuth();
   const { resolved, toggle } = useTheme();
-  const { notifications, messages } = useUnreadCounts();
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const { notifications } = useUnreadCounts();
   const [query, setQuery] = useState('');
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const onClick = (event) => {
+      if (moreRef.current && !moreRef.current.contains(event.target)) setMoreOpen(false);
+    };
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, []);
 
   const search = (event) => {
     event.preventDefault();
@@ -147,113 +58,153 @@ export default function WorkspaceLayout() {
     navigate(value ? `/marketplace?q=${encodeURIComponent(value)}` : '/marketplace');
   };
 
+  const signOut = async () => {
+    await logout();
+    setMoreOpen(false);
+    navigate('/');
+  };
+
   return (
-    <div className="min-h-screen bg-canvas lg:grid lg:grid-cols-[236px_1fr]">
-      <aside className="sticky top-0 hidden h-screen border-r border-line bg-surface lg:block">
-        <Sidebar messages={messages} />
-      </aside>
+    <div className="min-h-screen bg-canvas">
+      <header className="sticky top-0 z-40 px-3 pt-3 sm:px-5">
+        <div className="liquid-glass liquid-glass-nav mx-auto flex w-full max-w-[1440px] items-center gap-2 px-3 py-2 sm:gap-3">
+          <Link to="/marketplace" className="shrink-0" aria-label="CampusLoop marketplace">
+            <span className="hidden sm:block">
+              <Logo />
+            </span>
+            <span className="sm:hidden">
+              <Logo compact />
+            </span>
+          </Link>
 
-      <div
-        className={cx('drawer-shell fixed inset-0 z-50 lg:hidden', drawerOpen && 'drawer-open')}
-        aria-hidden={!drawerOpen}
-      >
-        <button
-          type="button"
-          data-no-ripple
-          className="drawer-backdrop absolute inset-0"
-          aria-label="Close menu"
-          onClick={() => setDrawerOpen(false)}
-          tabIndex={-1}
-        />
-        <aside className="drawer-panel absolute inset-y-0 left-0 w-[270px] bg-surface shadow-lift">
-          <button
-            type="button"
-            onClick={() => setDrawerOpen(false)}
-            className="absolute right-3 top-4 rounded-lg p-2 text-muted hover:bg-elevated hover:text-ink"
-            aria-label="Close menu"
-          >
-            <X size={18} />
-          </button>
-          <Sidebar messages={messages} onNavigate={() => setDrawerOpen(false)} />
-        </aside>
-      </div>
+          <div className="mx-auto">
+            <LiquidNavigation />
+          </div>
 
-      <div className="flex min-w-0 flex-col">
-        <header className="sticky top-0 z-30 border-b border-line bg-canvas/95 backdrop-blur-md">
-          <div className="flex h-[74px] items-center gap-3 px-4 sm:px-6">
+          <form onSubmit={search} className="relative ml-auto hidden w-full max-w-[240px] xl:block">
+            <Search size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search the marketplace"
+              className="h-9 w-full rounded-full border border-line/70 bg-surface/70 pl-9 pr-9 text-[12.5px] text-ink placeholder:text-muted focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+              aria-label="Search the marketplace"
+            />
+            <SlidersHorizontal size={13} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted" />
+          </form>
+
+          <div className="ml-auto flex shrink-0 items-center gap-1 xl:ml-0">
             <button
               type="button"
-              onClick={() => setDrawerOpen(true)}
-              className="rounded-lg p-2 text-muted hover:bg-elevated hover:text-ink lg:hidden"
-              aria-label="Open menu"
+              onClick={toggle}
+              className="hidden rounded-full p-2 text-muted transition hover:bg-elevated hover:text-ink sm:inline-flex"
+              aria-label={resolved === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
             >
-              <Menu size={20} />
+              {resolved === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
             </button>
-            <div className="lg:hidden">
-              <Logo compact />
-            </div>
 
-            <form onSubmit={search} className="relative ml-auto hidden w-full max-w-[320px] sm:block">
-              <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search the marketplace"
-                className="h-10 w-full rounded-[9px] border border-line bg-surface pl-10 pr-10 text-[13px] text-ink placeholder:text-muted focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/15"
-                aria-label="Search the marketplace"
-              />
-              <SlidersHorizontal size={14} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted" />
-            </form>
+            <Link
+              to="/notifications"
+              className="relative rounded-full p-2 text-muted transition hover:bg-elevated hover:text-ink"
+              aria-label="Notifications"
+            >
+              <Bell size={18} />
+              {notifications ? (
+                <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-brand-500 ring-2 ring-surface" />
+              ) : null}
+            </Link>
 
-            <div className="ml-auto flex items-center gap-1 sm:ml-2">
+            <div className="relative" ref={moreRef}>
               <button
                 type="button"
-                onClick={toggle}
-                className="hidden rounded-[9px] border border-line bg-surface p-2.5 text-muted transition hover:text-ink sm:inline-flex"
-                aria-label={resolved === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+                onClick={() => setMoreOpen((value) => !value)}
+                aria-haspopup="menu"
+                aria-expanded={moreOpen}
+                aria-label="More workspace links"
+                className="rounded-full p-2 text-muted transition hover:bg-elevated hover:text-ink"
               >
-                {resolved === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+                <MoreHorizontal size={18} />
               </button>
-              <Link
-                to="/notifications"
-                className="relative rounded-[9px] border border-line bg-surface p-2.5 text-muted transition hover:text-ink"
-                aria-label="Notifications"
-              >
-                <Bell size={17} />
-                {notifications ? (
-                  <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-brand-500 ring-2 ring-surface" />
-                ) : null}
-              </Link>
-              <Link to="/profile" className="ml-1 flex items-center gap-2.5 rounded-[10px] p-1 pr-1.5 transition hover:bg-elevated">
-                <Avatar name={user?.full_name} src={user?.avatar_url} size="sm" />
-                <span className="hidden text-left md:block">
-                  <span className="block max-w-[120px] truncate text-[12.5px] font-semibold leading-tight text-ink">
-                    {user?.full_name}
-                  </span>
-                  <span className="block text-[10.5px] text-muted">{user?.role === 'admin' ? 'Admin' : 'Student'}</span>
+              {moreOpen ? (
+                <div role="menu" className="pop-in liquid-glass liquid-glass-dropdown absolute right-0 mt-2 w-56 p-1.5">
+                  {MORE_LINKS.map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      role="menuitem"
+                      onClick={() => setMoreOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] text-muted transition hover:bg-elevated hover:text-ink"
+                    >
+                      <item.icon size={15} /> {item.label}
+                    </Link>
+                  ))}
+                  {isAdmin ? (
+                    <Link
+                      to="/admin"
+                      role="menuitem"
+                      onClick={() => setMoreOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] text-muted transition hover:bg-elevated hover:text-ink"
+                    >
+                      <ShieldCheck size={15} /> Admin panel
+                    </Link>
+                  ) : null}
+                  {user?.verification_status !== 'verified' ? (
+                    <Link
+                      to="/verify"
+                      role="menuitem"
+                      onClick={() => setMoreOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] text-warning transition hover:bg-warning/10"
+                    >
+                      <ShieldCheck size={15} /> Verify student account
+                    </Link>
+                  ) : null}
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={signOut}
+                    className="mt-1 flex w-full items-center gap-2.5 rounded-xl border-t border-line/60 px-3 py-2 text-[13px] text-danger transition hover:bg-danger/5"
+                  >
+                    <LogOut size={15} /> Sign out
+                  </button>
+                </div>
+              ) : null}
+            </div>
+
+            <Link
+              to="/profile"
+              className={cx('ml-0.5 flex items-center gap-2 rounded-full p-1 transition hover:bg-elevated')}
+              aria-label="Your profile"
+            >
+              <Avatar name={user?.full_name} src={user?.avatar_url} size="sm" />
+              <span className="hidden text-left xl:block">
+                <span className="block max-w-[110px] truncate text-[12px] font-semibold leading-tight text-ink">
+                  {user?.full_name}
                 </span>
-              </Link>
-            </div>
+                <span className="block text-[10px] text-muted">
+                  {user?.role === 'admin' ? 'Admin' : <User size={10} className="inline" />} Student
+                </span>
+              </span>
+            </Link>
           </div>
-        </header>
+        </div>
+      </header>
 
-        <main className="min-w-0 flex-1 px-4 py-5 sm:px-6 lg:py-6">
-          <PageTransition>
-            <Outlet />
-          </PageTransition>
-        </main>
+      <main className="mx-auto w-full max-w-[1440px] min-w-0 px-4 pb-28 pt-5 sm:px-6 md:pb-8 lg:py-6">
+        <PageTransition>
+          <Outlet />
+        </PageTransition>
+      </main>
 
-        <footer className="border-t border-line px-4 py-4 sm:px-6">
-          <div className="flex flex-col gap-2 text-[11px] text-muted sm:flex-row sm:items-center sm:justify-between">
-            <p>© {new Date().getFullYear()} CampusLoop · Academic project</p>
-            <div className="flex flex-wrap gap-4">
-              <Link to="/settings" className="hover:text-ink">Privacy</Link>
-              <Link to="/settings" className="hover:text-ink">Terms</Link>
-              <Link to="/marketplace" className="hover:text-ink">Marketplace</Link>
-            </div>
+      <footer className="mx-auto w-full max-w-[1440px] px-4 pb-24 sm:px-6 md:pb-6">
+        <div className="flex flex-col gap-2 border-t border-line pt-4 text-[11px] text-muted sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} CampusLoop · Academic project</p>
+          <div className="flex flex-wrap gap-4">
+            <Link to="/settings" className="hover:text-ink">Privacy</Link>
+            <Link to="/settings" className="hover:text-ink">Terms</Link>
+            <Link to="/marketplace" className="hover:text-ink">Marketplace</Link>
           </div>
-        </footer>
-      </div>
+        </div>
+      </footer>
     </div>
   );
 }

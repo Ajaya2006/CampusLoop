@@ -15,7 +15,7 @@ import { PRODUCT_STATUS } from '../../constants';
 import { formatDate, inr } from '../../utils/format';
 
 const STATUS_COLORS = {
-  available: '#FF7800',
+  available: '#6D4AFF',
   approved: '#34D399',
   pending_verification: '#FBBF24',
   reserved: '#7947FF',
@@ -69,14 +69,14 @@ function ListingTrend({ series }) {
               vectorEffect="non-scaling-stroke"
             />
           ))}
-          {area ? <path className="chart-area" d={area} fill="rgba(255, 120, 0, 0.1)" /> : null}
+          {area ? <path className="chart-area" d={area} fill="rgba(109, 74, 255, 0.1)" /> : null}
           {line ? (
             <path
               className="chart-line"
               d={line}
               pathLength="1"
               fill="none"
-              stroke="#FF7800"
+              stroke="#6D4AFF"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -103,7 +103,7 @@ function ListingTrend({ series }) {
             <>
               <span className="chart-tip-title">{data[hover]?.date?.slice(5)}</span>
               <span className="chart-tip-row">
-                <span className="chart-tip-swatch" style={{ backgroundColor: '#FF7800' }} />
+                <span className="chart-tip-swatch" style={{ backgroundColor: '#6D4AFF' }} />
                 <span className="chart-tip-label">Listings added</span>
                 <span className="chart-tip-value">{data[hover]?.count ?? 0}</span>
               </span>

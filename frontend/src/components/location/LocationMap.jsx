@@ -21,7 +21,7 @@ export default function LocationMap({ latitude, longitude, label, details, class
       radius: 9,
       color: '#FFFFFF',
       weight: 3,
-      fillColor: '#F26B3A',
+      fillColor: '#6D4AFF',
       fillOpacity: 1,
     }).addTo(map);
     const popup = document.createElement('div');

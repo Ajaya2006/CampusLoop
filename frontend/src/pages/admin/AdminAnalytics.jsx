@@ -33,10 +33,10 @@ const RANGES = [7, 14, 30, 90];
 /* The headline cards keep their own window so the chart dropdowns stay local. */
 const KPI_DAYS = 30;
 
-const CATEGORY_COLORS = ['#FF7800', '#7947FF', '#6B7280', '#A78BFA', '#FFA94D', '#4B5563'];
+const CATEGORY_COLORS = ['#6D4AFF', '#7947FF', '#6B7280', '#A78BFA', '#8F71FF', '#4B5563'];
 
 const STATUS_COLORS = {
-  available: '#FF7800',
+  available: '#6D4AFF',
   approved: '#34D399',
   pending_verification: '#FBBF24',
   reserved: '#7947FF',
@@ -47,7 +47,7 @@ const STATUS_COLORS = {
 };
 
 const OFFER_COLORS = {
-  pending: '#FF7800',
+  pending: '#6D4AFF',
   accepted: '#34D399',
   rejected: '#F87171',
   countered: '#7947FF',
@@ -230,7 +230,7 @@ function UsageChart({ transactionSeries, listingSeries }) {
                   width={orangeWidth}
                   height={Math.max(3, H - padBottom - dealsTop)}
                   rx={Math.min(10, orangeWidth / 2)}
-                  fill="#FF7800"
+                  fill="#6D4AFF"
                 />
               ) : null}
             </g>
@@ -256,7 +256,7 @@ function UsageChart({ transactionSeries, listingSeries }) {
           <rect x="11" y="28" width="7" height="7" rx="2" fill="rgb(var(--chart-muted))" />
           <text x="23" y="34.5" fill="currentColor" className="text-[9px] text-muted">Listings added</text>
           <text x={tooltipWidth - 11} y="34.5" textAnchor="end" fill="currentColor" className="text-[10px] font-bold text-ink">{selectedPoint.listings}</text>
-          <rect x="11" y="42" width="7" height="7" rx="2" fill="#FF7800" />
+          <rect x="11" y="42" width="7" height="7" rx="2" fill="#6D4AFF" />
           <text x="23" y="48.5" fill="currentColor" className="text-[9px] text-muted">Deals started</text>
           <text x={tooltipWidth - 11} y="48.5" textAnchor="end" fill="currentColor" className="text-[10px] font-bold text-ink">{selectedPoint.deals}</text>
         </g>
@@ -330,7 +330,7 @@ function ValueChart({ series }) {
               y={top}
               width={slot}
               height={H - padBottom - top}
-              fill={highlighted ? 'rgba(255, 120, 0, 0.18)' : 'rgb(var(--chart-muted))'}
+              fill={highlighted ? 'rgba(109, 74, 255, 0.18)' : 'rgb(var(--chart-muted))'}
             >
               <title>{`${formatChartDate(point.date)}: ${inr(point.value)} completed deal value`}</title>
             </rect>
@@ -345,7 +345,7 @@ function ValueChart({ series }) {
               x2={x(index) + slot / 2}
               y1={y(point.value)}
               y2={y(point.value)}
-              stroke={index === maxIndex ? '#FF7800' : '#8F97A2'}
+              stroke={index === maxIndex ? '#6D4AFF' : '#8F97A2'}
               strokeWidth="2"
               strokeLinecap="round"
             />

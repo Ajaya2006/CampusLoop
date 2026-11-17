@@ -17,7 +17,7 @@ import { formatDateTime, inr } from '../../utils/format';
 const STATUS_COLORS = {
   pending: '#FBBF24',
   meeting_scheduled: '#7947FF',
-  completion_requested: '#FF7800',
+  completion_requested: '#6D4AFF',
   completed: '#34D399',
   cancelled: '#F87171',
 };
@@ -87,14 +87,14 @@ function DealTrend({ series }) {
               vectorEffect="non-scaling-stroke"
             />
           ))}
-          {area ? <path className="chart-area" d={area} fill="rgb(255 120 0 / 0.12)" /> : null}
+          {area ? <path className="chart-area" d={area} fill="rgb(109 74 255 / 0.12)" /> : null}
           {line ? (
             <path
               className="chart-line"
               d={line}
               pathLength="1"
               fill="none"
-              stroke="#FF7800"
+              stroke="#6D4AFF"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -121,7 +121,7 @@ function DealTrend({ series }) {
             <>
               <span className="chart-tip-title">{data[hover]?.date?.slice(5)}</span>
               <span className="chart-tip-row">
-                <span className="chart-tip-swatch" style={{ backgroundColor: '#FF7800' }} />
+                <span className="chart-tip-swatch" style={{ backgroundColor: '#6D4AFF' }} />
                 <span className="chart-tip-label">Deals started</span>
                 <span className="chart-tip-value">{data[hover]?.count ?? 0}</span>
               </span>
@@ -340,7 +340,7 @@ export default function AdminTransactions() {
             <ul className="flex flex-1 flex-col justify-between gap-3">
               {topSellers.map((seller, index) => {
                 const width = Math.max(3, Math.round((seller.value / topSellerMax) * 100));
-                const color = index === 0 ? '#FF7800' : index === 1 ? '#7947FF' : '#6B7280';
+                const color = index === 0 ? '#6D4AFF' : index === 1 ? '#7947FF' : '#6B7280';
                 return (
                   <li key={seller.id}>
                     <div className="flex items-center gap-2.5">

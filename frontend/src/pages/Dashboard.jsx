@@ -200,7 +200,7 @@ function OfferPipeline({ pipeline }) {
       value,
       color:
         status === 'pending'
-          ? '#F26B3A'
+          ? '#6D4AFF'
           : status === 'accepted'
             ? '#1F9D79'
             : status === 'rejected'
