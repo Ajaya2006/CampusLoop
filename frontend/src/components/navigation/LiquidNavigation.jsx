@@ -1,4 +1,5 @@
 import { Compass, Home, MessageCircle, Plus, User } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useUnreadCounts from '../../hooks/useUnreadCounts';
@@ -58,10 +59,15 @@ export function useMainNavigation() {
 export default function LiquidNavigation() {
   const { items, activeIndex } = useMainNavigation();
 
+  // The desktop capsule sits inside the glass header, but the mobile bar is
+  // fixed to the viewport. A `backdrop-filter` ancestor becomes the containing
+  // block for fixed children, so the mobile bar is portalled to <body>.
   return (
     <>
       <LiquidNavigationDesktop items={items} activeIndex={activeIndex} />
-      <LiquidNavigationMobile items={items} activeIndex={activeIndex} />
+      {typeof document === 'undefined'
+        ? null
+        : createPortal(<LiquidNavigationMobile items={items} activeIndex={activeIndex} />, document.body)}
     </>
   );
 }
