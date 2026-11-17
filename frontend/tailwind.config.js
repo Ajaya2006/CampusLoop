@@ -5,20 +5,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        /* CampusLoop identity: purple primary, blue secondary. */
+        /* CampusLoop identity: orange primary, dark navy structure. */
         brand: {
-          50: '#F4F1FF',
-          100: '#EAE4FF',
-          200: '#D6CBFF',
-          300: '#B8A3FF',
-          400: '#8F71FF',
-          500: '#6D4AFF',
-          600: '#5B36E8',
-          700: '#4A29C2',
-          800: '#3B219B',
-          900: '#2E1B78',
+          50: '#FFF5EF',
+          100: '#FEE8DB',
+          200: '#FBD3BE',
+          300: '#F8B497',
+          400: '#F5906B',
+          500: '#F26B3A',
+          600: '#DD5628',
+          700: '#B74620',
+          800: '#923A1D',
+          900: '#772F19',
         },
-        info: '#3B82F6',
         accent: 'rgb(var(--accent) / <alpha-value>)',
         navy: '#1B2A40',
         canvas: 'rgb(var(--canvas) / <alpha-value>)',

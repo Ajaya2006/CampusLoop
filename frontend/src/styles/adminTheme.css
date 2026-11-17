@@ -14,7 +14,7 @@
   --danger: 248 113 113;
   color-scheme: dark;
   background-color: #050607;
-  accent-color: #6d4aff;
+  accent-color: #ff7800;
 }
 
 .dark body.admin-mode .admin-shell {
@@ -58,9 +58,9 @@
 
 /* Navigation */
 .dark body.admin-mode .admin-sidebar a[aria-current='page'] {
-  background-color: #6d4aff;
+  background-color: #ff7800;
   color: #050607;
-  box-shadow: 0 10px 26px rgb(109 74 255 / 0.24);
+  box-shadow: 0 10px 26px rgb(255 120 0 / 0.24);
 }
 
 .dark body.admin-mode .admin-sidebar a[aria-current='page'] svg {
@@ -74,7 +74,7 @@
 /* Accent remap: orange primary, purple secondary */
 .dark body.admin-mode .admin-shell .bg-brand-500,
 .dark body.admin-mode .modal-panel .bg-brand-500 {
-  background-color: #6d4aff;
+  background-color: #ff7800;
   color: #050607;
 }
 
@@ -92,25 +92,25 @@
 .dark body.admin-mode .admin-shell [class*='dark:bg-brand-900/'],
 .dark body.admin-mode .modal-panel [class~='bg-brand-50'],
 .dark body.admin-mode .modal-panel [class*='dark:bg-brand-900/'] {
-  background-color: rgb(109 74 255 / 0.12);
+  background-color: rgb(255 120 0 / 0.12);
 }
 
 .dark body.admin-mode .admin-shell [class*='border-brand-'],
 .dark body.admin-mode .modal-panel [class*='border-brand-'] {
-  border-color: rgb(109 74 255 / 0.34);
+  border-color: rgb(255 120 0 / 0.34);
 }
 
 /* Icon chips: a tinted badge keeps the glyph visible on the night canvas
    instead of relying on the card's position in the row. */
 .dark body.admin-mode .admin-shell .dashboard-card-icon {
-  background-color: rgb(109 74 255 / 0.13);
+  background-color: rgb(255 120 0 / 0.13);
   color: #ff8a1f;
-  box-shadow: inset 0 0 0 1px rgb(109 74 255 / 0.22);
+  box-shadow: inset 0 0 0 1px rgb(255 120 0 / 0.22);
 }
 
 /* Admin stat accents map onto the console palette (orange, purple, green). */
 .dark body.admin-mode .admin-shell .stat-card {
-  --stat-accent: 109 74 255;
+  --stat-accent: 255 120 0;
 }
 
 .dark body.admin-mode .admin-shell .stat-card[data-accent='navy'],
@@ -176,8 +176,8 @@
 
 .dark body.admin-mode .admin-shell .input-base:focus,
 .dark body.admin-mode .modal-panel .input-base:focus {
-  border-color: #6d4aff;
-  box-shadow: 0 0 0 3px rgb(109 74 255 / 0.15);
+  border-color: #ff7800;
+  box-shadow: 0 0 0 3px rgb(255 120 0 / 0.15);
 }
 
 .dark body.admin-mode .admin-shell .period-select {

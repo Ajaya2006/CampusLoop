@@ -75,8 +75,8 @@
 }
 
 .admin-trend-charts .period-select:hover {
-  border-color: rgb(109 74 255 / 0.45);
-  box-shadow: 0 8px 20px -10px rgb(109 74 255 / 0.5), inset 0 1px 0 rgb(255 255 255 / 0.06);
+  border-color: rgb(255 120 0 / 0.45);
+  box-shadow: 0 8px 20px -10px rgb(255 120 0 / 0.5), inset 0 1px 0 rgb(255 255 255 / 0.06);
 }
 
 /* Keep the popup above the neighbouring cards while it is open. */
@@ -90,8 +90,8 @@
 }
 
 .admin-trend-charts .period-select:focus-within {
-  border-color: #6d4aff;
-  box-shadow: 0 0 0 3px rgb(109 74 255 / 0.18);
+  border-color: #ff7800;
+  box-shadow: 0 0 0 3px rgb(255 120 0 / 0.18);
 }
 
 .admin-trend-charts .period-select:active .period-trigger {
@@ -139,8 +139,8 @@
 .admin-trend-charts .period-select:focus-within .period-trigger svg,
 .admin-trend-charts .period-select[data-open='true'] .period-trigger svg {
   transform: rotate(180deg);
-  background: rgb(109 74 255 / 0.16);
-  stroke: #6d4aff;
+  background: rgb(255 120 0 / 0.16);
+  stroke: #ff7800;
 }
 
 /* Period list: a quiet popup instead of a native select, so the options match
@@ -191,8 +191,8 @@
 }
 
 .admin-trend-charts .period-option[data-active='true'] {
-  background: rgb(109 74 255 / 0.12);
-  color: #6d4aff;
+  background: rgb(255 120 0 / 0.12);
+  color: #ff7800;
 }
 
 .admin-trend-charts .period-option svg {
@@ -310,8 +310,8 @@
 }
 
 .admin-trend-charts .revenue-column.is-active .revenue-fill {
-  border-top-color: #6d4aff;
-  background: linear-gradient(180deg, rgb(109 74 255 / 0.2), rgb(109 74 255 / 0.02));
+  border-top-color: #ff7800;
+  background: linear-gradient(180deg, rgb(255 120 0 / 0.2), rgb(255 120 0 / 0.02));
 }
 
 .admin-trend-charts .revenue-month,
@@ -337,7 +337,7 @@
 
 .admin-trend-charts .revenue-column:focus-visible .revenue-fill,
 .admin-trend-charts .usage-column:focus-visible .visitor-bar {
-  outline: 2px solid rgb(109 74 255 / 0.4);
+  outline: 2px solid rgb(255 120 0 / 0.4);
   outline-offset: 2px;
 }
 
@@ -373,7 +373,7 @@
   height: var(--bar-height);
   max-height: 100%;
   border-radius: 8px 8px 3px 3px;
-  background: #6d4aff;
+  background: #ff7800;
   transform: scaleY(0);
   transform-origin: bottom;
   animation: cl-grow-bar 0.7s 0.12s cubic-bezier(0.2, 0.74, 0.24, 1) forwards;
@@ -544,7 +544,7 @@
 }
 
 .admin-trend-charts .borrowers-swatch {
-  background: #6d4aff;
+  background: #ff7800;
 }
 
 /* Empty states */
@@ -665,7 +665,7 @@
 }
 
 .dark .admin-trend-charts .period-select:hover {
-  border-color: rgb(109 74 255 / 0.45);
+  border-color: rgb(255 120 0 / 0.45);
   background: linear-gradient(180deg, #171b21, #0f1216);
 }
 
@@ -684,7 +684,7 @@
 }
 
 .dark .admin-trend-charts .period-option[data-active='true'] {
-  background: rgb(109 74 255 / 0.16);
+  background: rgb(255 120 0 / 0.16);
 }
 
 .dark .admin-trend-charts .grid-lines i {

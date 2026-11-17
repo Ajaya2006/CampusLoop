@@ -16,9 +16,9 @@
   --glass-edge: 23 23 37 / 0.08;
   --glass-highlight: 255 255 255 / 0.95;
   --glass-shadow: 23 30 60 / 0.14;
-  --glass-tint: 109 74 255 / 0.08;
-  --indicator-from: 109 74 255;
-  --indicator-to: 59 130 246;
+  --glass-tint: 255 120 0 / 0.08;
+  --indicator-from: 255 120 0;
+  --indicator-to: 221 86 40;
   --nav-ink: 23 23 37;
   --nav-muted: 102 112 133;
 
@@ -36,7 +36,7 @@
   --glass-edge: 255 255 255 / 0.06;
   --glass-highlight: 255 255 255 / 0.16;
   --glass-shadow: 0 0 0 / 0.55;
-  --glass-tint: 109 74 255 / 0.16;
+  --glass-tint: 255 120 0 / 0.16;
   --nav-ink: 245 246 250;
   --nav-muted: 170 179 197;
 }
@@ -108,7 +108,7 @@
   align-items: center;
   gap: 8px;
   min-height: 42px;
-  padding: 0 14px;
+  padding: 0 16px;
   border: 0;
   border-radius: 999px;
   background: transparent;
@@ -215,8 +215,17 @@
 }
 
 /* Desktop capsule hides on small viewports; mobile capsule hides above md. */
+/* Desktop and tablet: the same capsule, anchored to the bottom of the viewport
+   and wider than the phone version so labels breathe. */
 .liquid-nav-desktop {
   display: none;
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 45;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100vw - 32px);
 }
 
 @media (min-width: 768px) {

@@ -11,7 +11,7 @@ const MAX_DETAILS = 300;
 
 const pinIcon = L.divIcon({
   className: '',
-  html: '<div style="width:22px;height:22px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#6D4AFF;border:3px solid #fff;box-shadow:0 2px 8px rgba(23,23,37,.4)"></div>',
+  html: '<div style="width:22px;height:22px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#ff7800;border:3px solid #fff;box-shadow:0 2px 8px rgba(23,23,37,.4)"></div>',
   iconSize: [22, 22],
   iconAnchor: [11, 22],
 });

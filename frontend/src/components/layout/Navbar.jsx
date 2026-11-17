@@ -40,10 +40,6 @@ export default function Navbar() {
           <Logo />
         </Link>
 
-        <div className="mx-auto">
-          <LiquidNavigation />
-        </div>
-
         <div className="ml-auto flex shrink-0 items-center gap-1">
           <button
             type="button"
@@ -125,6 +121,8 @@ export default function Navbar() {
           )}
         </div>
       </div>
+
+      <LiquidNavigation />
     </header>
   );
 }

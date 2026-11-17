@@ -77,10 +77,6 @@ export default function WorkspaceLayout() {
             </span>
           </Link>
 
-          <div className="mx-auto">
-            <LiquidNavigation />
-          </div>
-
           <form onSubmit={search} className="relative ml-auto hidden w-full max-w-[240px] xl:block">
             <Search size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
             <input
@@ -189,13 +185,13 @@ export default function WorkspaceLayout() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[1440px] min-w-0 px-4 pb-28 pt-5 sm:px-6 md:pb-8 lg:py-6">
+      <main className="mx-auto w-full max-w-[1440px] min-w-0 px-4 pb-32 pt-5 sm:px-6 lg:py-6">
         <PageTransition>
           <Outlet />
         </PageTransition>
       </main>
 
-      <footer className="mx-auto w-full max-w-[1440px] px-4 pb-24 sm:px-6 md:pb-6">
+      <footer className="mx-auto w-full max-w-[1440px] px-4 pb-32 sm:px-6">
         <div className="flex flex-col gap-2 border-t border-line pt-4 text-[11px] text-muted sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} CampusLoop · Academic project</p>
           <div className="flex flex-wrap gap-4">
@@ -205,6 +201,8 @@ export default function WorkspaceLayout() {
           </div>
         </div>
       </footer>
+
+      <LiquidNavigation />
     </div>
   );
 }
