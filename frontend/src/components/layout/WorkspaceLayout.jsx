@@ -185,7 +185,7 @@ export default function WorkspaceLayout() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[1440px] min-w-0 px-4 pb-32 pt-5 sm:px-6 lg:py-6">
+      <main className="mx-auto w-full max-w-[1440px] min-w-0 px-4 pb-32 pt-5 sm:px-6 lg:pb-32 lg:pt-6">
         <PageTransition>
           <Outlet />
         </PageTransition>

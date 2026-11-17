@@ -58,7 +58,7 @@ export default function Footer() {
         ))}
       </div>
       <div className="border-t border-line">
-        <div className="page-wrap flex flex-col items-center justify-between gap-2 py-4 text-xs text-muted sm:flex-row">
+        <div className="page-wrap flex flex-col items-center justify-between gap-2 pb-24 pt-4 text-xs text-muted sm:flex-row">
           <p>© {new Date().getFullYear()} CampusLoop · Academic project</p>
           <p>Offline, student-to-student deals. No payments are processed on CampusLoop.</p>
         </div>
