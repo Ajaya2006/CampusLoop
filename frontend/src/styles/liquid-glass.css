@@ -67,8 +67,9 @@
 /* Material                                                          */
 /* ---------------------------------------------------------------- */
 
+/* No `position` here: this class is combined with Tailwind's `absolute` on
+   dropdowns, and an unlayered rule would win over the utility layer. */
 .liquid-glass {
-  position: relative;
   background: rgb(var(--glass-surface));
   border: 1px solid rgb(var(--glass-border));
   box-shadow:
@@ -139,6 +140,7 @@
 /* Bars and capsules: a light shell without blur, so only the elements inside
    (or the active selection) read as glass. */
 .liquid-glass-nav {
+  position: relative;
   border-radius: 999px;
   padding: 7px;
   background:
