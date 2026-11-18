@@ -275,7 +275,7 @@ export default function ProductDetail() {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-1.5 text-[12px] font-medium text-muted transition hover:text-ink"
+          className="liquid-glass-item inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium text-muted transition hover:text-ink"
         >
           <ArrowLeft size={14} /> Back
         </button>

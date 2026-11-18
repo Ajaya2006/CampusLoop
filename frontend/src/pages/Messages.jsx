@@ -575,7 +575,7 @@ export default function Messages() {
                 <button
                   type="button"
                   onClick={() => navigate('/messages')}
-                  className="rounded-lg p-1.5 text-muted hover:bg-elevated hover:text-ink lg:hidden"
+                  className="liquid-glass-icon lg:hidden"
                   aria-label="Back to conversations"
                 >
                   <ArrowLeft size={18} />

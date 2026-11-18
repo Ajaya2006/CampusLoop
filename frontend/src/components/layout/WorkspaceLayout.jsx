@@ -67,8 +67,12 @@ export default function WorkspaceLayout() {
   return (
     <div className="min-h-screen bg-canvas">
       <header className="sticky top-0 z-40 px-3 pt-3 sm:px-5">
-        <div className="liquid-glass liquid-glass-nav mx-auto flex w-full max-w-[1440px] items-center gap-2 px-3 py-2 sm:gap-3">
-          <Link to="/marketplace" className="shrink-0" aria-label="CampusLoop marketplace">
+        <div className="mx-auto flex w-full max-w-[1440px] items-center gap-2 sm:gap-3">
+          <Link
+            to="/marketplace"
+            className="liquid-glass-item inline-flex shrink-0 items-center rounded-2xl px-2 py-1.5"
+            aria-label="CampusLoop marketplace"
+          >
             <span className="hidden sm:block">
               <Logo />
             </span>
@@ -83,7 +87,7 @@ export default function WorkspaceLayout() {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search the marketplace"
-              className="h-9 w-full rounded-full border border-line/70 bg-surface/70 pl-9 pr-9 text-[12.5px] text-ink placeholder:text-muted focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+              className="liquid-glass-field h-9 w-full pl-9 pr-9 text-[12.5px] text-ink placeholder:text-muted focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
               aria-label="Search the marketplace"
             />
             <SlidersHorizontal size={13} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted" />
@@ -93,7 +97,7 @@ export default function WorkspaceLayout() {
             <button
               type="button"
               onClick={toggle}
-              className="hidden rounded-full p-2 text-muted transition hover:bg-elevated hover:text-ink sm:inline-flex"
+              className="liquid-glass-icon hidden sm:inline-flex"
               aria-label={resolved === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
             >
               {resolved === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
@@ -101,7 +105,7 @@ export default function WorkspaceLayout() {
 
             <Link
               to="/notifications"
-              className="relative rounded-full p-2 text-muted transition hover:bg-elevated hover:text-ink"
+              className="liquid-glass-icon relative"
               aria-label="Notifications"
             >
               <Bell size={18} />
@@ -117,7 +121,7 @@ export default function WorkspaceLayout() {
                 aria-haspopup="menu"
                 aria-expanded={moreOpen}
                 aria-label="More workspace links"
-                className="rounded-full p-2 text-muted transition hover:bg-elevated hover:text-ink"
+                className="liquid-glass-icon"
               >
                 <MoreHorizontal size={18} />
               </button>
@@ -168,7 +172,7 @@ export default function WorkspaceLayout() {
 
             <Link
               to="/profile"
-              className={cx('ml-0.5 flex items-center gap-2 rounded-full p-1 transition hover:bg-elevated')}
+              className={cx('liquid-glass-item ml-0.5 flex items-center gap-2 rounded-full py-1 pl-1 pr-1 xl:pr-2.5')}
               aria-label="Your profile"
             >
               <Avatar name={user?.full_name} src={user?.avatar_url} size="sm" />

@@ -35,8 +35,8 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 px-3 pt-3 sm:px-5">
-      <div className="liquid-glass liquid-glass-nav mx-auto flex w-full max-w-[1360px] items-center gap-3 px-3 py-2">
-        <Link to="/" className="shrink-0" aria-label="CampusLoop home">
+      <div className="mx-auto flex w-full max-w-[1360px] items-center gap-3">
+        <Link to="/" className="liquid-glass-item inline-flex shrink-0 items-center rounded-2xl px-2.5 py-1.5" aria-label="CampusLoop home">
           <Logo />
         </Link>
 
@@ -44,7 +44,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={toggle}
-            className="rounded-full p-2 text-muted transition hover:bg-elevated hover:text-ink"
+            className="liquid-glass-icon"
             aria-label={resolved === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
           >
             {resolved === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
@@ -54,7 +54,7 @@ export default function Navbar() {
             <>
               <Link
                 to="/notifications"
-                className="relative rounded-full p-2 text-muted transition hover:bg-elevated hover:text-ink"
+                className="liquid-glass-icon relative"
                 aria-label={`Notifications${notifications ? `, ${notifications} unread` : ''}`}
               >
                 <Bell size={18} />
@@ -66,7 +66,7 @@ export default function Navbar() {
               <div className="relative" ref={menuRef}>
                 <button
                   type="button"
-                  className="flex items-center gap-1.5 rounded-full p-1 transition hover:bg-elevated"
+                  className="liquid-glass-item flex items-center gap-1.5 rounded-full py-1 pl-1 pr-2"
                   onClick={() => setMenuOpen((value) => !value)}
                   aria-haspopup="menu"
                   aria-expanded={menuOpen}

@@ -144,7 +144,7 @@ export default function AdminLayout() {
       </div>
 
       <div className="flex min-w-0 flex-col">
-        <header className="admin-topbar sticky top-0 z-30 border-b border-line bg-canvas/95 backdrop-blur-md">
+        <header className="admin-topbar sticky top-0 z-30 border-b border-line bg-canvas">
           <div className="flex h-[74px] items-center gap-3 px-4 sm:px-6">
             <button
               type="button"

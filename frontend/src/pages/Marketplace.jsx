@@ -342,7 +342,7 @@ export default function Marketplace() {
                 ) : null}
               </button>
 
-              <div className="flex h-11 shrink-0 items-center gap-0.5 rounded-control border border-line bg-surface p-1">
+              <div className="liquid-glass-item flex h-11 shrink-0 items-center gap-0.5 rounded-2xl p-1">
                 <button
                   type="button"
                   onClick={() => setView('grid')}
