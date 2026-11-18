@@ -1,6 +1,7 @@
 import { RotateCcw } from 'lucide-react';
 import { CONDITION_OPTIONS, SORT_OPTIONS } from '../../constants';
 import { Checkbox, Input, Select } from '../common/Form';
+import SelectMenu from '../common/SelectMenu';
 import Button from '../common/Button';
 import { cx } from '../../utils/format';
 
@@ -23,24 +24,21 @@ export default function FilterPanel({ filters, state, onChange, onReset, classNa
 
       <div>
         <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Category</h3>
-        <select
+        <SelectMenu
           value={state.category}
           onChange={(event) => onChange({ category: event.target.value, page: 1 })}
-          className="input-base"
+          options={[
+            { value: '', label: 'All categories' },
+            ...(filters?.categories || []).map((category) => ({
+              label: category.name,
+              options: [
+                { value: category.slug, label: `${category.name} (all)` },
+                ...(category.children || []).map((child) => ({ value: child.slug, label: child.name })),
+              ],
+            })),
+          ]}
           aria-label="Filter by category"
-        >
-          <option value="">All categories</option>
-          {filters?.categories?.map((category) => (
-            <optgroup key={category.id} label={category.name}>
-              <option value={category.slug}>{category.name} (all)</option>
-              {category.children?.map((child) => (
-                <option key={child.id} value={child.slug}>
-                  {child.name}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
+        />
       </div>
 
       <div>

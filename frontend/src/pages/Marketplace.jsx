@@ -16,6 +16,7 @@ import ProductCard from '../components/marketplace/ProductCard';
 import ListingQuickView from '../components/marketplace/ListingQuickView';
 import FilterPanel from '../components/marketplace/FilterPanel';
 import SearchBar from '../components/common/SearchBar';
+import SelectMenu from '../components/common/SelectMenu';
 import LiquidTabBar from '../components/navigation/LiquidTabBar';
 import Pagination from '../components/common/Pagination';
 import Modal from '../components/common/Modal';
@@ -253,7 +254,7 @@ export default function Marketplace() {
   // the slugs the API accepts; "All" simply clears the category filter.
   const categoryTabs = useMemo(() => {
     const flat = (filters?.categories || []).flatMap((category) => [category, ...(category.children || [])]);
-    return [{ value: 'all', label: 'All' }, ...flat.slice(0, 5).map((category) => ({ value: category.slug, label: category.name }))];
+    return [{ value: 'all', label: 'All' }, ...flat.map((category) => ({ value: category.slug, label: category.name }))];
   }, [filters]);
 
   const setQuickTab = (value) => {
@@ -476,16 +477,14 @@ export default function Marketplace() {
             <div className="flex items-center gap-3 text-[11px] text-muted">
               <label className="flex items-center gap-1.5">
                 Show
-                <select
-                  value={state.page_size}
+                <SelectMenu
+                  size="sm"
+                  value={String(state.page_size)}
                   onChange={(event) => update({ page_size: Number(event.target.value), page: 1 })}
-                  className="h-8 rounded-[6px] border border-line bg-surface px-1.5 text-[11px] font-medium text-ink"
+                  options={[8, 12, 24, 36].map((size) => ({ value: String(size), label: String(size) }))}
+                  className="w-[74px]"
                   aria-label="Listings per page"
-                >
-                  {[8, 12, 24, 36].map((size) => (
-                    <option key={size} value={size}>{size}</option>
-                  ))}
-                </select>
+                />
               </label>
               <span>
                 of {result.total} result{result.total === 1 ? '' : 's'}

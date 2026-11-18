@@ -15,6 +15,8 @@ export default function GlassPopover({
   onClose,
   align = 'end',
   offset = 10,
+  matchWidth = false,
+  role = 'menu',
   className = '',
   children,
 }) {
@@ -33,6 +35,12 @@ export default function GlassPopover({
       if (!anchor || !panel) return;
 
       const rect = anchor.getBoundingClientRect();
+      // A select panel mirrors its trigger width, so it is measured after the
+      // width is applied to keep the height (and the flip decision) honest.
+      // offsetWidth is used because a rect shrinks while an ancestor's enter
+      // animation is still scaling, which would leave the panel too narrow.
+      if (matchWidth) panel.style.width = `${anchor.offsetWidth || rect.width}px`;
+
       const width = panel.offsetWidth;
       const height = panel.offsetHeight;
       const margin = 12;
@@ -55,7 +63,7 @@ export default function GlassPopover({
       window.removeEventListener('resize', place);
       window.removeEventListener('scroll', place, true);
     };
-  }, [open, anchorRef, align, offset]);
+  }, [open, anchorRef, align, offset, matchWidth]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -82,11 +90,12 @@ export default function GlassPopover({
   return createPortal(
     <div
       ref={panelRef}
-      role="menu"
+      role={role}
       className={`pop-in liquid-glass liquid-glass-dropdown fixed z-[60] p-1.5 ${className}`}
       style={{
         top: pos ? pos.top : 0,
         left: pos ? pos.left : 0,
+        transformOrigin: align === 'end' ? 'top right' : 'top left',
         visibility: pos ? 'visible' : 'hidden',
       }}
     >

@@ -1,9 +1,12 @@
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import LiquidActiveIndicator from './LiquidActiveIndicator';
 
 /**
  * Segmented control with the same travelling indicator as the main navigation.
  * Tabs are data-driven: pass any `{ value, label, count?, icon? }` list.
+ *
+ * Bars that overflow (category strips, admin tab rails) scroll the selected tab
+ * back into view, so the sliding tile never lands half off-screen.
  */
 export default function LiquidTabBar({ items, value, onChange, ariaLabel = 'Section', className = '' }) {
   const containerRef = useRef(null);
@@ -21,6 +24,20 @@ export default function LiquidTabBar({ items, value, onChange, ariaLabel = 'Sect
     const buttons = containerRef.current?.querySelectorAll('[role="tab"]');
     buttons?.[next]?.focus();
   };
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || container.scrollWidth <= container.clientWidth + 1) return;
+    const target = container.querySelectorAll('[role="tab"]')[activeIndex];
+    if (!target) return;
+
+    const centered = target.offsetLeft - (container.clientWidth - target.offsetWidth) / 2;
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    container.scrollTo({
+      left: Math.max(0, Math.min(centered, container.scrollWidth - container.clientWidth)),
+      behavior: reduceMotion ? 'auto' : 'smooth',
+    });
+  }, [activeIndex, items.length]);
 
   return (
     <div

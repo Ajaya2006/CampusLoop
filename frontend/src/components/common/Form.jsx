@@ -1,5 +1,6 @@
-import { forwardRef } from 'react';
+import { Children, forwardRef, isValidElement } from 'react';
 import { AlertCircle } from 'lucide-react';
+import SelectMenu from './SelectMenu';
 import { cx } from '../../utils/format';
 
 export function Field({ label, htmlFor, error, hint, required, className = '', children }) {
@@ -60,6 +61,25 @@ export const Textarea = forwardRef(function Textarea(
   );
 });
 
+/* Turn declarative <option>/<optgroup> children into the option lists the custom
+   dropdown takes, so existing call sites keep their markup. */
+function childrenToOptions(children) {
+  const out = [];
+  Children.forEach(children, (child) => {
+    if (!isValidElement(child)) return;
+    if (child.type === 'optgroup') {
+      out.push({ label: child.props.label, options: childrenToOptions(child.props.children) });
+    } else if (child.type === 'option') {
+      out.push({
+        value: child.props.value ?? (typeof child.props.children === 'string' ? child.props.children : ''),
+        label: child.props.children,
+        disabled: child.props.disabled,
+      });
+    }
+  });
+  return out;
+}
+
 export const Select = forwardRef(function Select(
   { label, error, hint, className = '', id, children, required, ...props },
   ref,
@@ -67,9 +87,14 @@ export const Select = forwardRef(function Select(
   const inputId = id || props.name;
   return (
     <Field label={label} htmlFor={inputId} error={error} hint={hint} required={required} className={className}>
-      <select ref={ref} id={inputId} className={cx(baseInput, 'pr-8', error && 'border-danger')} {...props}>
-        {children}
-      </select>
+      <SelectMenu
+        ref={ref}
+        id={inputId}
+        options={childrenToOptions(children)}
+        error={Boolean(error)}
+        required={required}
+        {...props}
+      />
     </Field>
   );
 });

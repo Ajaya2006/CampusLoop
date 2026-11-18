@@ -36,13 +36,13 @@
   --item-rgb: 252 252 250;
   --item-alpha: 0.2;
   --item-shadow: 0 2px 5px 1px rgb(0 0 0 / 0.25);
-  --item-blur: 18px;
   --menu-rgb: 252 252 250;
-  --menu-alpha: 0.7;
+  --menu-alpha: 0.76;
+  --menu-blur: 44px;
   --menu-ring-alpha: 0.6;
   --menu-shadow: 0 24px 60px -24px rgb(20 28 50 / 0.32), 0 2px 5px 1px rgb(0 0 0 / 0.12);
-  --nav-fill-top: 255 255 255 / 0.78;
-  --nav-fill-bottom: 252 252 250 / 0.42;
+  --nav-fill-top: 255 255 255 / 0.9;
+  --nav-fill-bottom: 252 252 250 / 0.68;
   --nav-ring: 255 255 255 / 0.85;
   --nav-shadow: 0 18px 44px -22px rgb(18 26 46 / 0.4), 0 2px 5px 1px rgb(0 0 0 / 0.1);
   --ind-bg-rgb: 255 255 255;
@@ -81,13 +81,13 @@
   --item-rgb: 37 46 66;
   --item-alpha: 0.5;
   --item-shadow: 0 2px 6px 1px rgb(0 0 0 / 0.45);
-  --item-blur: 20px;
   --menu-rgb: 24 31 46;
-  --menu-alpha: 0.8;
+  --menu-alpha: 0.85;
+  --menu-blur: 40px;
   --menu-ring-alpha: 0.14;
   --menu-shadow: 0 26px 64px -24px rgb(0 0 0 / 0.7), 0 2px 6px 1px rgb(0 0 0 / 0.35);
-  --nav-fill-top: 48 59 84 / 0.6;
-  --nav-fill-bottom: 22 29 44 / 0.7;
+  --nav-fill-top: 48 59 84 / 0.84;
+  --nav-fill-bottom: 22 29 44 / 0.9;
   --nav-ring: 255 255 255 / 0.12;
   --nav-shadow: 0 20px 48px -20px rgb(0 0 0 / 0.75), 0 2px 6px 1px rgb(0 0 0 / 0.3);
   --ind-bg-rgb: 255 255 255;
@@ -101,7 +101,11 @@
 /* ---------------------------------------------------------------- */
 
 /* No `position` here: this class is combined with Tailwind's `absolute` on
-   dropdowns, and an unlayered rule would win over the utility layer. */
+   dropdowns, and an unlayered rule would win over the utility layer.
+
+   Glass is translucency, not frost: no backdrop blur here (or on the bars,
+   items or indicator). Only expanded menus lift their blur, because text has to
+   stay readable over whatever the page happens to be showing. */
 .liquid-glass {
   background: rgb(var(--glass-surface));
   border: 1px solid rgb(var(--glass-border));
@@ -109,15 +113,6 @@
     0 10px 32px -18px rgb(var(--glass-shadow)),
     0 1px 2px rgb(var(--glass-edge)),
     inset 0 1px 0 rgb(var(--glass-highlight));
-  -webkit-backdrop-filter: blur(22px) saturate(165%);
-  backdrop-filter: blur(22px) saturate(165%);
-}
-
-/* Readable fallback where backdrop-filter is unsupported. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .liquid-glass {
-    background: rgb(var(--glass-surface-strong));
-  }
 }
 
 /* Individual glass element: one button, one chip, one field. Small surfaces keep
@@ -132,8 +127,6 @@
   box-shadow:
     var(--item-shadow),
     inset 0 1px 0 rgb(255 255 255 / var(--inset-alpha));
-  -webkit-backdrop-filter: blur(var(--item-blur)) saturate(180%);
-  backdrop-filter: blur(var(--item-blur)) saturate(180%);
 }
 
 /* One capsule holding the top-bar controls (theme, notifications, more) so they
@@ -149,8 +142,6 @@
   box-shadow:
     var(--item-shadow),
     inset 0 1px 0 rgb(255 255 255 / var(--inset-alpha));
-  -webkit-backdrop-filter: blur(var(--item-blur)) saturate(180%);
-  backdrop-filter: blur(var(--item-blur)) saturate(180%);
 }
 
 /* Controls inside the cluster are bare — the capsule owns the material. */
@@ -212,18 +203,8 @@
   border-radius: 999px;
 }
 
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .liquid-glass-item,
-  .liquid-glass-icon,
-  .liquid-glass-field {
-    background: rgb(var(--glass-surface-strong));
-  }
-}
-
-/* Bars and capsules: a light shell without blur, so only the elements inside
-   (or the active selection) read as glass. */
-/* The bar itself is glass here (reference 2): a bright translucent capsule that
-   the page shows through, with a lit top edge. */
+/* Bars and capsules: translucent glass, no frost, so the page shows through the
+   fill while the shadow and lit top edge keep the capsule crisp. */
 .liquid-glass-nav {
   position: relative;
   border-radius: 999px;
@@ -234,12 +215,11 @@
     var(--nav-shadow),
     inset 0 1px 0 rgb(255 255 255 / var(--inset-alpha)),
     inset 0 -1px 1px rgb(0 0 0 / 0.04);
-  -webkit-backdrop-filter: blur(26px) saturate(190%);
-  backdrop-filter: blur(26px) saturate(190%);
 }
 
-/* Expanded menus: deeper glass, so the page reads through the blur behind the
-   links instead of a flat panel. */
+/* Expanded menus are the one place blur stays on, and it is heavy on purpose:
+   the links sit over live page content, so a strong frost plus a denser fill is
+   what keeps the labels readable in both day and night mode. */
 .liquid-glass-dropdown {
   border-radius: 20px;
   background: rgb(var(--menu-rgb) / var(--menu-alpha));
@@ -247,8 +227,15 @@
   box-shadow:
     var(--menu-shadow),
     inset 0 1px 0 rgb(255 255 255 / calc(var(--inset-alpha) + 0.1));
-  -webkit-backdrop-filter: blur(30px) saturate(190%);
-  backdrop-filter: blur(30px) saturate(190%);
+  -webkit-backdrop-filter: blur(var(--menu-blur)) saturate(180%);
+  backdrop-filter: blur(var(--menu-blur)) saturate(180%);
+}
+
+/* Where the frost is unavailable, tighten the fill instead of going see-through. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .liquid-glass-dropdown {
+    background: rgb(var(--menu-rgb) / 0.97);
+  }
 }
 
 .liquid-glass-panel {
@@ -359,8 +346,6 @@
   border-radius: 999px;
   background: rgb(var(--ind-bg-rgb) / var(--ind-bg-alpha));
   box-shadow: var(--ind-shadow);
-  -webkit-backdrop-filter: blur(8px) saturate(180%);
-  backdrop-filter: blur(8px) saturate(180%);
   transition:
     transform var(--motion-indicator) var(--motion-spring),
     width var(--motion-indicator) var(--motion-spring),
@@ -430,21 +415,33 @@
 
 .liquid-tabs {
   position: relative;
-  display: inline-flex;
+  display: flex;
+  flex: 0 1 auto;
+  width: fit-content;
+  min-width: 0;
   align-items: center;
   gap: 2px;
   max-width: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
   scrollbar-width: none;
   border-radius: 999px;
   padding: 5px;
   background:
     linear-gradient(180deg, rgb(255 255 255 / calc(var(--sheen-alpha) * 0.5)), transparent 62%),
     rgb(var(--hover-rgb) / var(--tabs-tint));
-  border: 1px solid rgb(var(--hairline-rgb) / 0.12);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / calc(var(--inset-alpha) * 0.8));
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  border: 1px solid rgb(var(--nav-ring));
+  box-shadow:
+    0 10px 24px -20px rgb(var(--glass-shadow)),
+    inset 0 1px 0 rgb(255 255 255 / calc(var(--inset-alpha) * 0.8));
+}
+
+/* Call sites that ask for a full-width rail keep it. */
+.liquid-tabs.w-full {
+  width: 100%;
 }
 
 .liquid-tabs::-webkit-scrollbar {
@@ -456,6 +453,7 @@
   z-index: 1;
   display: inline-flex;
   flex: 0 0 auto;
+  scroll-snap-align: center;
   align-items: center;
   gap: 6px;
   height: 34px;
@@ -492,9 +490,96 @@
   background: rgb(255 255 255 / 0.24);
 }
 
-.liquid-tabs .liquid-indicator {
+/* The tab bar is padded, so the travelling tile is inset to the tab height
+   instead of stretching across that padding. */
+.liquid-tabs > .liquid-indicator {
+  top: 5px;
+  bottom: 5px;
   background: rgb(var(--ind-bg-rgb) / var(--ind-bg-alpha));
   box-shadow: var(--ind-shadow);
+}
+
+/* ---------------------------------------------------------------- */
+/* Custom dropdown (SelectMenu)                                      */
+/* ---------------------------------------------------------------- */
+
+.select-trigger {
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 150ms var(--motion-standard),
+    box-shadow 150ms var(--motion-standard),
+    background 150ms var(--motion-standard);
+}
+
+.select-trigger[data-open='true'] {
+  border-color: rgb(255 120 0 / 0.55);
+  box-shadow: 0 0 0 3px rgb(255 120 0 / 0.14);
+}
+
+.select-trigger--sm {
+  height: 32px;
+  padding: 0 9px;
+  border-radius: 10px;
+  font-size: 11.5px;
+}
+
+.select-menu {
+  max-height: min(320px, 60vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.select-group-label {
+  padding: 7px 10px 3px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgb(var(--nav-muted));
+  opacity: 0.85;
+}
+
+.select-option {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  padding: 8px 10px;
+  color: rgb(var(--nav-muted));
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 140ms var(--motion-standard),
+    color 140ms var(--motion-standard);
+}
+
+.select-option:hover,
+.select-option[data-active='true'] {
+  background: rgb(var(--hover-rgb) / var(--hover-alpha));
+  color: rgb(var(--nav-ink));
+}
+
+.select-option[data-selected='true'] {
+  color: rgb(var(--accent-ink));
+  font-weight: 600;
+}
+
+.select-option__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  width: 18px;
+  border-radius: 999px;
+  background: rgb(255 120 0 / 0.16);
 }
 
 /* ---------------------------------------------------------------- */
