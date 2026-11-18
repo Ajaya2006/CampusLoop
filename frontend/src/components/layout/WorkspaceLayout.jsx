@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import {
   Bell,
@@ -21,6 +21,7 @@ import Logo from './Logo';
 import PageTransition from './PageTransition';
 import LiquidNavigation from '../navigation/LiquidNavigation';
 import Avatar from '../common/Avatar';
+import GlassPopover from '../common/GlassPopover';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import useUnreadCounts from '../../hooks/useUnreadCounts';
@@ -43,14 +44,6 @@ export default function WorkspaceLayout() {
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const onClick = (event) => {
-      if (moreRef.current && !moreRef.current.contains(event.target)) setMoreOpen(false);
-    };
-    document.addEventListener('mousedown', onClick);
-    return () => document.removeEventListener('mousedown', onClick);
-  }, []);
 
   const search = (event) => {
     event.preventDefault();
@@ -126,11 +119,12 @@ export default function WorkspaceLayout() {
                 >
                   <MoreHorizontal size={18} />
                 </button>
-                {moreOpen ? (
-                  <div
-                    role="menu"
-                    className="pop-in liquid-glass liquid-glass-dropdown absolute right-0 top-full mt-3 w-56 p-1.5"
-                  >
+                <GlassPopover
+                  open={moreOpen}
+                  anchorRef={moreRef}
+                  onClose={() => setMoreOpen(false)}
+                  className="w-56"
+                >
                     {MORE_LINKS.map((item) => (
                       <Link
                         key={item.to}
@@ -170,8 +164,7 @@ export default function WorkspaceLayout() {
                     >
                       <LogOut size={15} /> Sign out
                     </button>
-                  </div>
-                ) : null}
+                </GlassPopover>
               </div>
             </div>
 

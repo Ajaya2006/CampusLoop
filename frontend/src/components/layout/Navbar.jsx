@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bell, ChevronDown, Heart, LayoutDashboard, LogOut, Moon, Settings, ShieldCheck, Sun, Tag, User } from 'lucide-react';
 import Logo from './Logo';
 import LiquidNavigation from '../navigation/LiquidNavigation';
 import Avatar from '../common/Avatar';
+import GlassPopover from '../common/GlassPopover';
 import { buttonStyles } from '../common/Button';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -18,14 +19,6 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const onClick = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) setMenuOpen(false);
-    };
-    document.addEventListener('mousedown', onClick);
-    return () => document.removeEventListener('mousedown', onClick);
-  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -79,11 +72,12 @@ export default function Navbar() {
                   <Avatar name={user?.full_name} src={user?.avatar_url} size="sm" />
                   <ChevronDown size={13} className="hidden text-muted sm:block" />
                 </button>
-                {menuOpen ? (
-                  <div
-                    role="menu"
-                    className="pop-in liquid-glass liquid-glass-dropdown absolute right-0 mt-2 w-60 p-1.5"
-                  >
+                <GlassPopover
+                  open={menuOpen}
+                  anchorRef={menuRef}
+                  onClose={() => setMenuOpen(false)}
+                  className="w-60"
+                >
                     <div className="border-b border-line/60 px-3 py-2.5">
                       <p className="truncate text-sm font-semibold text-ink">{user?.full_name}</p>
                       <p className="truncate text-xs text-muted">{user?.email}</p>
@@ -114,8 +108,7 @@ export default function Navbar() {
                     >
                       <LogOut size={16} /> Sign out
                     </button>
-                  </div>
-                ) : null}
+                </GlassPopover>
               </div>
             </>
           ) : (
