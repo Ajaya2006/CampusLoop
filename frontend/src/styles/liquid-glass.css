@@ -22,8 +22,6 @@
   --surface-rgb: 255 255 255;
   --surface-alpha: 0.9;
   --tabs-tint: 0.045;
-  --item-rgb: 255 255 255;
-  --item-alpha: 0.58;
   --item-border-alpha: 0.75;
   --inset-alpha: 0.7;
   --hover-rgb: 23 37 60;
@@ -32,6 +30,24 @@
   --hairline-rgb: 23 37 60;
   --nav-ink: 23 23 37;
   --nav-muted: 102 112 133;
+
+  /* Day-mode material, exactly as specified: a 20% warm-white fill with a soft
+     5px drop shadow that gives the glass its edge on a pale page. */
+  --item-rgb: 252 252 250;
+  --item-alpha: 0.2;
+  --item-shadow: 0 2px 5px 1px rgb(0 0 0 / 0.25);
+  --item-blur: 18px;
+  --menu-rgb: 252 252 250;
+  --menu-alpha: 0.5;
+  --menu-shadow: 0 24px 60px -24px rgb(20 28 50 / 0.32), 0 2px 5px 1px rgb(0 0 0 / 0.12);
+  --nav-fill-top: 255 255 255 / 0.78;
+  --nav-fill-bottom: 252 252 250 / 0.42;
+  --nav-ring: 255 255 255 / 0.85;
+  --nav-shadow: 0 18px 44px -22px rgb(18 26 46 / 0.4), 0 2px 5px 1px rgb(0 0 0 / 0.1);
+  --ind-bg-rgb: 255 255 255;
+  --ind-bg-alpha: 0.75;
+  --ind-shadow: 0 2px 5px 1px rgb(0 0 0 / 0.12), inset 0 1px 0 rgb(255 255 255 / 0.9);
+  --accent-ink: 214 82 38;
 
   --motion-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
   --motion-enter: cubic-bezier(0.16, 1, 0.3, 1);
@@ -51,8 +67,6 @@
   --surface-rgb: 21 27 41;
   --surface-alpha: 0.92;
   --tabs-tint: 0.08;
-  --item-rgb: 255 255 255;
-  --item-alpha: 0.09;
   --item-border-alpha: 0.16;
   --inset-alpha: 0.16;
   --hover-rgb: 255 255 255;
@@ -61,6 +75,23 @@
   --hairline-rgb: 255 255 255;
   --nav-ink: 245 246 250;
   --nav-muted: 170 179 197;
+
+  /* Night mode: the same shapes, lit from inside instead of by the page. */
+  --item-rgb: 37 46 66;
+  --item-alpha: 0.5;
+  --item-shadow: 0 2px 6px 1px rgb(0 0 0 / 0.45);
+  --item-blur: 20px;
+  --menu-rgb: 24 31 46;
+  --menu-alpha: 0.6;
+  --menu-shadow: 0 26px 64px -24px rgb(0 0 0 / 0.7), 0 2px 6px 1px rgb(0 0 0 / 0.35);
+  --nav-fill-top: 48 59 84 / 0.6;
+  --nav-fill-bottom: 22 29 44 / 0.7;
+  --nav-ring: 255 255 255 / 0.12;
+  --nav-shadow: 0 20px 48px -20px rgb(0 0 0 / 0.75), 0 2px 6px 1px rgb(0 0 0 / 0.3);
+  --ind-bg-rgb: 255 255 255;
+  --ind-bg-alpha: 0.14;
+  --ind-shadow: 0 2px 6px 1px rgb(0 0 0 / 0.3), inset 0 1px 0 rgb(255 255 255 / 0.18);
+  --accent-ink: 255 154 80;
 }
 
 /* ---------------------------------------------------------------- */
@@ -97,10 +128,60 @@
   background: rgb(var(--item-rgb) / var(--item-alpha));
   border: 1px solid rgb(255 255 255 / var(--item-border-alpha));
   box-shadow:
-    0 8px 20px -16px rgb(var(--glass-shadow)),
+    var(--item-shadow),
     inset 0 1px 0 rgb(255 255 255 / var(--inset-alpha));
-  -webkit-backdrop-filter: blur(16px) saturate(170%);
-  backdrop-filter: blur(16px) saturate(170%);
+  -webkit-backdrop-filter: blur(var(--item-blur)) saturate(180%);
+  backdrop-filter: blur(var(--item-blur)) saturate(180%);
+}
+
+/* One capsule holding the top-bar controls (theme, notifications, more) so they
+   read as a single piece of glass with a shared shadow, as in the reference. */
+.liquid-control-cluster {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgb(var(--item-rgb) / var(--item-alpha));
+  border: 1px solid rgb(255 255 255 / var(--item-border-alpha));
+  box-shadow:
+    var(--item-shadow),
+    inset 0 1px 0 rgb(255 255 255 / var(--inset-alpha));
+  -webkit-backdrop-filter: blur(var(--item-blur)) saturate(180%);
+  backdrop-filter: blur(var(--item-blur)) saturate(180%);
+}
+
+/* Controls inside the cluster are bare — the capsule owns the material. */
+.liquid-control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  width: 34px;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  color: rgb(var(--nav-muted));
+  cursor: pointer;
+  transition:
+    color 160ms var(--motion-standard),
+    background 160ms var(--motion-standard),
+    transform 160ms var(--motion-standard);
+}
+
+.liquid-control:hover {
+  color: rgb(var(--nav-ink));
+  background: rgb(var(--hover-rgb) / var(--hover-alpha));
+}
+
+.liquid-control:active {
+  transform: scale(0.94);
+}
+
+.liquid-control[aria-expanded='true'] {
+  color: rgb(var(--nav-ink));
+  background: rgb(var(--hover-rgb) / var(--hover-alpha));
 }
 
 .liquid-glass-icon {
@@ -139,24 +220,33 @@
 
 /* Bars and capsules: a light shell without blur, so only the elements inside
    (or the active selection) read as glass. */
+/* The bar itself is glass here (reference 2): a bright translucent capsule that
+   the page shows through, with a lit top edge. */
 .liquid-glass-nav {
   position: relative;
   border-radius: 999px;
-  padding: 7px;
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / var(--sheen-alpha)), transparent 58%),
-    rgb(var(--surface-rgb) / var(--surface-alpha));
-  border: 1px solid rgb(var(--hairline-rgb) / 0.1);
+  padding: 6px;
+  background: linear-gradient(180deg, rgb(var(--nav-fill-top)), rgb(var(--nav-fill-bottom)));
+  border: 1px solid rgb(var(--nav-ring));
   box-shadow:
-    0 18px 40px -30px rgb(var(--glass-shadow)),
-    inset 0 1px 0 rgb(255 255 255 / var(--inset-alpha));
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+    var(--nav-shadow),
+    inset 0 1px 0 rgb(255 255 255 / var(--inset-alpha)),
+    inset 0 -1px 1px rgb(0 0 0 / 0.04);
+  -webkit-backdrop-filter: blur(26px) saturate(190%);
+  backdrop-filter: blur(26px) saturate(190%);
 }
 
+/* Expanded menus: deeper glass, so the page reads through the blur behind the
+   links instead of a flat panel. */
 .liquid-glass-dropdown {
-  border-radius: 16px;
-  background: rgb(var(--glass-surface-strong));
+  border-radius: 20px;
+  background: rgb(var(--menu-rgb) / var(--menu-alpha));
+  border-color: rgb(255 255 255 / var(--item-border-alpha));
+  box-shadow:
+    var(--menu-shadow),
+    inset 0 1px 0 rgb(255 255 255 / calc(var(--inset-alpha) + 0.1));
+  -webkit-backdrop-filter: blur(30px) saturate(190%);
+  backdrop-filter: blur(30px) saturate(190%);
 }
 
 .liquid-glass-panel {
@@ -223,12 +313,12 @@
 
 .liquid-nav__item[aria-current='page'],
 .liquid-nav__item[data-active='true'] {
-  color: rgb(255 255 255);
+  color: rgb(var(--accent-ink));
 }
 
-.dark .liquid-nav__item[aria-current='page'],
-.dark .liquid-nav__item[data-active='true'] {
-  color: #fff;
+.liquid-nav__item[aria-current='page'] .liquid-nav__icon,
+.liquid-nav__item[data-active='true'] .liquid-nav__icon {
+  color: rgb(var(--accent-ink));
 }
 
 .liquid-nav__icon {
@@ -265,11 +355,10 @@
   left: 0;
   z-index: 0;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgb(var(--indicator-from)), rgb(var(--indicator-to)));
-  box-shadow:
-    0 10px 26px -14px rgb(var(--indicator-from) / 0.7),
-    inset 0 1px 0 rgb(255 255 255 / 0.55),
-    inset 0 -10px 16px -12px rgb(0 0 0 / 0.28);
+  background: rgb(var(--ind-bg-rgb) / var(--ind-bg-alpha));
+  box-shadow: var(--ind-shadow);
+  -webkit-backdrop-filter: blur(8px) saturate(180%);
+  backdrop-filter: blur(8px) saturate(180%);
   transition:
     transform var(--motion-indicator) var(--motion-spring),
     width var(--motion-indicator) var(--motion-spring),
@@ -385,7 +474,7 @@
 }
 
 .liquid-tabs__tab[data-active='true'] {
-  color: #fff;
+  color: rgb(var(--accent-ink));
 }
 
 .liquid-tabs__count {
@@ -402,7 +491,8 @@
 }
 
 .liquid-tabs .liquid-indicator {
-  background: linear-gradient(135deg, rgb(var(--indicator-from)), rgb(var(--indicator-to)));
+  background: rgb(var(--ind-bg-rgb) / var(--ind-bg-alpha));
+  box-shadow: var(--ind-shadow);
 }
 
 /* ---------------------------------------------------------------- */

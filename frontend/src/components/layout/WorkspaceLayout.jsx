@@ -93,86 +93,91 @@ export default function WorkspaceLayout() {
             <SlidersHorizontal size={13} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted" />
           </form>
 
-          <div className="ml-auto flex shrink-0 items-center gap-1 xl:ml-0">
-            <button
-              type="button"
-              onClick={toggle}
-              className="liquid-glass-icon hidden sm:inline-flex"
-              aria-label={resolved === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-            >
-              {resolved === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
-            </button>
-
-            <Link
-              to="/notifications"
-              className="liquid-glass-icon relative"
-              aria-label="Notifications"
-            >
-              <Bell size={18} />
-              {notifications ? (
-                <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-brand-500 ring-2 ring-surface" />
-              ) : null}
-            </Link>
-
-            <div className="relative" ref={moreRef}>
+          <div className="ml-auto flex shrink-0 items-center gap-2 xl:ml-0">
+            <div className="liquid-control-cluster">
               <button
                 type="button"
-                onClick={() => setMoreOpen((value) => !value)}
-                aria-haspopup="menu"
-                aria-expanded={moreOpen}
-                aria-label="More workspace links"
-                className="liquid-glass-icon"
+                onClick={toggle}
+                className="liquid-control hidden sm:inline-flex"
+                aria-label={resolved === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
               >
-                <MoreHorizontal size={18} />
+                {resolved === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
               </button>
-              {moreOpen ? (
-                <div role="menu" className="pop-in liquid-glass liquid-glass-dropdown absolute right-0 mt-2 w-56 p-1.5">
-                  {MORE_LINKS.map((item) => (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      role="menuitem"
-                      onClick={() => setMoreOpen(false)}
-                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] text-muted transition hover:bg-elevated hover:text-ink"
-                    >
-                      <item.icon size={15} /> {item.label}
-                    </Link>
-                  ))}
-                  {isAdmin ? (
-                    <Link
-                      to="/admin"
-                      role="menuitem"
-                      onClick={() => setMoreOpen(false)}
-                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] text-muted transition hover:bg-elevated hover:text-ink"
-                    >
-                      <ShieldCheck size={15} /> Admin panel
-                    </Link>
-                  ) : null}
-                  {user?.verification_status !== 'verified' ? (
-                    <Link
-                      to="/verify"
-                      role="menuitem"
-                      onClick={() => setMoreOpen(false)}
-                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] text-warning transition hover:bg-warning/10"
-                    >
-                      <ShieldCheck size={15} /> Verify student account
-                    </Link>
-                  ) : null}
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={signOut}
-                    className="mt-1 flex w-full items-center gap-2.5 border-t border-line/60 px-3 pb-2 pt-3 text-[13px] text-danger transition hover:text-danger/80"
+
+              <Link
+                to="/notifications"
+                className="liquid-control"
+                aria-label="Notifications"
+              >
+                <Bell size={18} />
+                {notifications ? (
+                  <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-brand-500" />
+                ) : null}
+              </Link>
+
+              <div className="relative" ref={moreRef}>
+                <button
+                  type="button"
+                  onClick={() => setMoreOpen((value) => !value)}
+                  aria-haspopup="menu"
+                  aria-expanded={moreOpen}
+                  aria-label="More workspace links"
+                  className="liquid-control"
+                >
+                  <MoreHorizontal size={18} />
+                </button>
+                {moreOpen ? (
+                  <div
+                    role="menu"
+                    className="pop-in liquid-glass liquid-glass-dropdown absolute right-0 top-full mt-3 w-56 p-1.5"
                   >
-                    <LogOut size={15} /> Sign out
-                  </button>
-                </div>
-              ) : null}
+                    {MORE_LINKS.map((item) => (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] text-muted transition hover:bg-elevated hover:text-ink"
+                      >
+                        <item.icon size={15} /> {item.label}
+                      </Link>
+                    ))}
+                    {isAdmin ? (
+                      <Link
+                        to="/admin"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] text-muted transition hover:bg-elevated hover:text-ink"
+                      >
+                        <ShieldCheck size={15} /> Admin panel
+                      </Link>
+                    ) : null}
+                    {user?.verification_status !== 'verified' ? (
+                      <Link
+                        to="/verify"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] text-warning transition hover:bg-warning/10"
+                      >
+                        <ShieldCheck size={15} /> Verify student account
+                      </Link>
+                    ) : null}
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={signOut}
+                      className="mt-1 flex w-full items-center gap-2.5 border-t border-line/60 px-3 pb-2 pt-3 text-[13px] text-danger transition hover:text-danger/80"
+                    >
+                      <LogOut size={15} /> Sign out
+                    </button>
+                  </div>
+                ) : null}
+              </div>
             </div>
 
             <Link
               to="/profile"
-              className={cx('liquid-glass-item ml-0.5 flex items-center gap-2 rounded-full py-1 pl-1 pr-1 xl:pr-2.5')}
+              className={cx('liquid-glass-item flex items-center gap-2 rounded-full py-1 pl-1 pr-1 xl:pr-2.5')}
               aria-label="Your profile"
             >
               <Avatar name={user?.full_name} src={user?.avatar_url} size="sm" />

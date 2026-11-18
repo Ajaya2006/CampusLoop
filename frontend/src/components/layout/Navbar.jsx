@@ -40,29 +40,33 @@ export default function Navbar() {
           <Logo />
         </Link>
 
-        <div className="ml-auto flex shrink-0 items-center gap-1">
-          <button
-            type="button"
-            onClick={toggle}
-            className="liquid-glass-icon"
-            aria-label={resolved === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-          >
-            {resolved === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
-          </button>
+        <div className="ml-auto flex shrink-0 items-center gap-2">
+          <div className="liquid-control-cluster">
+            <button
+              type="button"
+              onClick={toggle}
+              className="liquid-control"
+              aria-label={resolved === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+            >
+              {resolved === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+            </button>
 
-          {isAuthenticated ? (
-            <>
+            {isAuthenticated ? (
               <Link
                 to="/notifications"
-                className="liquid-glass-icon relative"
+                className="liquid-control"
                 aria-label={`Notifications${notifications ? `, ${notifications} unread` : ''}`}
               >
                 <Bell size={18} />
                 {notifications ? (
-                  <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-danger ring-2 ring-surface" />
+                  <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-danger" />
                 ) : null}
               </Link>
+            ) : null}
+          </div>
 
+          {isAuthenticated ? (
+            <>
               <div className="relative" ref={menuRef}>
                 <button
                   type="button"
