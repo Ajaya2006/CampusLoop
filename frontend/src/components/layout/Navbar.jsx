@@ -106,7 +106,7 @@ export default function Navbar() {
                       type="button"
                       role="menuitem"
                       onClick={handleLogout}
-                      className="mt-1 flex w-full items-center gap-2.5 rounded-xl border-t border-line/60 px-3 py-2 text-sm text-danger transition hover:bg-danger/5"
+                      className="mt-1 flex w-full items-center gap-2.5 border-t border-line/60 px-3 pb-2 pt-3 text-sm text-danger transition hover:text-danger/80"
                     >
                       <LogOut size={16} /> Sign out
                     </button>
