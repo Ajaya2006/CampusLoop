@@ -38,7 +38,8 @@
   --item-shadow: 0 2px 5px 1px rgb(0 0 0 / 0.25);
   --item-blur: 18px;
   --menu-rgb: 252 252 250;
-  --menu-alpha: 0.5;
+  --menu-alpha: 0.58;
+  --menu-ring-alpha: 0.6;
   --menu-shadow: 0 24px 60px -24px rgb(20 28 50 / 0.32), 0 2px 5px 1px rgb(0 0 0 / 0.12);
   --nav-fill-top: 255 255 255 / 0.78;
   --nav-fill-bottom: 252 252 250 / 0.42;
@@ -82,7 +83,8 @@
   --item-shadow: 0 2px 6px 1px rgb(0 0 0 / 0.45);
   --item-blur: 20px;
   --menu-rgb: 24 31 46;
-  --menu-alpha: 0.6;
+  --menu-alpha: 0.74;
+  --menu-ring-alpha: 0.14;
   --menu-shadow: 0 26px 64px -24px rgb(0 0 0 / 0.7), 0 2px 6px 1px rgb(0 0 0 / 0.35);
   --nav-fill-top: 48 59 84 / 0.6;
   --nav-fill-bottom: 22 29 44 / 0.7;
@@ -241,7 +243,7 @@
 .liquid-glass-dropdown {
   border-radius: 20px;
   background: rgb(var(--menu-rgb) / var(--menu-alpha));
-  border-color: rgb(255 255 255 / var(--item-border-alpha));
+  border: 1px solid rgb(255 255 255 / var(--menu-ring-alpha));
   box-shadow:
     var(--menu-shadow),
     inset 0 1px 0 rgb(255 255 255 / calc(var(--inset-alpha) + 0.1));
