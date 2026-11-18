@@ -38,7 +38,7 @@
   --item-shadow: 0 2px 5px 1px rgb(0 0 0 / 0.25);
   --item-blur: 18px;
   --menu-rgb: 252 252 250;
-  --menu-alpha: 0.58;
+  --menu-alpha: 0.7;
   --menu-ring-alpha: 0.6;
   --menu-shadow: 0 24px 60px -24px rgb(20 28 50 / 0.32), 0 2px 5px 1px rgb(0 0 0 / 0.12);
   --nav-fill-top: 255 255 255 / 0.78;
@@ -83,7 +83,7 @@
   --item-shadow: 0 2px 6px 1px rgb(0 0 0 / 0.45);
   --item-blur: 20px;
   --menu-rgb: 24 31 46;
-  --menu-alpha: 0.74;
+  --menu-alpha: 0.8;
   --menu-ring-alpha: 0.14;
   --menu-shadow: 0 26px 64px -24px rgb(0 0 0 / 0.7), 0 2px 6px 1px rgb(0 0 0 / 0.35);
   --nav-fill-top: 48 59 84 / 0.6;
