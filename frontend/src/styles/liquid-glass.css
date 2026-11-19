@@ -41,13 +41,15 @@
   --menu-blur: 44px;
   --menu-ring-alpha: 0.6;
   --menu-shadow: 0 24px 60px -24px rgb(20 28 50 / 0.32), 0 2px 5px 1px rgb(0 0 0 / 0.12);
-  --nav-fill-top: 255 255 255 / 0.9;
-  --nav-fill-bottom: 252 252 250 / 0.68;
   --nav-ring: 255 255 255 / 0.85;
-  --nav-shadow: 0 18px 44px -22px rgb(18 26 46 / 0.4), 0 2px 5px 1px rgb(0 0 0 / 0.1);
-  --ind-bg-rgb: 255 255 255;
-  --ind-bg-alpha: 0.75;
+  --ind-bg-rgb: 252 252 250;
+  --ind-bg-alpha: 0.42;
+  --ind-ring: 255 255 255 / 0.8;
   --ind-shadow: 0 2px 5px 1px rgb(0 0 0 / 0.12), inset 0 1px 0 rgb(255 255 255 / 0.9);
+  /* Lit-from-above gloss that makes the glass read as a curved solid rather
+     than a flat tint. Alpha only, so the fill itself stays see-through. */
+  --sheen-top: 0.5;
+  --sheen-rim: 0.2;
   --accent-ink: 214 82 38;
 
   --motion-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -86,13 +88,13 @@
   --menu-blur: 40px;
   --menu-ring-alpha: 0.14;
   --menu-shadow: 0 26px 64px -24px rgb(0 0 0 / 0.7), 0 2px 6px 1px rgb(0 0 0 / 0.35);
-  --nav-fill-top: 48 59 84 / 0.84;
-  --nav-fill-bottom: 22 29 44 / 0.9;
   --nav-ring: 255 255 255 / 0.12;
-  --nav-shadow: 0 20px 48px -20px rgb(0 0 0 / 0.75), 0 2px 6px 1px rgb(0 0 0 / 0.3);
   --ind-bg-rgb: 255 255 255;
-  --ind-bg-alpha: 0.14;
+  --ind-bg-alpha: 0.12;
+  --ind-ring: 255 255 255 / 0.18;
   --ind-shadow: 0 2px 6px 1px rgb(0 0 0 / 0.3), inset 0 1px 0 rgb(255 255 255 / 0.18);
+  --sheen-top: 0.24;
+  --sheen-rim: 0.08;
   --accent-ink: 255 154 80;
 }
 
@@ -203,16 +205,21 @@
   border-radius: 999px;
 }
 
-/* Bars and capsules: translucent glass, no frost, so the page shows through the
-   fill while the shadow and lit top edge keep the capsule crisp. */
+/* Bars and capsules: the plain day/night glass fill (`--item-*`), never a
+   gradient and never a frost — the same 20% warm white as the reference, with
+   the soft drop shadow and lit edge doing the work of separating it from the
+   page. Deliberately see-through: content behind the bar stays visible. */
 .liquid-glass-nav {
   position: relative;
   border-radius: 999px;
   padding: 6px;
-  background: linear-gradient(180deg, rgb(var(--nav-fill-top)), rgb(var(--nav-fill-bottom)));
-  border: 1px solid rgb(var(--nav-ring));
+  background-color: rgb(var(--item-rgb) / var(--item-alpha));
+  background-image:
+    linear-gradient(170deg, rgb(255 255 255 / var(--sheen-top)) 0%, rgb(255 255 255 / 0) 52%),
+    linear-gradient(0deg, rgb(255 255 255 / var(--sheen-rim)) 0%, rgb(255 255 255 / 0) 22%);
+  border: 1px solid rgb(255 255 255 / var(--item-border-alpha));
   box-shadow:
-    var(--nav-shadow),
+    var(--item-shadow),
     inset 0 1px 0 rgb(255 255 255 / var(--inset-alpha)),
     inset 0 -1px 1px rgb(0 0 0 / 0.04);
 }
@@ -336,7 +343,9 @@
   font-weight: 700;
 }
 
-/* The travelling selection lives behind the items. */
+/* The travelling selection lives behind the items, as its own piece of liquid
+   glass: a see-through fill with a lit ring and the standard soft shadow, so the
+   active section reads as glass on top of the bar rather than a flat tile. */
 .liquid-indicator {
   position: absolute;
   top: 0;
@@ -344,8 +353,13 @@
   left: 0;
   z-index: 0;
   border-radius: 999px;
-  background: rgb(var(--ind-bg-rgb) / var(--ind-bg-alpha));
-  box-shadow: var(--ind-shadow);
+  background-color: rgb(var(--ind-bg-rgb) / var(--ind-bg-alpha));
+  background-image:
+    linear-gradient(170deg, rgb(255 255 255 / var(--sheen-top)) 0%, rgb(255 255 255 / 0) 54%),
+    linear-gradient(0deg, rgb(255 255 255 / var(--sheen-rim)) 0%, rgb(255 255 255 / 0) 20%);
+  box-shadow:
+    var(--ind-shadow),
+    inset 0 0 0 1px rgb(var(--ind-ring));
   transition:
     transform var(--motion-indicator) var(--motion-spring),
     width var(--motion-indicator) var(--motion-spring),
@@ -491,12 +505,56 @@
 }
 
 /* The tab bar is padded, so the travelling tile is inset to the tab height
-   instead of stretching across that padding. */
+   instead of stretching across that padding. The glass itself comes from
+   `.liquid-indicator`. */
 .liquid-tabs > .liquid-indicator {
   top: 5px;
   bottom: 5px;
-  background: rgb(var(--ind-bg-rgb) / var(--ind-bg-alpha));
-  box-shadow: var(--ind-shadow);
+}
+
+/* Back affordances that sit in a page's top bar (listing detail, chat header).
+   Same transparent glass as the bars — translucent fill, lit edge, soft shadow —
+   and no blur. */
+.liquid-glass-back {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / var(--item-border-alpha));
+  background-color: rgb(var(--item-rgb) / var(--item-alpha));
+  background-image:
+    linear-gradient(170deg, rgb(255 255 255 / var(--sheen-top)) 0%, rgb(255 255 255 / 0) 56%),
+    linear-gradient(0deg, rgb(255 255 255 / var(--sheen-rim)) 0%, rgb(255 255 255 / 0) 24%);
+  box-shadow:
+    var(--item-shadow),
+    inset 0 1px 0 rgb(255 255 255 / var(--inset-alpha));
+  color: rgb(var(--nav-muted));
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 160ms var(--motion-standard),
+    transform 160ms var(--motion-standard);
+}
+
+.liquid-glass-back:hover {
+  color: rgb(var(--nav-ink));
+  transform: translateY(-1px);
+}
+
+.liquid-glass-back:active {
+  transform: scale(0.96);
+}
+
+.liquid-glass-back--icon {
+  width: 34px;
+  padding: 0;
 }
 
 /* ---------------------------------------------------------------- */
