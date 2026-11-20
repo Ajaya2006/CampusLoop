@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import GlassBackdrop from '../glass/GlassBackdrop';
 import useResponsiveNavigation from '../../hooks/useResponsiveNavigation';
 import LiquidActiveIndicator from './LiquidActiveIndicator';
 import LiquidNavItem from './LiquidNavItem';
@@ -10,7 +11,8 @@ export default function LiquidNavigationDesktop({ items, activeIndex }) {
   const { isDesktop } = useResponsiveNavigation();
 
   return (
-    <nav className="liquid-nav-desktop liquid-glass liquid-glass-nav" aria-label="Main navigation">
+    <nav className="liquid-nav-desktop liquid-glass-nav" aria-label="Main navigation">
+      <GlassBackdrop blur={7} displace={0.45} backgroundOpacity={0.08} />
       <div className="liquid-nav" ref={containerRef}>
         <LiquidActiveIndicator
           containerRef={containerRef}

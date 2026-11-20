@@ -1,0 +1,136 @@
+/* ------------------------------------------------------------------
+   Liquid Glass material (CSS only)
+
+   Frosted blur + a semi-transparent tint, a rounded silhouette, a lit hairline
+   rim, one soft specular highlight and two layers of shadow. Nothing animates
+   except colours and shadows, and no filter chain is rebuilt while scrolling.
+
+   `color-scheme` is scoped to the surface so light-dark() resolves from the
+   surface's own theme (the app toggles `.dark` on <html>) instead of leaking.
+   ------------------------------------------------------------------ */
+
+.glass-surface {
+  --glass-blur: 18px;
+  --glass-frost: 0.1;
+  --glass-saturation: 1.4;
+
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color-scheme: light;
+
+  background: hsl(0 0% 100% / calc(0.1 + var(--glass-frost) * 0.55));
+  border: 1px solid hsl(0 0% 100% / 0.55);
+  box-shadow:
+    /* light catching the top edge, and a faint bounce along the bottom */
+    inset 0 1px 0 0 hsl(0 0% 100% / 0.6),
+    inset 0 -1px 0 0 hsl(0 0% 100% / 0.14),
+    /* the pane sitting above the page */
+    0 2px 6px -2px rgb(17 24 39 / 0.18),
+    0 14px 30px -18px rgb(17 24 39 / 0.42),
+    0 32px 64px -40px rgb(17 24 39 / 0.5);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(calc(var(--glass-saturation) * 1.4)) brightness(1.04);
+  backdrop-filter: blur(var(--glass-blur)) saturate(calc(var(--glass-saturation) * 1.4)) brightness(1.04);
+  transition:
+    background-color 260ms ease,
+    box-shadow 260ms ease;
+}
+
+.dark .glass-surface {
+  color-scheme: dark;
+  background: hsl(0 0% 100% / calc(0.04 + var(--glass-frost) * 0.5));
+  border-color: hsl(0 0% 100% / 0.14);
+  box-shadow:
+    inset 0 1px 0 0 hsl(0 0% 100% / 0.2),
+    inset 0 -1px 0 0 hsl(0 0% 100% / 0.04),
+    0 2px 6px -2px rgb(0 0 0 / 0.4),
+    0 16px 34px -20px rgb(0 0 0 / 0.65),
+    0 34px 68px -42px rgb(0 0 0 / 0.7);
+}
+
+.glass-surface__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: inherit;
+}
+
+/* Soft reflection: a single diagonal band of light, brighter at the top-left
+   corner where a real pane would catch the room. */
+.glass-surface__sheen,
+.glass-surface__rim {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.glass-surface__sheen {
+  background:
+    radial-gradient(120% 90% at 12% -10%, hsl(0 0% 100% / 0.34) 0%, hsl(0 0% 100% / 0) 58%),
+    linear-gradient(140deg, hsl(0 0% 100% / 0.2) 0%, hsl(0 0% 100% / 0) 44%, hsl(0 0% 100% / 0) 62%, hsl(0 0% 100% / 0.07) 100%);
+}
+
+.dark .glass-surface__sheen {
+  background:
+    radial-gradient(120% 90% at 12% -10%, hsl(0 0% 100% / 0.16) 0%, hsl(0 0% 100% / 0) 56%),
+    linear-gradient(140deg, hsl(0 0% 100% / 0.08) 0%, hsl(0 0% 100% / 0) 46%, hsl(0 0% 100% / 0.04) 100%);
+}
+
+/* The rim is the edge of the material: a 1px inset ring, brightest at the top
+   and thinning towards the bottom, so the glass has a silhouette on any
+   background without a heavy border. */
+.glass-surface__rim {
+  box-shadow:
+    inset 0 0 0 1px hsl(0 0% 100% / 0.16),
+    inset 0 1px 0 0 hsl(0 0% 100% / 0.5);
+}
+
+.dark .glass-surface__rim {
+  box-shadow:
+    inset 0 0 0 1px hsl(0 0% 100% / 0.06),
+    inset 0 1px 0 0 hsl(0 0% 100% / 0.18);
+}
+
+/* Where frost is unavailable (or the user asked the OS for less blur), lean on
+   a denser tint instead of going see-through. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-surface {
+    background: hsl(0 0% 100% / 0.86);
+  }
+
+  .dark .glass-surface {
+    background: hsl(220 22% 12% / 0.9);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-surface {
+    background: hsl(0 0% 100% / 0.94);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .dark .glass-surface {
+    background: hsl(220 22% 12% / 0.96);
+  }
+}
+
+.glass-surface:focus-visible {
+  outline: 2px solid light-dark(#007aff, #0a84ff);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-surface {
+    transition: none;
+  }
+}

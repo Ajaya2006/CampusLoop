@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import GlassBackdrop from '../glass/GlassBackdrop';
 import LiquidActiveIndicator from './LiquidActiveIndicator';
 import LiquidNavItem from './LiquidNavItem';
 
@@ -7,7 +8,8 @@ export default function LiquidNavigationMobile({ items, activeIndex }) {
   const containerRef = useRef(null);
 
   return (
-    <nav className="liquid-nav-mobile liquid-glass liquid-glass-nav" aria-label="Primary">
+    <nav className="liquid-nav-mobile liquid-glass-nav" aria-label="Primary">
+      <GlassBackdrop blur={7} displace={0.45} backgroundOpacity={0.08} />
       <div className="liquid-nav" ref={containerRef}>
         <LiquidActiveIndicator
           containerRef={containerRef}

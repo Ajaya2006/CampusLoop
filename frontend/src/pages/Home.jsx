@@ -5,6 +5,7 @@ import {
   BadgeCheck,
   CalendarCheck,
   HandCoins,
+  MapPin,
   MessagesSquare,
   Plus,
   Search,
@@ -17,10 +18,15 @@ import { categoryService, productService } from '../services';
 import { apiError } from '../services/api';
 import ProductCard from '../components/marketplace/ProductCard';
 import CategoryCard from '../components/marketplace/CategoryCard';
+import ProductImage from '../components/common/ProductImage';
+import GlassBackdrop from '../components/glass/GlassBackdrop';
 import { ProductCardSkeleton, ErrorState, EmptyState } from '../components/common/Feedback';
-import Button, { buttonStyles } from '../components/common/Button';
+import { buttonStyles } from '../components/common/Button';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { useAuth } from '../context/AuthContext';
+import { inr } from '../utils/format';
+import { categoryImage } from '../utils/categoryImages';
+import '../styles/home.css';
 
 const steps = [
   { icon: ShieldCheck, title: 'Verify your student status', text: 'Submit your college details for moderator review.' },
@@ -28,6 +34,16 @@ const steps = [
   { icon: MessagesSquare, title: 'Chat and negotiate', text: 'Ask questions, make offers and agree on a price.' },
   { icon: CalendarCheck, title: 'Meet and complete', text: 'Schedule a campus handover and confirm the deal.' },
 ];
+
+const popularSearches = ['Laptop', 'Books', 'Cycle', 'Study table'];
+
+const demoFeature = {
+  id: 'demo-feature',
+  title: 'Dell Inspiron 15 · 8GB / 512GB',
+  price: 28500,
+  location: 'Central library gate',
+  cover_image: '/images/products/dell-inspiron-15-laptop.jpg',
+};
 
 export default function Home() {
   useDocumentTitle('Student marketplace');
@@ -68,110 +84,190 @@ export default function Home() {
     [categories],
   );
 
+  const picks = useMemo(
+    () => [...products].sort((a, b) => (a.price ?? 0) - (b.price ?? 0)).slice(0, 4),
+    [products],
+  );
+
+  const fresh = useMemo(
+    () => products.filter((product) => !picks.some((pick) => pick.id === product.id)),
+    [products, picks],
+  );
+
+  const featured = products[0] || demoFeature;
+
   const submitSearch = (event) => {
     event.preventDefault();
     navigate(query.trim() ? `/marketplace?q=${encodeURIComponent(query.trim())}` : '/marketplace');
   };
 
   return (
-    <div className="space-y-14 sm:space-y-20">
-      <section className="relative overflow-hidden rounded-[22px] border border-line bg-surface">
-        <div
-          className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-brand-100 blur-3xl dark:bg-brand-900/40"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-accent/10 blur-3xl"
-          aria-hidden
-        />
-        <div className="relative grid gap-10 p-6 sm:p-10 lg:grid-cols-[1.1fr_0.9fr] lg:p-14">
-          <div>
-            <p className="inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700 dark:border-brand-800 dark:bg-brand-900/40 dark:text-brand-200">
-              <Sparkles size={13} /> Verified students · 8 categories · Zero commission
-            </p>
-            <h1 className="mt-5 font-display text-[34px] font-extrabold leading-[1.1] tracking-tight text-ink sm:text-5xl">
-              The campus marketplace
-              <br />
-              that actually <span className="text-brand-500">loops back</span>.
+    <div className="home-page">
+      <section className="home-hero">
+        <span className="home-hero__wash" aria-hidden />
+        <span className="home-hero__grain" aria-hidden />
+
+        <div className="home-hero__inner">
+          <div className="home-hero__copy">
+            <span className="home-badge">
+              <GlassBackdrop blur={6} displace={0.35} backgroundOpacity={0.12} />
+              <Sparkles size={13} />
+              <span>Verified students · zero commission</span>
+            </span>
+
+            <h1 className="home-hero__title">
+              Buy, sell and <em>loop it back</em>.
             </h1>
-            <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">
-              Buy and sell laptops, books, hostel furniture and gadgets with students from your own college.
-              Verified accounts, moderated listings, and a clear handover process.
+            <p className="home-hero__lede">
+              The marketplace for your own campus. Laptops, textbooks, cycles and hostel furniture from
+              verified students — no shipping, no strangers, no commission.
             </p>
 
-            <form onSubmit={submitSearch} className="mt-7 flex flex-col gap-2 sm:flex-row">
-              <div className="relative flex-1">
-                <Search size={17} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+            <form onSubmit={submitSearch} className="home-search" role="search">
+              <GlassBackdrop blur={7} displace={0.45} backgroundOpacity={0.14} distortionScale={-190} />
+              <div className="home-search__field">
+                <Search size={17} />
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder="Search laptops, textbooks, chairs…"
                   aria-label="Search the marketplace"
-                  className="input-base h-12 pl-10"
+                  className="home-search__input"
                 />
               </div>
-              <Button type="submit" size="lg" className="h-12">
-                Search
-              </Button>
+              <button type="submit" className="home-search__btn">
+                Search <ArrowRight size={15} />
+              </button>
             </form>
 
-            <div className="mt-6 flex flex-wrap items-center gap-2 text-xs text-muted">
-              <span className="font-medium text-ink">Popular:</span>
-              {['Laptop', 'Books', 'Cycle', 'Study table'].map((term) => (
-                <Link
-                  key={term}
-                  to={`/marketplace?q=${term}`}
-                  className="rounded-full border border-line bg-canvas px-2.5 py-1 transition hover:border-brand-300 hover:text-brand-600"
-                >
+            <div className="home-chips">
+              <span className="mr-1">Popular</span>
+              {popularSearches.map((term) => (
+                <Link key={term} to={`/marketplace?q=${term}`} className="home-chip">
                   {term}
                 </Link>
               ))}
             </div>
           </div>
 
-          <div className="relative hidden lg:block">
-            <div className="absolute right-6 top-2 w-64 rotate-3 rounded-card border border-line bg-canvas p-4 shadow-card">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-success/10 text-success">
-                  <BadgeCheck size={16} />
-                </span>
-                <div>
-                  <p className="text-xs font-semibold text-ink">Verified seller</p>
-                  <p className="text-[11px] text-muted">IIT · 3rd year</p>
-                </div>
-              </div>
-              <img
-                src="/images/products/dell-inspiron-15-laptop.jpg"
-                alt=""
-                className="mt-3 h-24 w-full rounded-lg object-cover"
-              />
-              <div className="mt-3 flex items-center justify-between">
-                <p className="text-xs font-medium text-ink">Dell Inspiron 15</p>
-                <p className="font-display text-sm font-bold text-ink">₹28,500</p>
-              </div>
-            </div>
+          <div className="home-hero__art">
+            <div className="loop-art">
+              <span className="loop-art__ring loop-art__ring--outer" aria-hidden />
+              <span className="loop-art__ring loop-art__ring--mid" aria-hidden />
+              <span className="loop-art__arc" aria-hidden />
 
-            <div className="absolute bottom-0 left-0 w-64 -rotate-2 rounded-card border border-line bg-surface p-4 shadow-lift">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-900/40 dark:text-brand-300">
-                  <HandCoins size={16} />
-                </span>
-                <div>
-                  <p className="text-xs font-semibold text-ink">Offer accepted</p>
-                  <p className="text-[11px] text-muted">₹1,800 · Engineering Mathematics</p>
+              <article className="loop-art__card">
+                <GlassBackdrop blur={5} displace={0.3} backgroundOpacity={0.16} distortionScale={-160} />
+                <div className="loop-art__shot">
+                  <ProductImage
+                    src={featured.cover_image}
+                    alt=""
+                    fallback={categoryImage(featured.category_slug, featured.category_name || 'Laptops')}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
-              </div>
-              <div className="mt-3 space-y-2">
-                <div className="h-2 w-full rounded-full bg-elevated">
-                  <div className="h-2 w-3/4 rounded-full bg-brand-400" />
+                <div className="loop-art__card-body pt-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="line-clamp-2 text-[12.5px] font-semibold leading-snug text-white">
+                      {featured.title}
+                    </p>
+                    <p className="shrink-0 font-display text-[15px] font-bold text-white">{inr(featured.price)}</p>
+                  </div>
+                  <p className="mt-1 flex items-center gap-1 text-[10.5px] text-white/55">
+                    <MapPin size={10} className="shrink-0" />
+                    <span className="truncate">{featured.location || 'Campus handover'}</span>
+                  </p>
                 </div>
-                <p className="text-[11px] text-muted">Meeting confirmed · Library gate · 4:30 PM</p>
-              </div>
-            </div>
+              </article>
 
-            <div className="absolute left-8 top-24 inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-[11px] font-medium text-ink shadow-sm">
-              <TrendingUp size={13} className="text-success" /> {totalListings || 8} live listings
+              <span className="loop-art__tag loop-art__tag--top">
+                <BadgeCheck size={12} className="text-emerald-300" /> Verified seller
+              </span>
+              <span className="loop-art__tag loop-art__tag--bottom">
+                <TrendingUp size={12} className="text-brand-300" /> Picked up today
+              </span>
             </div>
+          </div>
+        </div>
+
+        <div className="home-hero__stats">
+          <div>
+            <p className="home-stat__value">{totalListings ? totalListings.toLocaleString('en-IN') : 8}</p>
+            <p className="home-stat__label">Live listings</p>
+          </div>
+          <div>
+            <p className="home-stat__value">{categories.length || 8}</p>
+            <p className="home-stat__label">Categories</p>
+          </div>
+          <div>
+            <p className="home-stat__value">₹0</p>
+            <p className="home-stat__label">Commission</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-[10.5px] font-bold uppercase tracking-[0.15em] text-brand-600 dark:text-brand-300">
+              Recommended for you
+            </p>
+            <h2 className="mt-1.5 font-display text-xl font-bold text-ink sm:text-2xl">Light as glass, priced by students</h2>
+            <p className="mt-1 max-w-xl text-sm text-muted">
+              The fairest listings live right now, with nothing hidden in the middle.
+            </p>
+          </div>
+          <Link
+            to="/marketplace"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700"
+          >
+            Browse all <ArrowRight size={15} />
+          </Link>
+        </div>
+
+        <div className="home-spotlight">
+          <span className="home-spotlight__glow home-spotlight__glow--warm" aria-hidden />
+          <span className="home-spotlight__glow home-spotlight__glow--cool" aria-hidden />
+
+          <div className="home-spotlight__panel">
+            <GlassBackdrop radius={26} blur={9} backgroundOpacity={0.16} />
+            <div className="home-spotlight__body">
+              <p className="home-spotlight__eyebrow">Why students loop</p>
+              <h3 className="home-spotlight__title">Nothing on campus deserves to sit in a cupboard.</h3>
+              <p className="home-spotlight__text">
+                Every listing is priced by a student, checked by a moderator and handed over between classes. No
+                couriers, no packaging, no commission.
+              </p>
+              <Link to="/marketplace" className="home-spotlight__cta">
+                Browse the picks <ArrowRight size={14} />
+              </Link>
+              <ul className="home-spotlight__facts">
+                <li>₹0 commission</li>
+                <li>Verified students</li>
+                <li>Meet in person</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="home-spotlight__picks">
+            <p className="home-spotlight__picks-label">Cheapest right now</p>
+            {picks.length ? (
+              <ul>
+                {picks.map((product) => (
+                  <li key={product.id}>
+                    <Link to={`/product/${product.id}`} className="home-spotlight__pick">
+                      <span className="home-spotlight__pick-title">{product.title}</span>
+                      <span className="home-spotlight__pick-price">{inr(product.price)}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="home-spotlight__empty">Cheapest listings appear here as they go live.</p>
+            )}
+            <Link to="/marketplace" className="home-spotlight__see-all">
+              See all listings <ArrowRight size={13} />
+            </Link>
           </div>
         </div>
       </section>
@@ -182,7 +278,10 @@ export default function Home() {
             <h2 className="font-display text-xl font-bold text-ink sm:text-2xl">Browse by category</h2>
             <p className="mt-1 text-sm text-muted">Everything a student needs, from first year to final semester.</p>
           </div>
-          <Link to="/categories" className="hidden items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700 sm:inline-flex">
+          <Link
+            to="/categories"
+            className="hidden items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700 sm:inline-flex"
+          >
             All categories <ArrowRight size={15} />
           </Link>
         </div>
@@ -207,7 +306,10 @@ export default function Home() {
             <h2 className="font-display text-xl font-bold text-ink sm:text-2xl">Fresh on campus</h2>
             <p className="mt-1 text-sm text-muted">The newest approved listings from verified students.</p>
           </div>
-          <Link to="/marketplace" className="inline-flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700">
+          <Link
+            to="/marketplace"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700"
+          >
             View all <ArrowRight size={15} />
           </Link>
         </div>
@@ -233,52 +335,57 @@ export default function Home() {
           />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {products.map((product) => (
+            {(fresh.length ? fresh : products).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         )}
       </section>
 
-      <section className="rounded-[22px] border border-line bg-surface p-6 sm:p-10">
+      <section className="home-steps">
         <div className="max-w-2xl">
           <h2 className="font-display text-xl font-bold text-ink sm:text-2xl">How CampusLoop works</h2>
-          <p className="mt-1 text-sm text-muted">A simple, safe loop from listing to handover.</p>
+          <p className="mt-1 text-sm text-muted">Four steps, one loop, no online payments.</p>
         </div>
-        <div className="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="home-steps__grid">
           {steps.map((step, index) => (
-            <div key={step.title} className="relative rounded-card border border-line bg-canvas p-5">
-              <span className="absolute right-4 top-4 font-display text-2xl font-extrabold text-brand-100 dark:text-brand-900">
-                0{index + 1}
+            <article key={step.title} className="home-step">
+              <span className="home-step__num">0{index + 1}</span>
+              <span className="home-step__icon">
+                <step.icon size={18} />
               </span>
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-900/40 dark:text-brand-300">
-                <step.icon size={19} />
-              </span>
-              <h3 className="mt-3.5 text-sm font-semibold text-ink">{step.title}</h3>
-              <p className="mt-1 text-[13px] leading-relaxed text-muted">{step.text}</p>
-            </div>
+              <h3 className="home-step__title">{step.title}</h3>
+              <p className="home-step__text">{step.text}</p>
+            </article>
           ))}
         </div>
       </section>
 
       <section className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-        <div className="relative overflow-hidden rounded-[22px] bg-brand-500 p-7 text-white sm:p-10">
+        <div className="relative overflow-hidden rounded-[28px] bg-brand-500 p-7 text-white sm:p-10">
           <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-white/10" aria-hidden />
+          <div className="pointer-events-none absolute -bottom-16 left-1/2 h-40 w-40 rounded-full bg-brand-300/30 blur-2xl" aria-hidden />
           <h2 className="font-display text-2xl font-extrabold sm:text-3xl">Got something gathering dust?</h2>
           <p className="mt-2 max-w-md text-sm text-white/85">
             Turn your old laptop, cycle or textbooks into cash for the next semester. Listing takes about two minutes
             and our price guide helps you pick a fair number.
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
-            <Link to={isAuthenticated ? '/sell' : '/register'} className="inline-flex h-11 items-center gap-2 rounded-control bg-white px-5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">
+            <Link
+              to={isAuthenticated ? '/sell' : '/register'}
+              className="inline-flex h-11 items-center gap-2 rounded-control bg-white px-5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50"
+            >
               <Plus size={16} /> Sell an item
             </Link>
-            <Link to="/marketplace" className="inline-flex h-11 items-center gap-2 rounded-control border border-white/30 px-5 text-sm font-semibold text-white transition hover:bg-white/10">
+            <Link
+              to="/marketplace"
+              className="inline-flex h-11 items-center gap-2 rounded-control border border-white/30 px-5 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
               Explore listings
             </Link>
           </div>
         </div>
-        <div className="rounded-[22px] border border-line bg-surface p-7 sm:p-8">
+        <div className="rounded-[28px] border border-line bg-surface p-7 sm:p-8">
           <ShieldCheck className="text-success" size={24} />
           <h2 className="mt-3 font-display text-lg font-bold text-ink">Built for trust</h2>
           <ul className="mt-3 space-y-2.5 text-[13px] text-muted">
@@ -287,6 +394,9 @@ export default function Home() {
             <li>· Reports on listings and users are tracked to resolution</li>
             <li>· No online payments — you pay in person after inspection</li>
           </ul>
+          <p className="mt-4 flex items-center gap-1.5 text-[12px] font-medium text-ink">
+            <HandCoins size={14} className="text-brand-500" /> Fair prices, agreed face to face
+          </p>
         </div>
       </section>
     </div>

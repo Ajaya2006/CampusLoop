@@ -5,6 +5,7 @@ import Logo from './Logo';
 import LiquidNavigation from '../navigation/LiquidNavigation';
 import Avatar from '../common/Avatar';
 import GlassPopover from '../common/GlassPopover';
+import GlassBackdrop from '../glass/GlassBackdrop';
 import { buttonStyles } from '../common/Button';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -35,6 +36,7 @@ export default function Navbar() {
 
         <div className="ml-auto flex shrink-0 items-center gap-2">
           <div className="liquid-control-cluster">
+            <GlassBackdrop blur={6} displace={0.3} distortionScale={-150} backgroundOpacity={0.12} />
             <button
               type="button"
               onClick={toggle}

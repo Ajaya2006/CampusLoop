@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import GlassBackdrop from '../glass/GlassBackdrop';
 
 /**
  * The signature selection capsule.
@@ -62,7 +63,7 @@ export default function LiquidActiveIndicator({ containerRef, index, dependencie
   }, [measure, containerRef, ...dependencies]);
 
   return (
-    <span
+    <div
       aria-hidden="true"
       className="liquid-indicator"
       style={{
@@ -70,6 +71,16 @@ export default function LiquidActiveIndicator({ containerRef, index, dependencie
         width: box.width ? `${box.width}px` : '0px',
         opacity: box.ready ? 1 : 0,
       }}
-    />
+    >
+      {/* The capsule carries the same refracting glass as the bar it sits in, so
+          the highlight reads as a second piece of liquid rather than a flat tile. */}
+      <GlassBackdrop
+        blur={5}
+        displace={0.3}
+        distortionScale={-150}
+        backgroundOpacity={0.32}
+        borderWidth={0.05}
+      />
+    </div>
   );
 }
