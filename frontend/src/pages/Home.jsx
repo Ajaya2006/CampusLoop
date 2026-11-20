@@ -173,7 +173,7 @@ export default function Home() {
                     </p>
                     <p className="shrink-0 font-display text-[15px] font-bold text-white">{inr(featured.price)}</p>
                   </div>
-                  <p className="mt-1 flex items-center gap-1 text-[10.5px] text-white/55">
+                  <p className="mt-1 flex items-center gap-1 text-[10.5px] text-white/75">
                     <MapPin size={10} className="shrink-0" />
                     <span className="truncate">{featured.location || 'Campus handover'}</span>
                   </p>

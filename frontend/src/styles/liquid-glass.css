@@ -29,28 +29,36 @@
   --sheen-alpha: 0.5;
   --hairline-rgb: 23 37 60;
   --nav-ink: 23 23 37;
-  --nav-muted: 102 112 133;
+  /* Darker than the old #667085: the bars are translucent, so muted labels need
+     enough weight to clear 4.5:1 against a dark section behind the glass. */
+  --nav-muted: 63 70 88;
 
   /* Day-mode material, exactly as specified: a 20% warm-white fill with a soft
      5px drop shadow that gives the glass its edge on a pale page. */
   --item-rgb: 252 252 250;
   --item-alpha: 0.2;
   --item-shadow: 0 2px 5px 1px rgb(0 0 0 / 0.25);
+  /* Chrome veil: how much of the page the floating bars let through. The bars
+     sit over whatever they are scrolled across, including the dark hero and the
+     recommended stage, so the tint has to carry the text on its own. 0.74 keeps
+     the backdrop readable while still frosting it. */
+  --chrome-veil-rgb: 252 252 250;
+  --chrome-veil-alpha: 0.74;
   --menu-rgb: 252 252 250;
   --menu-alpha: 0.76;
   --menu-blur: 44px;
   --menu-ring-alpha: 0.6;
   --menu-shadow: 0 24px 60px -24px rgb(20 28 50 / 0.32), 0 2px 5px 1px rgb(0 0 0 / 0.12);
   --nav-ring: 255 255 255 / 0.85;
-  --ind-bg-rgb: 252 252 250;
-  --ind-bg-alpha: 0.42;
-  --ind-ring: 255 255 255 / 0.8;
+  --ind-bg-rgb: 255 120 0;
+  --ind-bg-alpha: 0.18;
+  --ind-ring: 255 120 0 / 0.28;
   --ind-shadow: 0 2px 5px 1px rgb(0 0 0 / 0.12), inset 0 1px 0 rgb(255 255 255 / 0.9);
   /* Lit-from-above gloss that makes the glass read as a curved solid rather
      than a flat tint. Alpha only, so the fill itself stays see-through. */
   --sheen-top: 0.5;
   --sheen-rim: 0.2;
-  --accent-ink: 214 82 38;
+  --accent-ink: 163 58 9;
 
   --motion-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
   --motion-enter: cubic-bezier(0.16, 1, 0.3, 1);
@@ -77,20 +85,22 @@
   --sheen-alpha: 0.14;
   --hairline-rgb: 255 255 255;
   --nav-ink: 245 246 250;
-  --nav-muted: 170 179 197;
+  --nav-muted: 195 203 217;
 
   /* Night mode: the same shapes, lit from inside instead of by the page. */
   --item-rgb: 37 46 66;
   --item-alpha: 0.5;
   --item-shadow: 0 2px 6px 1px rgb(0 0 0 / 0.45);
+  --chrome-veil-rgb: 20 27 42;
+  --chrome-veil-alpha: 0.84;
   --menu-rgb: 24 31 46;
   --menu-alpha: 0.85;
   --menu-blur: 40px;
   --menu-ring-alpha: 0.14;
   --menu-shadow: 0 26px 64px -24px rgb(0 0 0 / 0.7), 0 2px 6px 1px rgb(0 0 0 / 0.35);
   --nav-ring: 255 255 255 / 0.12;
-  --ind-bg-rgb: 255 255 255;
-  --ind-bg-alpha: 0.12;
+  --ind-bg-rgb: 255 154 80;
+  --ind-bg-alpha: 0.26;
   --ind-ring: 255 255 255 / 0.18;
   --ind-shadow: 0 2px 6px 1px rgb(0 0 0 / 0.3), inset 0 1px 0 rgb(255 255 255 / 0.18);
   --sheen-top: 0.24;
@@ -220,6 +230,20 @@
   transition: none;
 }
 
+/* Chrome legibility. The fixed bars float over whatever is scrolling underneath
+   — the navy hero, the dark recommended stage, a bright product photo — so the
+   material alone cannot guarantee contrast. The bars therefore use a denser
+   theme veil than the decorative glass on the hero, and the selection capsule
+   is a tinted primary control rather than plain glass. */
+.liquid-glass-nav > .glass-surface.glass-backdrop,
+.liquid-control-cluster > .glass-surface.glass-backdrop {
+  background: rgb(var(--chrome-veil-rgb) / var(--chrome-veil-alpha));
+}
+
+.liquid-indicator > .glass-surface.glass-backdrop {
+  background: rgb(var(--ind-bg-rgb) / var(--ind-bg-alpha));
+}
+
 /* The capsule needs a touch more presence than the bar it sits in, or the
    moving highlight reads as the same pane of glass. */
 .liquid-indicator > .glass-backdrop {
@@ -309,9 +333,12 @@
     background 160ms var(--motion-standard);
 }
 
+/* The active label stays in the ink colour instead of going orange: the tinted
+   capsule behind it already carries the brand, and dark-on-frost keeps the label
+   legible over any backdrop. Icons keep the accent. */
 .liquid-nav__item[aria-current='page'],
 .liquid-nav__item[data-active='true'] {
-  color: rgb(var(--accent-ink));
+  color: rgb(var(--nav-ink));
 }
 
 .liquid-nav__item[aria-current='page'] .liquid-nav__icon,
