@@ -122,6 +122,14 @@
   font-size: 11.5px;
   font-weight: 600;
   color: rgb(255 255 255 / 0.88);
+  /* Reference material: the material is read by its edges, not its fill. A lit
+     hairline along the top, a faint bounce along the bottom, then one tight
+     contact shadow so the pill sits on the stage instead of floating in it. */
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.4),
+    inset 0 -1px 0 rgb(255 255 255 / 0.06),
+    0 2px 4px -2px rgb(0 0 0 / 0.6),
+    0 10px 24px -18px rgb(0 0 0 / 0.9);
 }
 
 .home-badge > span,
@@ -148,6 +156,25 @@
   padding: 6px;
   border-radius: 999px;
   border: 1px solid rgb(255 255 255 / 0.14);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.38),
+    inset 0 -1px 0 rgb(255 255 255 / 0.05),
+    0 3px 8px -4px rgb(0 0 0 / 0.6),
+    0 18px 44px -28px rgb(0 0 0 / 0.9);
+  transition:
+    border-color 220ms var(--motion-standard),
+    box-shadow 220ms var(--motion-standard);
+}
+
+/* Focus brightens the material rather than drawing a ring around it: the rim
+   picks up more light and the shadow deepens, as if the pane lifted. */
+.home-search:focus-within {
+  border-color: rgb(255 255 255 / 0.26);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.58),
+    inset 0 -1px 0 rgb(255 255 255 / 0.08),
+    0 4px 10px -4px rgb(0 0 0 / 0.6),
+    0 20px 48px -26px rgb(0 0 0 / 0.95);
 }
 
 .home-search__field {
@@ -179,7 +206,23 @@
 }
 
 .home-search__input::placeholder {
-  color: rgb(255 255 255 / 0.6);
+  color: rgb(255 255 255 / 0.72);
+  /* Phone widths cannot fit the whole hint; end it with an ellipsis instead of
+     clipping a word in half. */
+  text-overflow: ellipsis;
+}
+
+/* The hero glass carries white text, and the material's sheen plus the warm
+   bloom behind it lift the fill far enough that white copy loses contrast. A
+   smoked veil under the sheen keeps the bright rim but gives the text a dark
+   backing — the dark-mode equivalent of the light glass in the reference. */
+.home-search > .glass-surface.glass-backdrop,
+.loop-art__card > .glass-surface.glass-backdrop {
+  background: rgb(10 19 33 / 0.52);
+  /* The material's own 1px white border is tuned for a pale page; over the
+     navy hero it reads as a drawn outline, so the rim comes from the top
+     highlight and the shell border instead. */
+  border-color: rgb(255 255 255 / 0.14);
 }
 
 .home-search__btn {
@@ -224,6 +267,17 @@
   .home-search__btn-label {
     display: none;
   }
+
+  /* Give the hint as much room as the phone can spare once the button is down
+     to its arrow. */
+  .home-search__field > svg {
+    left: 12px;
+  }
+
+  .home-search__input {
+    padding-left: 37px;
+    font-size: 13.5px;
+  }
 }
 
 .home-search__input:focus-visible,
@@ -254,13 +308,20 @@
   transition:
     background 160ms ease,
     border-color 160ms ease,
-    color 160ms ease;
+    color 160ms ease,
+    transform 140ms var(--motion-standard);
 }
 
 .home-chip:hover {
   background: rgb(255 255 255 / 0.13);
   border-color: rgb(255 255 255 / 0.24);
   color: #fff;
+}
+
+/* Gel press: the surface flexes under the finger instead of just changing
+   colour, which is what makes the chip read as a piece of material. */
+.home-chip:active {
+  transform: scale(0.96);
 }
 
 /* Stats ------------------------------------------------------------- */
@@ -359,7 +420,14 @@
   padding: 12px;
   border-radius: 24px;
   border: 1px solid rgb(255 255 255 / 0.16);
-  box-shadow: 0 34px 70px -34px rgb(0 0 0 / 0.85);
+  /* A card of this size reads as thicker stock: a clearer lit rim than the
+     small pills, plus a contact shadow tight enough to show it resting on the
+     ring and a long soft one for the lift. */
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.26),
+    inset 0 -1px 0 rgb(255 255 255 / 0.05),
+    0 4px 10px -4px rgb(0 0 0 / 0.55),
+    0 34px 70px -34px rgb(0 0 0 / 0.85);
 }
 
 .loop-art__shot {
@@ -384,11 +452,13 @@
   gap: 6px;
   padding: 7px 12px;
   border-radius: 999px;
-  border: 1px solid rgb(255 255 255 / 0.18);
-  background: rgb(255 255 255 / 0.1);
+  border: 1px solid rgb(255 255 255 / 0.16);
+  /* Same smoked fill as the search pill and the listing card: one material
+     across the hero, rather than light and dark glass side by side. */
+  background: rgb(10 19 33 / 0.55);
   -webkit-backdrop-filter: blur(14px) saturate(160%);
   backdrop-filter: blur(14px) saturate(160%);
-  color: rgb(255 255 255 / 0.9);
+  color: rgb(255 255 255 / 0.92);
   font-size: 11px;
   font-weight: 600;
   white-space: nowrap;
@@ -466,7 +536,24 @@
   padding: clamp(18px, 2vw, 26px);
   border-radius: 26px;
   border: 1px solid rgb(255 255 255 / 0.18);
-  box-shadow: 0 30px 60px -34px rgb(0 0 0 / 0.9);
+  /* Largest piece of glass on the page, so it gets the thickest material: a
+     bright rim, a soft inner bounce and three stacked shadows (contact, lift,
+     ambient). Inner controls stay flat fills — no glass on glass. */
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.34),
+    inset 0 -1px 0 rgb(255 255 255 / 0.05),
+    0 2px 6px -2px rgb(0 0 0 / 0.5),
+    0 34px 64px -30px rgb(0 0 0 / 0.92),
+    0 60px 110px -60px rgb(0 0 0 / 0.8);
+}
+
+/* The pane carries white body copy, and the warm bloom behind it lifts the
+   material's fill past the point where 13px text stays comfortable. The same
+   smoked veil as the hero glass restores the contrast without losing the rim
+   or the bloom, which still reads through it. */
+.home-spotlight__panel > .glass-surface.glass-backdrop {
+  background: rgb(10 19 33 / 0.4);
+  border-color: rgb(255 255 255 / 0.16);
 }
 
 .home-spotlight__body {
@@ -496,7 +583,7 @@
   max-width: 40ch;
   font-size: 13px;
   line-height: 1.6;
-  color: rgb(255 255 255 / 0.76);
+  color: rgb(255 255 255 / 0.84);
 }
 
 .home-spotlight__cta {
@@ -514,11 +601,17 @@
   box-shadow:
     0 12px 24px -14px rgb(255 120 0 / 0.9),
     inset 0 1px 0 rgb(255 255 255 / 0.35);
-  transition: filter 160ms ease;
+  transition:
+    filter 160ms ease,
+    transform 160ms var(--motion-standard);
 }
 
 .home-spotlight__cta:hover {
   filter: brightness(1.06);
+}
+
+.home-spotlight__cta:active {
+  transform: scale(0.975);
 }
 
 .home-spotlight__cta:focus-visible,
@@ -717,10 +810,18 @@
 /* ---------------------------- Motion pref -------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
+  .home-search,
   .home-search__btn,
   .home-chip,
   .home-spotlight__pick,
-  .home-spotlight__see-all {
+  .home-spotlight__see-all,
+  .home-spotlight__cta {
     transition: none;
+  }
+
+  /* No gel flex — the controls are simply there. */
+  .home-chip:active,
+  .home-spotlight__cta:active {
+    transform: none;
   }
 }
