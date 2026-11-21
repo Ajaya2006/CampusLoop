@@ -86,6 +86,10 @@ export default function AdminLayout() {
               <Logo />
             </span>
           </Link>
+          {/* Phone-only identity chip: the wordmark and console badge both hide. */}
+          <span className="admin-mobile-badge inline-flex items-center rounded-full border border-brand-500/30 bg-brand-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-brand-700 sm:hidden">
+            Admin
+          </span>
           <span className="admin-console-badge hidden rounded-[7px] bg-brand-50 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-brand-700 dark:bg-brand-900/30 dark:text-brand-200 lg:inline-block">
             Admin console
           </span>
