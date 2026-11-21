@@ -1,13 +1,11 @@
-import { useLayoutEffect, useState } from 'react';
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useLayoutEffect } from 'react';
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   BarChart3,
   Bell,
-  ChevronRight,
   Flag,
   LayoutDashboard,
   LogOut,
-  Menu,
   Moon,
   PackageSearch,
   ReceiptText,
@@ -16,7 +14,6 @@ import {
   Sun,
   Tag,
   Users,
-  X,
 } from 'lucide-react';
 import Logo from './Logo';
 import PageTransition from './PageTransition';
@@ -24,7 +21,6 @@ import Avatar from '../common/Avatar';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import useUnreadCounts from '../../hooks/useUnreadCounts';
-import { cx } from '../../utils/format';
 import '../../styles/adminTheme.css';
 
 const links = [
@@ -38,9 +34,40 @@ const links = [
   { to: '/admin/analytics', label: 'Activity', icon: BarChart3 },
 ];
 
-function Sidebar({ onNavigate }) {
-  const { logout } = useAuth();
+/* One floating bar for every breakpoint. Desktop shows icon + label, the phone
+   layout drops the label and keeps only the glyph. It is keyed by the route in
+   AdminLayout, so the swipe-up entry replays on each section change. */
+function AdminBottomBar() {
+  return (
+    <nav className="admin-bottom-bar" aria-label="Admin sections">
+      {links.map((link) => (
+        <NavLink
+          key={link.to}
+          to={link.to}
+          end={link.end}
+          aria-label={link.label}
+          title={link.label}
+          className="admin-bottom-bar__item"
+        >
+          <link.icon size={18} strokeWidth={1.8} className="admin-bottom-bar__icon" aria-hidden="true" />
+          <span className="admin-bottom-bar__label">{link.label}</span>
+        </NavLink>
+      ))}
+    </nav>
+  );
+}
+
+export default function AdminLayout() {
+  const { user, logout } = useAuth();
+  const { resolved, toggle } = useTheme();
+  const { notifications } = useUnreadCounts();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
+
+  useLayoutEffect(() => {
+    document.body.classList.add('admin-mode');
+    return () => document.body.classList.remove('admin-mode');
+  }, []);
 
   const signOut = async () => {
     await logout();
@@ -48,152 +75,75 @@ function Sidebar({ onNavigate }) {
   };
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex h-[74px] items-center px-5">
-        <Logo />
-      </div>
-      <div className="px-4 pb-3">
-        <p className="admin-console-badge rounded-[7px] bg-brand-50 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-brand-700 dark:bg-brand-900/30 dark:text-brand-200">
-          Admin console
-        </p>
-      </div>
+    <div className="admin-shell flex min-h-screen flex-col bg-canvas">
+      <header className="admin-topbar sticky top-0 z-30 border-b border-line bg-canvas">
+        <div className="flex h-[74px] items-center gap-3 px-4 sm:px-6">
+          <Link to="/admin" className="flex items-center gap-3" aria-label="Admin dashboard">
+            <span className="sm:hidden">
+              <Logo compact />
+            </span>
+            <span className="hidden sm:block">
+              <Logo />
+            </span>
+          </Link>
+          <span className="admin-console-badge hidden rounded-[7px] bg-brand-50 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-brand-700 dark:bg-brand-900/30 dark:text-brand-200 lg:inline-block">
+            Admin console
+          </span>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 pb-4" aria-label="Admin">
-        {links.map((link) => (
-          <NavLink
-            key={link.to}
-            to={link.to}
-            end={link.end}
-            onClick={onNavigate}
-            className={({ isActive }) =>
-              cx(
-                'group flex items-center gap-3 rounded-[9px] px-3 py-2.5 text-[13px] font-medium transition',
-                isActive
-                  ? 'bg-brand-500 text-white shadow-sm'
-                  : 'text-ink/75 hover:bg-elevated hover:text-ink',
-              )
-            }
-          >
-            <link.icon size={17} strokeWidth={1.8} className="shrink-0" />
-            <span className="flex-1">{link.label}</span>
-          </NavLink>
-        ))}
-      </nav>
+          <p className="ml-auto hidden text-[11.5px] text-muted md:block">
+            Moderating as <span className="font-semibold text-ink">{user?.full_name}</span>
+          </p>
 
-      <div className="space-y-1 border-t border-line p-3">
-        <Link
-          to="/marketplace"
-          onClick={onNavigate}
-          className="flex items-center gap-3 rounded-[9px] px-3 py-2.5 text-[12.5px] font-medium text-muted transition hover:bg-elevated hover:text-ink"
-        >
-          <Store size={16} /> Back to marketplace
-          <ChevronRight size={13} className="ml-auto" />
-        </Link>
-        <button
-          type="button"
-          onClick={signOut}
-          className="flex w-full items-center gap-3 rounded-[9px] px-3 py-2.5 text-left text-[12.5px] font-medium text-muted transition hover:bg-elevated hover:text-ink"
-        >
-          <LogOut size={16} /> Sign out
-        </button>
-      </div>
-    </div>
-  );
-}
-
-export default function AdminLayout() {
-  const { user } = useAuth();
-  const { resolved, toggle } = useTheme();
-  const { notifications } = useUnreadCounts();
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  useLayoutEffect(() => {
-    document.body.classList.add('admin-mode');
-    return () => document.body.classList.remove('admin-mode');
-  }, []);
-
-  return (
-    <div className="admin-shell min-h-screen bg-canvas lg:grid lg:grid-cols-[236px_1fr]">
-      <aside className="admin-sidebar sticky top-0 hidden h-screen border-r border-line bg-surface lg:block">
-        <Sidebar />
-      </aside>
-
-      <div
-        className={cx('drawer-shell fixed inset-0 z-50 lg:hidden', drawerOpen && 'drawer-open')}
-        aria-hidden={!drawerOpen}
-      >
-        <button
-          type="button"
-          data-no-ripple
-          className="drawer-backdrop absolute inset-0"
-          aria-label="Close menu"
-          onClick={() => setDrawerOpen(false)}
-          tabIndex={-1}
-        />
-        <aside className="admin-sidebar drawer-panel absolute inset-y-0 left-0 w-[270px] bg-surface shadow-lift">
-          <button
-            type="button"
-            onClick={() => setDrawerOpen(false)}
-            className="absolute right-3 top-4 rounded-lg p-2 text-muted hover:bg-elevated hover:text-ink"
-            aria-label="Close menu"
-          >
-            <X size={18} />
-          </button>
-          <Sidebar onNavigate={() => setDrawerOpen(false)} />
-        </aside>
-      </div>
-
-      <div className="flex min-w-0 flex-col">
-        <header className="admin-topbar sticky top-0 z-30 border-b border-line bg-canvas">
-          <div className="flex h-[74px] items-center gap-3 px-4 sm:px-6">
+          <div className="ml-auto flex items-center gap-1 md:ml-3">
+            <Link
+              to="/marketplace"
+              className="rounded-[9px] border border-line bg-surface p-2.5 text-muted transition hover:text-ink"
+              aria-label="Back to marketplace"
+              title="Back to marketplace"
+            >
+              <Store size={17} />
+            </Link>
             <button
               type="button"
-              onClick={() => setDrawerOpen(true)}
-              className="rounded-lg p-2 text-muted hover:bg-elevated hover:text-ink lg:hidden"
-              aria-label="Open admin menu"
+              onClick={toggle}
+              className="hidden rounded-[9px] border border-line bg-surface p-2.5 text-muted transition hover:text-ink sm:inline-flex"
+              aria-label={resolved === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
             >
-              <Menu size={20} />
+              {resolved === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
             </button>
-            <div className="lg:hidden">
-              <Logo compact />
-            </div>
-
-            <p className="ml-auto hidden text-[11.5px] text-muted md:block">
-              Moderating as <span className="font-semibold text-ink">{user?.full_name}</span>
-            </p>
-
-            <div className="ml-auto flex items-center gap-1 md:ml-3">
-              <button
-                type="button"
-                onClick={toggle}
-                className="hidden rounded-[9px] border border-line bg-surface p-2.5 text-muted transition hover:text-ink sm:inline-flex"
-                aria-label={resolved === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-              >
-                {resolved === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
-              </button>
-              <Link
-                to="/notifications"
-                className="relative rounded-[9px] border border-line bg-surface p-2.5 text-muted transition hover:text-ink"
-                aria-label="Notifications"
-              >
-                <Bell size={17} />
-                {notifications ? (
-                  <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-brand-500 ring-2 ring-surface" />
-                ) : null}
-              </Link>
-              <Link to="/profile" className="ml-1 flex items-center gap-2.5 rounded-[10px] p-1 pr-1.5 transition hover:bg-elevated">
-                <Avatar name={user?.full_name} src={user?.avatar_url} size="sm" />
-                <span className="hidden text-left sm:block">
-                  <span className="block max-w-[130px] truncate text-[12.5px] font-semibold leading-tight text-ink">
-                    {user?.full_name}
-                  </span>
-                  <span className="block text-[10.5px] text-muted">Administrator</span>
+            <Link
+              to="/notifications"
+              className="relative rounded-[9px] border border-line bg-surface p-2.5 text-muted transition hover:text-ink"
+              aria-label="Notifications"
+            >
+              <Bell size={17} />
+              {notifications ? (
+                <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-brand-500 ring-2 ring-surface" />
+              ) : null}
+            </Link>
+            <button
+              type="button"
+              onClick={signOut}
+              className="rounded-[9px] border border-line bg-surface p-2.5 text-muted transition hover:text-ink"
+              aria-label="Sign out"
+              title="Sign out"
+            >
+              <LogOut size={17} />
+            </button>
+            <Link to="/profile" className="ml-1 flex items-center gap-2.5 rounded-[10px] p-1 pr-1.5 transition hover:bg-elevated">
+              <Avatar name={user?.full_name} src={user?.avatar_url} size="sm" />
+              <span className="hidden text-left sm:block">
+                <span className="block max-w-[130px] truncate text-[12.5px] font-semibold leading-tight text-ink">
+                  {user?.full_name}
                 </span>
-              </Link>
-            </div>
+                <span className="block text-[10.5px] text-muted">Administrator</span>
+              </span>
+            </Link>
           </div>
-        </header>
+        </div>
+      </header>
 
+      <div className="admin-shell__body flex min-w-0 flex-1 flex-col">
         <main className="min-w-0 flex-1 px-4 py-5 sm:px-6 lg:py-6">
           <PageTransition>
             <Outlet />
@@ -210,6 +160,11 @@ export default function AdminLayout() {
             </div>
           </div>
         </footer>
+      </div>
+
+      {/* Remount per route so the swipe-up entry replays on every section. */}
+      <div key={pathname}>
+        <AdminBottomBar />
       </div>
     </div>
   );

@@ -22,9 +22,13 @@
   color: rgb(var(--ink));
 }
 
-.dark body.admin-mode .admin-sidebar {
-  background-color: #0b0d10;
+.dark body.admin-mode .admin-bottom-bar {
+  background-color: rgb(11 13 16 / 0.94);
   border-color: #252a32;
+  box-shadow:
+    0 18px 44px -20px rgb(0 0 0 / 0.85),
+    0 2px 6px rgb(0 0 0 / 0.45),
+    inset 0 1px 0 rgb(255 255 255 / 0.06);
 }
 
 .dark body.admin-mode .admin-topbar {
@@ -57,18 +61,19 @@
 }
 
 /* Navigation */
-.dark body.admin-mode .admin-sidebar a[aria-current='page'] {
-  background-color: #ff7800;
+.dark body.admin-mode .admin-bottom-bar__item[aria-current='page'] {
   color: #050607;
-  box-shadow: 0 10px 26px rgb(255 120 0 / 0.24);
+  box-shadow:
+    0 10px 26px rgb(255 120 0 / 0.24),
+    inset 0 1px 0 rgb(255 255 255 / 0.22);
 }
 
-.dark body.admin-mode .admin-sidebar a[aria-current='page'] svg {
-  color: #050607;
-}
-
-.dark body.admin-mode .admin-sidebar a:hover {
+.dark body.admin-mode .admin-bottom-bar__item:hover {
   color: rgb(var(--ink));
+}
+
+.dark body.admin-mode .admin-bottom-bar__item[aria-current='page']:hover {
+  color: #050607;
 }
 
 /* Accent remap: orange primary, purple secondary */
@@ -195,4 +200,145 @@
   border-color: #252a32;
   background-color: #0b0d10;
   color: #aab2bd;
+}
+
+/* ------------------------------------------------------------------
+   Bottom navigation
+   The admin console has no side rail: every section lives in one floating
+   bar above the bottom edge, matching the marketplace capsules. The bar
+   re-enters (swipe up) whenever a section mounts.
+   ------------------------------------------------------------------ */
+
+.admin-bottom-bar {
+  position: fixed;
+  right: 0;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  left: 0;
+  z-index: 40;
+  display: flex;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  align-items: center;
+  gap: 2px;
+  margin-inline: auto;
+  padding: 6px;
+  border: 1px solid rgb(var(--line));
+  border-radius: 999px;
+  background-color: rgb(var(--surface) / 0.94);
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0) 62%);
+  box-shadow:
+    0 18px 44px -22px rgb(15 23 42 / 0.5),
+    0 2px 6px rgb(15 23 42 / 0.08),
+    inset 0 1px 0 rgb(255 255 255 / 0.85);
+  animation: admin-bottom-bar-in 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.dark body.admin-mode .admin-bottom-bar {
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0) 62%);
+}
+
+.admin-bottom-bar__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 42px;
+  padding: 0 13px;
+  border-radius: 999px;
+  color: rgb(var(--muted));
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    color 170ms ease,
+    background-color 170ms ease,
+    transform 170ms ease;
+}
+
+.admin-bottom-bar__item:hover {
+  color: rgb(var(--ink));
+  background-color: rgb(var(--ink) / 0.06);
+}
+
+.admin-bottom-bar__item:active {
+  transform: scale(0.96);
+}
+
+.admin-bottom-bar__item[aria-current='page'] {
+  background-color: #ff7800;
+  color: #fff;
+  box-shadow:
+    0 10px 24px -12px rgb(255 120 0 / 0.75),
+    inset 0 1px 0 rgb(255 255 255 / 0.28);
+}
+
+.admin-bottom-bar__item[aria-current='page']:hover {
+  color: #fff;
+  background-color: #ff7800;
+}
+
+.admin-bottom-bar__icon {
+  flex: 0 0 auto;
+}
+
+/* Keep the last of the page clear of the fixed bar. */
+.admin-shell__body {
+  padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Below the desktop breakpoint every destination is icon-only: eight labels
+   need ~868px, so phone and tablet widths would otherwise squeeze them into
+   each other. The capsule keeps hugging its icons at tablet widths. */
+@media (max-width: 1023px) {
+  .admin-bottom-bar__item {
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+    min-width: 0;
+    height: 46px;
+    padding: 0 15px;
+  }
+
+  .admin-bottom-bar__label {
+    display: none;
+  }
+}
+
+/* Phone: the bar spans the viewport and each icon gets an equal share. */
+@media (max-width: 767px) {
+  .admin-bottom-bar {
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-width: none;
+    justify-content: space-between;
+    gap: 0;
+    margin-inline: 0;
+  }
+
+  .admin-bottom-bar__item {
+    flex: 1 1 0;
+    padding: 0;
+  }
+}
+
+@keyframes admin-bottom-bar-in {
+  0% {
+    opacity: 0;
+    transform: translateY(130%) scale(0.96);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-3px) scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-bottom-bar {
+    animation: none;
+  }
 }
