@@ -1,56 +1,57 @@
-const product = (name) => `/images/products/${name}.jpg`;
+const cover = (name) => `/images/categories/${name}.jpg`;
 
-const LAPTOP = product('dell-inspiron-15-laptop');
-const PHONE = product('samsung-galaxy-s21-fe');
-const BOOKS = product('engineering-mathematics-textbook-set');
-const TABLE = product('study-table-with-drawer');
-const HEADPHONES = product('boat-rockerz-450-headphones');
-const SPORTS = product('badminton-racket-shuttle-pack');
-const CALCULATOR = product('casio-fx-991ex-calculator');
-const JACKET = product('winter-jacket-size-m');
-const LAPTOP_ALT = product('dell-inspiron-15');
+// Shots taken from the CampusLoop Category Product Visual Catalog.
+const LAPTOP = cover('laptop');
+const PHONE = cover('phone');
+const BOOKS = cover('books');
+const CLOTHING = cover('clothing');
+const AUDIO = cover('audio');
+const TABLET = cover('tablet');
+const FURNITURE = cover('furniture');
+const BACKPACK = cover('backpack');
+const BICYCLE = cover('bicycle');
 
 /** Category cover photos, keyed by slug. Subcategories reuse the closest real product shot. */
 const BY_SLUG = {
   'laptops-computers': LAPTOP,
-  laptops: LAPTOP_ALT,
+  laptops: LAPTOP,
   monitors: LAPTOP,
-  'computer-accessories': LAPTOP,
+  'computer-accessories': TABLET,
   'mobiles-accessories': PHONE,
   smartphones: PHONE,
   'chargers-cables': PHONE,
-  headphones: HEADPHONES,
+  headphones: AUDIO,
   'books-study-material': BOOKS,
   'engineering-books': BOOKS,
   'competitive-exams': BOOKS,
-  'electronics-gadgets': HEADPHONES,
-  'hostel-furniture': TABLE,
-  'clothing-fashion': JACKET,
-  'sports-fitness': SPORTS,
-  other: CALCULATOR,
+  'electronics-gadgets': TABLET,
+  'hostel-furniture': FURNITURE,
+  'clothing-fashion': CLOTHING,
+  'sports-fitness': BICYCLE,
+  other: BACKPACK,
 };
 
 /** Category names are sent alongside list items, so they can choose a fallback photo too. */
 const BY_NAME = {
   'Laptops & Computers': LAPTOP,
-  Laptops: LAPTOP_ALT,
+  Laptops: LAPTOP,
   Monitors: LAPTOP,
-  'Computer accessories': LAPTOP,
+  'Computer accessories': TABLET,
   'Mobiles & Accessories': PHONE,
   Smartphones: PHONE,
   'Chargers & cables': PHONE,
-  Headphones: HEADPHONES,
+  Headphones: AUDIO,
   'Books & Study Material': BOOKS,
   Engineering: BOOKS,
   'Competitive exams': BOOKS,
-  'Electronics & Gadgets': HEADPHONES,
-  'Hostel & Furniture': TABLE,
-  'Clothing & Fashion': JACKET,
-  'Sports & Fitness': SPORTS,
-  Other: CALCULATOR,
+  'Electronics & Gadgets': TABLET,
+  'Hostel & Furniture': FURNITURE,
+  'Clothing & Fashion': CLOTHING,
+  'Sports & Fitness': BICYCLE,
+  Other: BACKPACK,
 };
 
-export const DEFAULT_CATEGORY_IMAGE = CALCULATOR;
+export const DEFAULT_CATEGORY_IMAGE = BACKPACK;
 
 export function categoryImage(slug, name) {
   return BY_SLUG[slug] || BY_NAME[name] || DEFAULT_CATEGORY_IMAGE;

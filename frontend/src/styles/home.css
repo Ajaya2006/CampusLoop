@@ -214,6 +214,18 @@
   transform: scale(0.97);
 }
 
+/* On phones the button label costs more room than the field can spare, so the
+   button shrinks to its arrow and the placeholder stays readable in full. */
+@media (max-width: 480px) {
+  .home-search__btn {
+    padding: 0 15px;
+  }
+
+  .home-search__btn-label {
+    display: none;
+  }
+}
+
 .home-search__input:focus-visible,
 .home-search__btn:focus-visible {
   outline: 2px solid rgb(255 255 255 / 0.55);

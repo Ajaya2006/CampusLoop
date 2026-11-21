@@ -244,6 +244,12 @@
   background: rgb(var(--ind-bg-rgb) / var(--ind-bg-alpha));
 }
 
+/* The logo tile and account chip float over the page on their own, so they need
+   the same veil — otherwise a section heading scrolls visibly through the mark. */
+header .liquid-glass-item {
+  background: rgb(var(--chrome-veil-rgb) / var(--chrome-veil-alpha));
+}
+
 /* The capsule needs a touch more presence than the bar it sits in, or the
    moving highlight reads as the same pane of glass. */
 .liquid-indicator > .glass-backdrop {

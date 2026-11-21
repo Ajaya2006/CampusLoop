@@ -130,13 +130,13 @@ export default function Home() {
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Search laptops, textbooks, chairs…"
+                  placeholder="Search laptops, books, chairs…"
                   aria-label="Search the marketplace"
                   className="home-search__input"
                 />
               </div>
-              <button type="submit" className="home-search__btn">
-                Search <ArrowRight size={15} />
+              <button type="submit" className="home-search__btn" aria-label="Search">
+                <span className="home-search__btn-label">Search</span> <ArrowRight size={15} />
               </button>
             </form>
 
