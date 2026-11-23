@@ -160,7 +160,7 @@
   box-shadow: 0 20px 42px -20px rgb(15 20 28 / 0.55);
   /* The popup is a bubble of the control's own material, so it swells open in
      place instead of dropping into place from above. */
-  animation: glass-morph var(--motion-slow) var(--motion-spring) both;
+  animation: glass-morph var(--motion-slow) var(--motion-pop) both;
   transform-origin: top right;
 }
 

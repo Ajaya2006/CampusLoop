@@ -215,7 +215,7 @@
   /* Menus and sheets swell open in place — the bubble pops, it does not slide
      in from an edge. */
   .pop-in {
-    animation: glass-morph var(--motion-slow) var(--motion-spring) both;
+    animation: glass-morph var(--motion-slow) var(--motion-pop) both;
     transform-origin: top right;
   }
 
@@ -227,12 +227,12 @@
   }
 
   .modal-panel {
-    animation: glass-morph var(--motion-slow) var(--motion-spring) both;
+    animation: glass-morph var(--motion-slow) var(--motion-pop) both;
     transform-origin: bottom center;
   }
 
   .quickview-panel {
-    animation: glass-morph var(--motion-slow) var(--motion-enter) both;
+    animation: glass-morph var(--motion-slow) var(--motion-pop) both;
     transform-origin: right center;
   }
 
@@ -269,7 +269,7 @@
   }
 
   .toast-item {
-    animation: glass-materialize var(--motion-slow) var(--motion-enter) both;
+    animation: glass-materialize var(--motion-slow) var(--motion-focus) both;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     will-change: opacity, transform, filter;

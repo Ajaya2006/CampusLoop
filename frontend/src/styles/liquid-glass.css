@@ -80,6 +80,10 @@
   --motion-lens: 340ms;
   --motion-morph: 460ms;
   --motion-focus: cubic-bezier(0.45, 0, 0.55, 1);
+  /* A bubble swelling open: it gathers first, then opens quickly and settles.
+     `--motion-spring` reached 99% by a third of the duration, so every menu
+     read as an instant snap rather than a morph. */
+  --motion-pop: cubic-bezier(0.5, 0, 0.3, 1);
   --motion-indicator: var(--motion-morph);
   --press-scale: 0.96;
 }
