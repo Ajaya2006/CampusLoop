@@ -541,22 +541,45 @@ header .liquid-glass-item {
   background-color: rgb(242 107 58 / 0.65);
 }
 
+/* Shell: holds the rail and its edge fade. The rail scrolls, the shell does
+   not, so the fade stays pinned to the pill's right edge instead of travelling
+   with the content (a sticky child cannot do this reliably inside a flex
+   scroller). */
+.liquid-tabs-shell {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.liquid-tabs-shell > .liquid-tabs {
+  max-width: 100%;
+}
+
+.liquid-tabs-shell.w-full > .liquid-tabs {
+  width: 100%;
+}
+
 /* When the rail overflows, the next chip is cut by the pill's rounded end. This
-   sticky sliver rides the right edge and dissolves it into the fill, so the cut
-   reads as "there is more" rather than as a sliced label. */
-.liquid-tabs::after {
+   sliver dissolves it into the fill, so the cut reads as "there is more this
+   way" rather than as a sliced label. Only while tabs actually remain. */
+.liquid-tabs-shell::after {
   content: '';
-  position: sticky;
-  right: 0;
-  flex: 0 0 auto;
-  align-self: stretch;
-  width: 22px;
-  margin-left: -22px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  bottom: 5px;
+  width: 26px;
+  border-top-right-radius: 999px;
+  border-bottom-right-radius: 999px;
   pointer-events: none;
-  /* Above the chips, which sit at z-index 1: otherwise the clipped label
-     paints over its own fade. */
-  z-index: 2;
+  opacity: 0;
+  transition: opacity var(--motion-quick) var(--motion-standard);
   background: linear-gradient(90deg, rgb(var(--surface) / 0) 0%, rgb(var(--surface) / 0.94) 72%);
+}
+
+.liquid-tabs-shell[data-scrollable='true']::after {
+  opacity: 1;
 }
 
 .liquid-tabs__tab {
