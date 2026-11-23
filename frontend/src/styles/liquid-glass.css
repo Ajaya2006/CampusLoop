@@ -573,6 +573,9 @@ header .liquid-glass-item {
   border-top-right-radius: 999px;
   border-bottom-right-radius: 999px;
   pointer-events: none;
+  /* The chips are z-index 1 inside the rail; without this the fade sits under
+     them and the clipped letter stays readable through it. */
+  z-index: 3;
   opacity: 0;
   transition: opacity var(--motion-quick) var(--motion-standard);
   /* Fades into the chrome veil rather than the page surface: the surface colour
