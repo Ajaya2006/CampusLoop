@@ -575,14 +575,15 @@ header .liquid-glass-item {
   pointer-events: none;
   opacity: 0;
   transition: opacity var(--motion-quick) var(--motion-standard);
-  /* A frosted sliver rather than a fill: painting the surface colour read as a
-     black smear on the dark pill. Frost blurs the cut chip into the material in
-     both themes without inventing a colour. */
-  background: rgb(var(--surface) / 0.3);
-  -webkit-backdrop-filter: blur(9px) saturate(150%);
-  backdrop-filter: blur(9px) saturate(150%);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 78%);
-  mask-image: linear-gradient(90deg, transparent 0%, #000 78%);
+  /* Fades into the chrome veil rather than the page surface: the surface colour
+     read as a black smear on the dark pill, while the veil is the tone the
+     floating chrome is already made of in both themes. */
+  background: linear-gradient(
+    90deg,
+    rgb(var(--chrome-veil-rgb) / 0) 0%,
+    rgb(var(--chrome-veil-rgb) / 0.55) 48%,
+    rgb(var(--chrome-veil-rgb) / 0.95) 100%
+  );
 }
 
 .liquid-tabs-shell[data-scrollable='true']::after {
