@@ -78,17 +78,18 @@
   /* Content arrives as one plane. No rise, no fade, no stagger: the material
      focuses in (`glass-materialize`), which is the reference's rule for glass
      and the only entrance the project uses for content. */
+  /* Content settles; it never blurs. A card holds a title, a price and a
+     seller — blurring those for a third of a second makes the grid
+     unreadable and spends one filter layer per card. The lens is reserved for
+     glass chrome (menus, sheets, toasts), which has no body copy in it. */
   .surface-card,
   .product-card,
   .category-card,
   .chart-card,
   .stat-card,
-  .skeleton-row {
-    animation: glass-materialize var(--motion-lens) var(--motion-focus) both;
-  }
-
+  .skeleton-row,
   .page-header {
-    animation: glass-materialize var(--motion-slow) var(--motion-focus) both;
+    animation: glass-settle var(--motion-base) var(--motion-focus) both;
   }
 
   .chart-line {
