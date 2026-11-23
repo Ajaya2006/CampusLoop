@@ -35,8 +35,8 @@
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(calc(var(--glass-saturation) * 1.4)) brightness(1.04);
   backdrop-filter: blur(var(--glass-blur)) saturate(calc(var(--glass-saturation) * 1.4)) brightness(1.04);
   transition:
-    background-color 260ms ease,
-    box-shadow 260ms ease;
+    background-color var(--motion-base) var(--motion-standard),
+    box-shadow var(--motion-base) var(--motion-standard);
 }
 
 .dark .glass-surface {

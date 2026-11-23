@@ -44,17 +44,44 @@ export default {
         lift: '0 14px 32px -20px rgba(27, 42, 64, 0.28)',
         focus: '0 0 0 3px rgba(242, 107, 58, 0.22)',
       },
+      /* Every Tailwind `transition`/`duration` utility now reads the same
+         Liquid Glass clock as the hand-written CSS: the default curve is the
+         material's, and the named ones map to enter, exit and spring. */
       transitionTimingFunction: {
-        standard: 'cubic-bezier(0.4, 0, 0.2, 1)',
+        DEFAULT: 'var(--motion-standard)',
+        standard: 'var(--motion-standard)',
+        enter: 'var(--motion-enter)',
+        exit: 'var(--motion-exit)',
+        spring: 'var(--motion-spring)',
       },
+      transitionDuration: {
+        DEFAULT: '160ms',
+      },
+      /* Glass never fades and never travels: it pulls focus (the lens sharpens,
+         the pane settles from slightly large) and it arrives lit. */
       keyframes: {
-        'fade-in': { from: { opacity: 0, transform: 'translateY(4px)' }, to: { opacity: 1, transform: 'none' } },
-        'slide-up': { from: { opacity: 0, transform: 'translateY(12px)' }, to: { opacity: 1, transform: 'none' } },
+        materialize: {
+          from: {
+            opacity: 0.001,
+            transform: 'scale(0.966)',
+            filter: 'blur(12px) brightness(1.08) saturate(1.3)',
+          },
+          '55%': { opacity: 1 },
+          to: { opacity: 1, transform: 'none', filter: 'blur(0) brightness(1) saturate(1)' },
+        },
+        morph: {
+          from: { opacity: 0.001, transform: 'scale(0.9)', filter: 'blur(9px) brightness(1.1)' },
+          '55%': { opacity: 1 },
+          to: { opacity: 1, transform: 'none', filter: 'blur(0) brightness(1)' },
+        },
         shimmer: { '100%': { transform: 'translateX(100%)' } },
       },
       animation: {
-        'fade-in': 'fade-in 200ms ease-out',
-        'slide-up': 'slide-up 240ms cubic-bezier(0.4, 0, 0.2, 1)',
+        materialize: 'materialize 480ms var(--motion-enter) both',
+        morph: 'morph 320ms var(--motion-spring) both',
+        /* Legacy names kept so existing call sites inherit the reference motion. */
+        'fade-in': 'materialize 480ms var(--motion-enter) both',
+        'slide-up': 'morph 320ms var(--motion-spring) both',
       },
     },
   },

@@ -105,10 +105,26 @@ Use uppercase tracking only for tiny section labels (e.g. `text-[11px] uppercase
 
 Motion:
 
-- Hover/press transitions 150 ms; entrances 200–240 ms.
-- Only transform/opacity/shadow animate. Cards lift by 2 px on hover; no bouncing or looping animation except skeleton shimmer.
-- `prefers-reduced-motion` removes animation and transition duration globally.
-- Modals and toasts use `animate-slide-up`; dropdowns use `animate-fade-in`.
+Every animation and transition reads from one clock in `liquid-glass.css`, taken from Apple's WWDC25 "Meet Liquid Glass" session:
+
+| Token | Value | Used for |
+| --- | --- | --- |
+| `--motion-instant` | 110 ms | Symmetry states that should feel immediate |
+| `--motion-quick` | 160 ms | Hover, press release, colour changes |
+| `--motion-base` | 240 ms | Focus rings, veil and fill shifts |
+| `--motion-slow` | 320 ms | Menus, sheets, small morphs |
+| `--motion-lens` | 480 ms | Materialisation of cards, pages, panels |
+| `--motion-morph` | 460 ms | Controls morphing between states |
+| `--motion-standard` / `-enter` / `-exit` / `-spring` | curves | The same four easings everywhere |
+| `--press-scale` | 0.96 | Gel press on every pressable surface |
+
+Rules:
+
+- Glass never fades and never travels. Content arrives with `glass-materialize` (lens pulls focus, pane settles from 0.966, edges light up), menus and sheets open in place with `glass-morph`, and removals use `glass-dematerialize`. No `translateY` entrances and no stagger delays.
+- Pressing a control lights it: `MotionEffects` spawns a `.press-glow` from the point of contact, and the surface flexes via `scale` (not `transform`, so it never fights a layout transform).
+- Only transform, scale, opacity, filter and shadow animate. Cards lift by 2 px on hover; nothing loops except skeleton shimmer and the typing indicator.
+- Tailwind's `transition`/`duration`/`ease-*` utilities resolve to the same tokens (`ease-spring`, `ease-enter`, 160 ms default), so utility classes and hand-written CSS cannot drift apart.
+- `prefers-reduced-motion` removes animation and transition duration globally and cancels the gel press.
 
 ---
 

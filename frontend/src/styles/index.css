@@ -75,71 +75,26 @@
 }
 
 @layer components {
-  .surface-card {
-    @apply rounded-card border border-line bg-surface shadow-card;
-    animation: card-rise 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* Content arrives as one plane. No rise, no fade, no stagger: the material
+     focuses in (`glass-materialize`), which is the reference's rule for glass
+     and the only entrance the project uses for content. */
+  .surface-card,
+  .product-card,
+  .category-card,
+  .chart-card,
+  .stat-card,
+  .skeleton-row {
+    animation: glass-materialize var(--motion-lens) var(--motion-enter) both;
   }
 
   .page-header {
-    animation: page-header-in 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  .product-card {
-    animation: card-rise 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  .product-card:nth-child(2) {
-    animation-delay: 45ms;
-  }
-
-  .product-card:nth-child(3) {
-    animation-delay: 90ms;
-  }
-
-  .product-card:nth-child(4) {
-    animation-delay: 135ms;
-  }
-
-  .product-card:nth-child(5) {
-    animation-delay: 180ms;
-  }
-
-  .product-card:nth-child(6) {
-    animation-delay: 225ms;
-  }
-
-  .product-card:nth-child(7) {
-    animation-delay: 270ms;
-  }
-
-  .product-card:nth-child(8) {
-    animation-delay: 315ms;
-  }
-
-  .category-card {
-    animation: card-rise 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  .category-card:nth-child(2) {
-    animation-delay: 40ms;
-  }
-
-  .category-card:nth-child(3) {
-    animation-delay: 80ms;
-  }
-
-  .category-card:nth-child(4) {
-    animation-delay: 120ms;
-  }
-
-  .chart-card {
-    animation: card-rise 460ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: glass-materialize var(--motion-slow) var(--motion-enter) both;
   }
 
   .chart-line {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
-    animation: chart-draw 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: chart-draw var(--motion-lens) var(--motion-enter) forwards;
     animation-delay: var(--chart-delay, 0ms);
   }
 
@@ -147,29 +102,29 @@
     transform-box: fill-box;
     transform-origin: bottom;
     transform: scaleY(0);
-    animation: chart-area-grow 720ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    animation-delay: calc(var(--chart-delay, 0ms) + 70ms);
+    animation: chart-area-grow var(--motion-lens) var(--motion-enter) forwards;
+    animation-delay: var(--chart-delay, 0ms);
   }
 
   .chart-bar {
     transform-box: fill-box;
     transform-origin: bottom;
     transform: scaleY(0);
-    animation: chart-bar-grow 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: chart-bar-grow var(--motion-slow) var(--motion-enter) forwards;
     animation-delay: var(--chart-delay, 0ms);
   }
 
   .chart-bar-x {
     transform-origin: left;
     transform: scaleX(0);
-    animation: chart-bar-grow-x 680ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: chart-bar-grow-x var(--motion-slow) var(--motion-enter) forwards;
     animation-delay: var(--chart-delay, 0ms);
   }
 
   .chart-donut {
     stroke-dasharray: 0 100;
     stroke-dashoffset: 0;
-    animation: chart-donut-grow 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: chart-donut-grow var(--motion-lens) var(--motion-enter) forwards;
     animation-delay: var(--chart-delay, 0ms);
   }
 
@@ -183,7 +138,7 @@
 
   .input-base {
     @apply w-full rounded-control border border-line bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-muted/70
-      transition-colors duration-150 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20
+      transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20
       disabled:cursor-not-allowed disabled:bg-elevated disabled:text-muted;
   }
 
@@ -223,42 +178,34 @@
     overflow: hidden;
   }
 
-  .ripple-wave {
+  /* Press feedback is light, not ink: touching a control lights it from the
+     point of contact and the bloom spreads through the element, exactly like
+     the reference's interaction glow. It never lays a colour film over the
+     label. */
+  .press-glow {
     position: absolute;
     z-index: 0;
     border-radius: 9999px;
-    background: currentColor;
     pointer-events: none;
+    background: radial-gradient(
+      circle,
+      rgb(255 255 255 / 0.4) 0%,
+      rgb(255 255 255 / 0.16) 38%,
+      rgb(255 255 255 / 0) 72%
+    );
     opacity: 0;
-    animation: ripple-expand 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: press-glow var(--motion-morph) var(--motion-enter) forwards;
   }
 
   .page-transition {
-    animation: page-in 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
-    will-change: opacity, transform;
+    animation: glass-materialize var(--motion-lens) var(--motion-enter) both;
+    will-change: opacity, transform, filter;
   }
 
-  .stat-card {
-    animation: bounce-in 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  .stat-card:nth-child(2) {
-    animation-delay: 55ms;
-    --chart-delay: 55ms;
-  }
-
-  .stat-card:nth-child(3) {
-    animation-delay: 110ms;
-    --chart-delay: 110ms;
-  }
-
-  .stat-card:nth-child(4) {
-    animation-delay: 165ms;
-    --chart-delay: 165ms;
-  }
-
+  /* Menus and sheets swell open in place — the bubble pops, it does not slide
+     in from an edge. */
   .pop-in {
-    animation: pop-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: glass-morph var(--motion-slow) var(--motion-spring) both;
     transform-origin: top right;
   }
 
@@ -266,20 +213,22 @@
     background: rgb(var(--ink) / 0.45);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    animation: fade-in 220ms ease-out both;
+    animation: fade-in var(--motion-base) var(--motion-standard) both;
   }
 
   .modal-panel {
-    animation: pop-in 340ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: glass-morph var(--motion-slow) var(--motion-spring) both;
+    transform-origin: bottom center;
   }
 
   .quickview-panel {
-    animation: slide-in-right 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: glass-morph var(--motion-slow) var(--motion-enter) both;
+    transform-origin: right center;
   }
 
   .drawer-shell {
     visibility: hidden;
-    transition: visibility 0s linear 320ms;
+    transition: visibility 0s linear var(--motion-slow);
   }
 
   .drawer-shell.drawer-open {
@@ -292,7 +241,7 @@
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     opacity: 0;
-    transition: opacity 240ms ease;
+    transition: opacity var(--motion-base) var(--motion-standard);
   }
 
   .drawer-open .drawer-backdrop {
@@ -301,7 +250,7 @@
 
   .drawer-panel {
     transform: translateX(-104%);
-    transition: transform 330ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform var(--motion-slow) var(--motion-spring);
     will-change: transform;
   }
 
@@ -310,19 +259,16 @@
   }
 
   .toast-item {
-    animation: toast-in 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: glass-materialize var(--motion-slow) var(--motion-enter) both;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     will-change: opacity, transform, filter;
   }
 
+  /* Leaving is the same lens, defocusing — not a shrink-and-fade. */
   .toast-item[data-leaving='true'] {
-    animation: toast-out 210ms ease-in both;
+    animation: glass-dematerialize var(--motion-quick) var(--motion-exit) both;
     pointer-events: none;
-  }
-
-  .skeleton-row {
-    animation: bounce-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 }
 
@@ -377,25 +323,62 @@
   }
 }
 
-@keyframes card-rise {
+/* ------------------------------------------------------------------
+   Motion primitives (Liquid Glass reference)
+
+   Glass materialises in and out by modulating its lensing, never by fading:
+   the pane starts slightly large and completely out of focus, then the lens
+   pulls focus while the rim catches light. Opacity only completes a short
+   ramp so hairlines and glyphs do not pop mid-blur — it is not the transition.
+   Nothing travels, and nothing staggers: the reference keeps one floating
+   plane, not a queue of objects rising into place.
+   ------------------------------------------------------------------ */
+
+@keyframes glass-materialize {
   from {
-    opacity: 0;
-    transform: translateY(10px);
+    opacity: 0.001;
+    transform: scale(0.966);
+    filter: blur(12px) brightness(1.08) saturate(1.3);
+  }
+  55% {
+    opacity: 1;
   }
   to {
     opacity: 1;
     transform: none;
+    filter: blur(0) brightness(1) saturate(1);
   }
 }
 
-@keyframes page-header-in {
+/* A control swelling to a larger piece of its own material: a menu bubble
+   opening in place, a sheet lifting from the surface under it. */
+@keyframes glass-morph {
   from {
-    opacity: 0;
-    transform: translateY(8px);
+    opacity: 0.001;
+    transform: scale(0.9);
+    filter: blur(9px) brightness(1.1);
+  }
+  55% {
+    opacity: 1;
   }
   to {
     opacity: 1;
     transform: none;
+    filter: blur(0) brightness(1);
+  }
+}
+
+/* The same lens letting go — used when something leaves. */
+@keyframes glass-dematerialize {
+  from {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+  to {
+    opacity: 0.001;
+    transform: scale(0.97);
+    filter: blur(10px);
   }
 }
 
@@ -436,90 +419,19 @@
   }
 }
 
-@keyframes ripple-expand {
+/* Light spreading out from the fingertip, then dissolving. */
+@keyframes press-glow {
   0% {
-    opacity: 0.3;
-    transform: scale(0);
+    opacity: 0.8;
+    transform: scale(0.15);
   }
   100% {
     opacity: 0;
-    transform: scale(1);
+    transform: scale(1.15);
   }
 }
 
-@keyframes page-in {
-  from {
-    opacity: 0;
-    transform: translateY(9px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
 
-@keyframes bounce-in {
-  0% {
-    opacity: 0;
-    transform: translateY(12px) scale(0.98);
-  }
-  62% {
-    opacity: 1;
-    transform: translateY(-3px) scale(1.006);
-  }
-  100% {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes pop-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.96);
-    filter: blur(7px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-    filter: blur(0);
-  }
-}
-
-@keyframes slide-in-right {
-  from {
-    opacity: 0;
-    transform: translateX(28px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes toast-in {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.94);
-    filter: blur(7px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-    filter: blur(0);
-  }
-}
-
-@keyframes toast-out {
-  from {
-    opacity: 1;
-    transform: none;
-  }
-  to {
-    opacity: 0;
-    transform: translateY(10px) scale(0.96);
-  }
-}
 
 @keyframes fade-in {
   from {
@@ -668,9 +580,9 @@
   transform: translate(-50%, calc(-100% - 4px)) scale(0.94);
   transform-origin: bottom center;
   transition:
-    opacity 0.16s ease,
-    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0s linear 0.28s;
+    opacity var(--motion-quick) var(--motion-standard),
+    transform var(--motion-base) var(--motion-spring),
+    visibility 0s linear var(--motion-base);
   will-change: opacity, transform;
 }
 
@@ -679,8 +591,8 @@
   visibility: visible;
   transform: translate(-50%, calc(-100% - 10px)) scale(1);
   transition:
-    opacity 0.16s ease,
-    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity var(--motion-quick) var(--motion-standard),
+    transform var(--motion-base) var(--motion-spring),
     visibility 0s linear 0s;
 }
 

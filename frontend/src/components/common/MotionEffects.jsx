@@ -16,8 +16,12 @@ export default function MotionEffects() {
       const size = Math.max(rect.width, rect.height) * 1.9;
       if (!size) return;
 
+      /* Not a colour ripple: touching glass lights it from the point of
+         contact and the glow spreads through the element, as in the
+         reference. The span is a light source, so it stays a decoration. */
       const wave = document.createElement('span');
-      wave.className = 'ripple-wave';
+      wave.className = 'press-glow';
+      wave.setAttribute('aria-hidden', 'true');
       wave.style.width = `${size}px`;
       wave.style.height = `${size}px`;
       wave.style.left = `${event.clientX - rect.left - size / 2}px`;

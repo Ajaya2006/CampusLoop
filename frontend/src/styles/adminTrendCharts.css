@@ -69,9 +69,9 @@
   /* No transform here: the popup is a child, and moving the shell under the
      cursor made the hover state oscillate (the visible jitter). */
   transition:
-    border-color 0.22s ease,
-    box-shadow 0.26s ease,
-    background 0.22s ease;
+    border-color var(--motion-base) var(--motion-standard),
+    box-shadow var(--motion-base) var(--motion-standard),
+    background var(--motion-base) var(--motion-standard);
 }
 
 .admin-trend-charts .period-select:hover {
@@ -130,9 +130,9 @@
   stroke-width: 1.9;
   background: rgb(var(--line) / 0.45);
   transition:
-    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-    background 0.22s ease,
-    stroke 0.22s ease;
+    transform var(--motion-base) var(--motion-spring),
+    background var(--motion-base) var(--motion-standard),
+    stroke var(--motion-base) var(--motion-standard);
 }
 
 .admin-trend-charts .period-select:hover .period-trigger svg,
@@ -158,7 +158,10 @@
   border-radius: 12px;
   background: rgb(var(--surface));
   box-shadow: 0 20px 42px -20px rgb(15 20 28 / 0.55);
-  animation: period-menu-in 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* The popup is a bubble of the control's own material, so it swells open in
+     place instead of dropping into place from above. */
+  animation: glass-morph var(--motion-slow) var(--motion-spring) both;
+  transform-origin: top right;
 }
 
 .admin-trend-charts .period-menu li {
@@ -182,8 +185,8 @@
   text-align: left;
   cursor: pointer;
   transition:
-    background 0.16s ease,
-    color 0.16s ease;
+    background var(--motion-quick) var(--motion-standard),
+    color var(--motion-quick) var(--motion-standard);
 }
 
 .admin-trend-charts .period-option:hover {
@@ -206,17 +209,6 @@
   stroke-width: 2.2;
 }
 
-@keyframes period-menu-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 /* Plot frame. Both cards carry the same header + legend block, so the plots
    start and end at the same place and fill the card without dead space. */
 .admin-trend-charts .revenue-plot,
@@ -227,7 +219,7 @@
   gap: 10px;
   min-height: 0;
   margin-top: 10px;
-  animation: cl-fade-in 0.5s 0.05s ease both;
+  animation: glass-materialize var(--motion-lens) var(--motion-enter) both;
 }
 
 .admin-trend-charts .y-axis {
@@ -302,11 +294,11 @@
   background: linear-gradient(180deg, rgb(27 42 64 / 0.1), rgb(27 42 64 / 0.015));
   transform: scaleY(0);
   transform-origin: bottom;
-  animation: cl-grow-bar 0.8s cubic-bezier(0.2, 0.74, 0.24, 1) forwards;
+  animation: cl-grow-bar var(--motion-lens) var(--motion-enter) forwards;
   animation-delay: calc(var(--chart-index, 0) * 55ms);
   transition:
-    background 0.25s ease,
-    border-color 0.25s ease;
+    background var(--motion-base) var(--motion-standard),
+    border-color var(--motion-base) var(--motion-standard);
 }
 
 .admin-trend-charts .revenue-column.is-active .revenue-fill {
@@ -325,7 +317,7 @@
   font-size: 10.5px;
   line-height: var(--chart-label-row);
   text-align: center;
-  transition: color 0.2s ease;
+  transition: color var(--motion-quick) var(--motion-standard);
 }
 
 .admin-trend-charts .revenue-column:focus-visible .revenue-month,
@@ -353,11 +345,11 @@
   background: rgb(var(--chart-muted));
   transform: scaleY(0);
   transform-origin: bottom;
-  animation: cl-grow-bar 0.78s cubic-bezier(0.2, 0.74, 0.24, 1) forwards;
+  animation: cl-grow-bar var(--motion-lens) var(--motion-enter) forwards;
   animation-delay: calc(var(--chart-index, 0) * 55ms);
   transition:
-    background 0.2s ease,
-    filter 0.2s ease;
+    background var(--motion-quick) var(--motion-standard),
+    filter var(--motion-quick) var(--motion-standard);
 }
 
 .admin-trend-charts .usage-column.is-active .visitor-bar {
@@ -376,7 +368,7 @@
   background: #ff7800;
   transform: scaleY(0);
   transform-origin: bottom;
-  animation: cl-grow-bar 0.7s 0.12s cubic-bezier(0.2, 0.74, 0.24, 1) forwards;
+  animation: cl-grow-bar var(--motion-slow) var(--motion-enter) forwards;
 }
 
 /* Value label above the highlighted revenue column */
@@ -394,8 +386,8 @@
   pointer-events: none;
   transform: translate(-50%, 6px) scale(0.92);
   transition:
-    opacity 0.18s ease,
-    transform 0.3s cubic-bezier(0.22, 1.2, 0.36, 1);
+    opacity var(--motion-quick) var(--motion-standard),
+    transform var(--motion-base) var(--motion-spring);
 }
 
 .admin-trend-charts .revenue-column.is-active .revenue-value {
@@ -427,9 +419,9 @@
   transform: translate(-50%, 8px) scale(0.95);
   transform-origin: bottom center;
   transition:
-    opacity 0.18s ease,
-    transform 0.3s cubic-bezier(0.22, 1.2, 0.36, 1),
-    visibility 0s linear 0.3s;
+    opacity var(--motion-quick) var(--motion-standard),
+    transform var(--motion-base) var(--motion-spring),
+    visibility 0s linear var(--motion-base);
   will-change: opacity, transform;
 }
 
@@ -482,8 +474,8 @@
   visibility: visible;
   transform: translate(-50%, 0) scale(1);
   transition:
-    opacity 0.18s ease,
-    transform 0.3s cubic-bezier(0.22, 1.2, 0.36, 1),
+    opacity var(--motion-quick) var(--motion-standard),
+    transform var(--motion-base) var(--motion-spring),
     visibility 0s linear 0s;
 }
 
@@ -606,15 +598,6 @@
   }
   50% {
     opacity: 0.85;
-  }
-}
-
-@keyframes cl-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }
 

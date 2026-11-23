@@ -184,7 +184,7 @@
   box-shadow:
     0 30px 80px -46px rgb(80 34 6 / 0.7),
     0 2px 8px rgb(80 34 6 / 0.08);
-  transition: box-shadow 0.4s ease;
+  transition: box-shadow var(--motion-lens) var(--motion-standard);
 }
 
 .dark .auth-card {
@@ -244,7 +244,7 @@
   box-shadow:
     0 10px 22px -10px rgb(var(--auth-glow) / 0.95),
     0 0 0 1px rgb(255 255 255 / 0.18) inset;
-  transition: transform 0.45s cubic-bezier(0.34, 1.32, 0.42, 1);
+  transition: transform var(--motion-morph) var(--motion-spring);
   will-change: transform;
 }
 
@@ -261,8 +261,8 @@
   font-weight: 600;
   color: rgb(var(--muted));
   transition:
-    color 0.25s ease,
-    transform 0.2s ease;
+    color var(--motion-base) var(--motion-standard),
+    scale var(--motion-quick) var(--motion-spring);
 }
 
 .auth-toggle button:hover {
@@ -270,7 +270,7 @@
 }
 
 .auth-toggle button:active {
-  transform: scale(0.98);
+  scale: var(--press-scale);
 }
 
 .auth-toggle button[data-active='true'] {
@@ -298,9 +298,9 @@
   border: 1px solid rgb(var(--line));
   background: rgb(var(--auth-field));
   transition:
-    border-color 0.2s ease,
-    box-shadow 0.3s ease,
-    background-color 0.2s ease;
+    border-color var(--motion-quick) var(--motion-standard),
+    box-shadow var(--motion-slow) var(--motion-standard),
+    background-color var(--motion-quick) var(--motion-standard);
 }
 
 .auth-control:hover {
@@ -327,7 +327,7 @@
   position: absolute;
   left: 0.9rem;
   color: rgb(var(--muted));
-  transition: color 0.2s ease;
+  transition: color var(--motion-quick) var(--motion-standard);
   pointer-events: none;
 }
 
@@ -374,9 +374,9 @@
   border-radius: 9px;
   color: rgb(var(--muted));
   transition:
-    color 0.2s ease,
-    background-color 0.2s ease,
-    box-shadow 0.25s ease;
+    color var(--motion-quick) var(--motion-standard),
+    background-color var(--motion-quick) var(--motion-standard),
+    box-shadow var(--motion-base) var(--motion-standard);
 }
 
 .auth-control .auth-action:hover {
@@ -413,9 +413,9 @@
   background-image: linear-gradient(135deg, #f87a45, #e2542b);
   box-shadow: 0 16px 32px -16px rgb(var(--auth-glow) / 0.9);
   transition:
-    transform 0.2s ease,
-    box-shadow 0.3s ease,
-    filter 0.2s ease;
+    transform var(--motion-quick) var(--motion-spring),
+    box-shadow var(--motion-slow) var(--motion-standard),
+    filter var(--motion-quick) var(--motion-standard);
 }
 
 .auth-submit:hover:not(:disabled) {
@@ -425,7 +425,7 @@
 }
 
 .auth-submit:active:not(:disabled) {
-  transform: translateY(0) scale(0.995);
+  transform: translateY(0) scale(var(--press-scale));
   box-shadow:
     0 0 0 6px rgb(var(--auth-glow) / 0.18),
     0 10px 24px -14px rgb(var(--auth-glow) / 0.9);

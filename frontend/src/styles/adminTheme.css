@@ -232,7 +232,9 @@
     0 18px 44px -22px rgb(15 23 42 / 0.5),
     0 2px 6px rgb(15 23 42 / 0.08),
     inset 0 1px 0 rgb(255 255 255 / 0.85);
-  animation: admin-bottom-bar-in 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* Re-enters as material, not as a bar sliding up: the capsule pulls focus
+     in place, the same way every other piece of glass on the site arrives. */
+  animation: glass-materialize var(--motion-lens) var(--motion-enter) both;
 }
 
 .dark body.admin-mode .admin-bottom-bar {
@@ -255,9 +257,9 @@
   line-height: 1;
   white-space: nowrap;
   transition:
-    color 170ms ease,
-    background-color 170ms ease,
-    transform 170ms ease;
+    color var(--motion-quick) var(--motion-standard),
+    background-color var(--motion-quick) var(--motion-standard),
+    scale var(--motion-quick) var(--motion-spring);
 }
 
 .admin-bottom-bar__item:hover {
@@ -266,7 +268,7 @@
 }
 
 .admin-bottom-bar__item:active {
-  transform: scale(0.96);
+  scale: var(--press-scale);
 }
 
 .admin-bottom-bar__item[aria-current='page'] {
@@ -327,23 +329,12 @@
   }
 }
 
-@keyframes admin-bottom-bar-in {
-  0% {
-    opacity: 0;
-    transform: translateY(130%) scale(0.96);
-  }
-  70% {
-    opacity: 1;
-    transform: translateY(-3px) scale(1);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .admin-bottom-bar {
     animation: none;
+  }
+
+  .admin-bottom-bar__item:active {
+    scale: 1;
   }
 }

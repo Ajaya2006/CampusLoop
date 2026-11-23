@@ -60,11 +60,23 @@
   --sheen-rim: 0.2;
   --accent-ink: 163 58 9;
 
+  /* One clock for the whole app, in the reference's terms. Nothing here is a
+     fade: press feedback is immediate and springs back (gel), state changes are
+     quick, morphs keep the single floating plane, and materialisation is a lens
+     pulling focus. Every animation and transition in the project reads from
+     these five durations and four curves. */
   --motion-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
   --motion-enter: cubic-bezier(0.16, 1, 0.3, 1);
   --motion-exit: cubic-bezier(0.4, 0, 1, 1);
   --motion-spring: cubic-bezier(0.24, 1.04, 0.32, 1);
-  --motion-indicator: 460ms;
+  --motion-instant: 110ms;
+  --motion-quick: 160ms;
+  --motion-base: 240ms;
+  --motion-slow: 320ms;
+  --motion-lens: 480ms;
+  --motion-morph: 460ms;
+  --motion-indicator: var(--motion-morph);
+  --press-scale: 0.96;
 }
 
 .dark {
@@ -321,9 +333,17 @@ header .liquid-glass-item {
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
+  /* `scale` rather than `transform`: it flexes the item without fighting the
+     transform the travelling indicator and the icon already use. */
   transition:
-    color 180ms var(--motion-standard),
-    opacity 180ms var(--motion-standard);
+    color var(--motion-quick) var(--motion-standard),
+    background-color var(--motion-quick) var(--motion-standard),
+    scale var(--motion-quick) var(--motion-spring);
+}
+
+/* Gel press: the material gives under the finger and springs back. */
+.liquid-nav__item:active {
+  scale: var(--press-scale);
 }
 
 .liquid-nav__item:hover {
@@ -509,7 +529,13 @@ header .liquid-glass-item {
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
-  transition: color 180ms var(--motion-standard);
+  transition:
+    color var(--motion-quick) var(--motion-standard),
+    scale var(--motion-quick) var(--motion-spring);
+}
+
+.liquid-tabs__tab:active {
+  scale: var(--press-scale);
 }
 
 .liquid-tabs__tab:hover {
@@ -597,9 +623,9 @@ header .liquid-glass-item {
   cursor: pointer;
   text-align: left;
   transition:
-    border-color 150ms var(--motion-standard),
-    box-shadow 150ms var(--motion-standard),
-    background 150ms var(--motion-standard);
+    border-color var(--motion-quick) var(--motion-standard),
+    box-shadow var(--motion-quick) var(--motion-standard),
+    background var(--motion-quick) var(--motion-standard);
 }
 
 .select-trigger[data-open='true'] {
@@ -647,8 +673,13 @@ header .liquid-glass-item {
   text-align: left;
   cursor: pointer;
   transition:
-    background 140ms var(--motion-standard),
-    color 140ms var(--motion-standard);
+    background var(--motion-quick) var(--motion-standard),
+    color var(--motion-quick) var(--motion-standard),
+    scale var(--motion-quick) var(--motion-spring);
+}
+
+.select-option:active {
+  scale: var(--press-scale);
 }
 
 .select-option:hover,
@@ -683,7 +714,16 @@ header .liquid-glass-item {
 
   .liquid-nav__icon,
   .liquid-nav__item,
-  .liquid-tabs__tab {
+  .liquid-tabs__tab,
+  .select-option {
     transition: none;
+  }
+
+  /* No gel flex — the controls are simply there, and the state changes are
+     instant rather than sprung. */
+  .liquid-nav__item:active,
+  .liquid-tabs__tab:active,
+  .select-option:active {
+    scale: 1;
   }
 }

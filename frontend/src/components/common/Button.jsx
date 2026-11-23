@@ -22,7 +22,9 @@ const SIZES = {
 
 export function buttonStyles({ variant = 'primary', size = 'md', block = false, className = '' } = {}) {
   return cx(
-    'inline-flex items-center justify-center rounded-control font-semibold transition-all duration-150',
+    /* Glass press: the button flexes under the finger and springs back, on the
+       project's shared clock. */
+    'inline-flex items-center justify-center rounded-control font-semibold transition duration-200 ease-spring active:scale-[0.97]',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas',
     'disabled:cursor-not-allowed disabled:opacity-70',
     VARIANTS[variant] || VARIANTS.primary,

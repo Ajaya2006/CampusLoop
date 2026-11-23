@@ -162,8 +162,8 @@
     0 3px 8px -4px rgb(0 0 0 / 0.6),
     0 18px 44px -28px rgb(0 0 0 / 0.9);
   transition:
-    border-color 220ms var(--motion-standard),
-    box-shadow 220ms var(--motion-standard);
+    border-color var(--motion-base) var(--motion-standard),
+    box-shadow var(--motion-base) var(--motion-standard);
 }
 
 /* Focus brightens the material rather than drawing a ring around it: the rim
@@ -245,8 +245,8 @@
     0 12px 26px -14px rgb(255 120 0 / 0.9),
     inset 0 1px 0 rgb(255 255 255 / 0.35);
   transition:
-    filter 160ms ease,
-    transform 160ms ease;
+    filter var(--motion-quick) var(--motion-standard),
+    transform var(--motion-quick) var(--motion-spring);
 }
 
 .home-search__btn:hover {
@@ -306,10 +306,10 @@
   color: rgb(255 255 255 / 0.76);
   font-weight: 500;
   transition:
-    background 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease,
-    transform 140ms var(--motion-standard);
+    background var(--motion-quick) var(--motion-standard),
+    border-color var(--motion-quick) var(--motion-standard),
+    color var(--motion-quick) var(--motion-standard),
+    transform var(--motion-quick) var(--motion-spring);
 }
 
 .home-chip:hover {
@@ -602,8 +602,8 @@
     0 12px 24px -14px rgb(255 120 0 / 0.9),
     inset 0 1px 0 rgb(255 255 255 / 0.35);
   transition:
-    filter 160ms ease,
-    transform 160ms var(--motion-standard);
+    filter var(--motion-quick) var(--motion-standard),
+    transform var(--motion-quick) var(--motion-spring);
 }
 
 .home-spotlight__cta:hover {
@@ -666,8 +666,8 @@
   border-bottom: 1px solid rgb(255 255 255 / 0.1);
   color: rgb(255 255 255 / 0.85);
   transition:
-    color 160ms ease,
-    padding-left 160ms ease;
+    color var(--motion-quick) var(--motion-standard),
+    padding-left var(--motion-quick) var(--motion-standard);
 }
 
 .home-spotlight__pick:hover {
@@ -705,7 +705,7 @@
   font-size: 12px;
   font-weight: 650;
   color: #ffb27d;
-  transition: color 160ms ease;
+  transition: color var(--motion-quick) var(--motion-standard);
 }
 
 .home-spotlight__see-all:hover {
