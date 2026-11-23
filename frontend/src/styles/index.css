@@ -78,10 +78,12 @@
   /* Content arrives as one plane. No rise, no fade, no stagger: the material
      focuses in (`glass-materialize`), which is the reference's rule for glass
      and the only entrance the project uses for content. */
-  /* Content settles; it never blurs. A card holds a title, a price and a
-     seller — blurring those for a third of a second makes the grid
-     unreadable and spends one filter layer per card. The lens is reserved for
-     glass chrome (menus, sheets, toasts), which has no body copy in it. */
+  /* Content does not animate in at all. In the reference only the glass moves:
+     cards, headings and grids are simply there, and the plane above them is
+     what morphs. Fading them from nothing was also the remaining slow read —
+     a card invisible for the first frame, half there at 120ms, solid at 240.
+     Entrance motion is reserved for glass chrome (menus, sheets, toasts) and
+     for the lens on the hero. */
   .surface-card,
   .product-card,
   .category-card,
@@ -89,7 +91,7 @@
   .stat-card,
   .skeleton-row,
   .page-header {
-    animation: glass-settle var(--motion-base) var(--motion-focus) both;
+    animation: none;
   }
 
   .chart-line {
@@ -203,13 +205,12 @@
     animation: press-glow var(--motion-slow) var(--motion-focus) forwards;
   }
 
-  /* A route change settles, it does not re-materialise: blurring this wrapper
-     blurred every pixel of the viewport on each navigation (nested on top of
-     the cards' own blur), which is the single most expensive thing the motion
-     system did. Opacity and a sub-pixel scale are pure compositor work. */
+  /* A route change does not animate the page: it swaps, and the content on it
+     settles. Blurring this wrapper blurred the whole viewport on every
+     navigation, and fading it from zero put a blank beat before anything
+     appeared. The wrapper stays only as the key target for React. */
   .page-transition {
-    animation: glass-settle var(--motion-base) var(--motion-focus) both;
-    will-change: opacity, transform;
+    animation: none;
   }
 
   /* Menus and sheets swell open in place — the bubble pops, it does not slide
