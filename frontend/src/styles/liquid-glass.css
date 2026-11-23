@@ -499,7 +499,12 @@ header .liquid-glass-item {
   overscroll-behavior-x: contain;
   scroll-behavior: smooth;
   scroll-snap-type: x proximity;
-  scrollbar-width: none;
+  /* The rail keeps a real bar instead of hiding it: a strip that scrolls with
+     no visible affordance reads as a clipped label. 3px, so it tucks inside
+     the pill's own padding. */
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--nav-muted) / 0.3) transparent;
+  scroll-padding-inline: 8px;
   border-radius: 999px;
   padding: 5px;
   background:
@@ -517,7 +522,36 @@ header .liquid-glass-item {
 }
 
 .liquid-tabs::-webkit-scrollbar {
-  display: none;
+  height: 3px;
+}
+
+.liquid-tabs::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.liquid-tabs::-webkit-scrollbar-thumb {
+  border: 0;
+  border-radius: 999px;
+  background-color: rgb(var(--nav-muted) / 0.28);
+}
+
+.liquid-tabs::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(242 107 58 / 0.65);
+}
+
+/* When the rail overflows, the next chip is cut by the pill's rounded end. This
+   sticky sliver rides the right edge and dissolves it into the fill, so the cut
+   reads as "there is more" rather than as a sliced label. */
+.liquid-tabs::after {
+  content: '';
+  position: sticky;
+  right: 0;
+  flex: 0 0 auto;
+  align-self: stretch;
+  width: 22px;
+  margin-left: -22px;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgb(var(--surface) / 0) 0%, rgb(var(--surface) / 0.94) 72%);
 }
 
 .liquid-tabs__tab {

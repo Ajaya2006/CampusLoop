@@ -92,7 +92,7 @@ export default function Modal({ open, onClose, title, description, children, foo
         </div>
         <div
           className={cx(
-            'modal-body min-h-0 flex-1 overflow-y-auto overscroll-contain',
+            'modal-body cl-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain',
             title || description ? 'mt-4' : '',
           )}
         >

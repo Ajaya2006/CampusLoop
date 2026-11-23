@@ -164,7 +164,7 @@ const SelectMenu = forwardRef(function SelectMenu(
         align="start"
         offset={6}
         matchWidth
-        className="select-menu"
+        className="select-menu cl-scroll"
       >
         {groups.map((group, groupIndex) => (
           <div key={group.label || `group-${groupIndex}`} role="group" aria-label={group.label || undefined}>
