@@ -207,8 +207,8 @@
     max-height: calc(100svh - 1.8rem);
     overflow-y: auto;
     overscroll-behavior: contain;
-    scrollbar-width: thin;
-    scrollbar-color: rgb(var(--line)) transparent;
+    /* No standard scrollbar properties here: they would make Chrome ignore the
+       custom bar below and paint the OS one. */
   }
 }
 
@@ -216,9 +216,17 @@
   width: 8px;
 }
 
+.auth-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .auth-card::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  background: rgb(var(--line));
+  background: rgb(var(--muted) / 0.35);
+}
+
+.auth-card::-webkit-scrollbar-thumb:hover {
+  background: rgb(242 107 58 / 0.7);
 }
 
 /* Sliding Sign in / Sign up switch. */

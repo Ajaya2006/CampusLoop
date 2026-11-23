@@ -290,11 +290,9 @@
    the only affordance it needs. Pointer-only: on touch the native overlay bar
    is already the right shape and a styled one only adds paint work. */
 @layer base {
-  html {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(var(--muted) / 0.45) transparent;
-  }
-
+  /* Webkit rules only. `scrollbar-width`/`scrollbar-color` would win over
+     `::-webkit-scrollbar` in Chrome and hand back the OS bar, so the standard
+     properties are avoided everywhere the custom bar is wanted. */
   @media (pointer: fine) {
     *::-webkit-scrollbar {
       width: 10px;
@@ -340,8 +338,6 @@
      modal bodies, drawers. 6px so it never crowds an option row, and the thumb
      sits flush rather than inset in a track. */
   .cl-scroll {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(var(--muted) / 0.35) transparent;
     overscroll-behavior: contain;
   }
 

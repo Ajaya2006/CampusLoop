@@ -501,9 +501,11 @@ header .liquid-glass-item {
   scroll-snap-type: x proximity;
   /* The rail keeps a real bar instead of hiding it: a strip that scrolls with
      no visible affordance reads as a clipped label. 3px, so it tucks inside
-     the pill's own padding. */
-  scrollbar-width: thin;
-  scrollbar-color: rgb(var(--nav-muted) / 0.3) transparent;
+     the pill's own padding.
+
+     No `scrollbar-width`/`scrollbar-color` here: setting either makes Chrome
+     ignore `::-webkit-scrollbar` entirely and paint the thick OS bar with
+     arrow steppers instead. The webkit rules below are the only ones. */
   scroll-padding-inline: 8px;
   border-radius: 999px;
   padding: 5px;
@@ -551,6 +553,9 @@ header .liquid-glass-item {
   width: 22px;
   margin-left: -22px;
   pointer-events: none;
+  /* Above the chips, which sit at z-index 1: otherwise the clipped label
+     paints over its own fade. */
+  z-index: 2;
   background: linear-gradient(90deg, rgb(var(--surface) / 0) 0%, rgb(var(--surface) / 0.94) 72%);
 }
 
