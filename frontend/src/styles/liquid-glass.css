@@ -73,8 +73,13 @@
   --motion-quick: 160ms;
   --motion-base: 240ms;
   --motion-slow: 320ms;
-  --motion-lens: 480ms;
+  /* Was 480 ms on an extreme ease-out: 90% of the lens ran in the first
+     100 ms and the blur layer then idled for another 380 ms, so it read as a
+     flicker and cost a composited layer for nothing. A symmetric focus curve
+     spreads the same motion across the whole window at a shorter length. */
+  --motion-lens: 340ms;
   --motion-morph: 460ms;
+  --motion-focus: cubic-bezier(0.45, 0, 0.55, 1);
   --motion-indicator: var(--motion-morph);
   --press-scale: 0.96;
 }

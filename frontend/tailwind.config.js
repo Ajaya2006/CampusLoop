@@ -64,7 +64,7 @@ export default {
           from: {
             opacity: 0.001,
             transform: 'scale(0.966)',
-            filter: 'blur(12px) brightness(1.08) saturate(1.3)',
+            filter: 'blur(7px) brightness(1.06) saturate(1.2)',
           },
           '55%': { opacity: 1 },
           to: { opacity: 1, transform: 'none', filter: 'blur(0) brightness(1) saturate(1)' },
@@ -77,10 +77,10 @@ export default {
         shimmer: { '100%': { transform: 'translateX(100%)' } },
       },
       animation: {
-        materialize: 'materialize 480ms var(--motion-enter) both',
+        materialize: 'materialize var(--motion-lens) var(--motion-focus) both',
         morph: 'morph 320ms var(--motion-spring) both',
         /* Legacy names kept so existing call sites inherit the reference motion. */
-        'fade-in': 'materialize 480ms var(--motion-enter) both',
+        'fade-in': 'materialize var(--motion-lens) var(--motion-focus) both',
         'slide-up': 'morph 320ms var(--motion-spring) both',
       },
     },
