@@ -111,7 +111,7 @@ export default function Home() {
           <div className="home-hero__copy">
             <span className="home-badge">
               {/* Decorative glass over the hero art, sized to sit under the label. */}
-              <GlassBackdrop blur={6} displace={0.35} backgroundOpacity={0.12} />
+              <GlassBackdrop blur={6} backgroundOpacity={0.12} />
               <Sparkles size={13} />
               <span>Verified students · zero commission</span>
             </span>
@@ -125,7 +125,9 @@ export default function Home() {
             </p>
 
             <form onSubmit={submitSearch} className="home-search" role="search">
-              <GlassBackdrop blur={7} displace={0.45} backgroundOpacity={0.14} distortionScale={-190} />
+              {/* The frosted fill is replaced by the smoked veil in home.css, so
+                  only the frost strength is set here. */}
+              <GlassBackdrop blur={7} />
               <div className="home-search__field">
                 <Search size={17} />
                 <input
@@ -158,7 +160,7 @@ export default function Home() {
               <span className="loop-art__arc" aria-hidden />
 
               <article className="loop-art__card">
-                <GlassBackdrop blur={5} displace={0.3} backgroundOpacity={0.16} distortionScale={-160} />
+                <GlassBackdrop blur={5} />
                 <div className="loop-art__shot">
                   <ProductImage
                     src={featured.cover_image}
@@ -231,7 +233,7 @@ export default function Home() {
           <span className="home-spotlight__glow home-spotlight__glow--cool" aria-hidden />
 
           <div className="home-spotlight__panel">
-            <GlassBackdrop radius={26} blur={9} backgroundOpacity={0.16} />
+            <GlassBackdrop radius={26} blur={9} />
             <div className="home-spotlight__body">
               <p className="home-spotlight__eyebrow">Why students loop</p>
               <h3 className="home-spotlight__title">Nothing on campus deserves to sit in a cupboard.</h3>

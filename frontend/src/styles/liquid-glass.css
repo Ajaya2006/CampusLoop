@@ -164,7 +164,7 @@
 
 /* One capsule holding the top-bar controls (theme, notifications, more) so they
    read as a single piece of glass with a shared shadow, as in the reference.
-   The material itself is the `<GlassBackdrop>` refraction layer inside it. */
+   The material itself is the `<GlassBackdrop>` layer inside it. */
 .liquid-control-cluster {
   position: relative;
   isolation: isolate;
@@ -236,7 +236,7 @@
   border-radius: 999px;
 }
 
-/* `<GlassBackdrop>`: the `GlassSurface` refraction layer used inside the bars,
+/* `<GlassBackdrop>`: the `GlassSurface` layer used inside the bars,
    the active capsule and the header control cluster. It fills its parent and
    never takes part in layout or hit-testing, so the shell keeps owning the
    size, radius and outer shadow. */
@@ -278,9 +278,9 @@ header .liquid-glass-item {
 }
 
 /* Bars and capsules: the shell only. The material is the `<GlassBackdrop>`
-   refraction layer inside them, so the bar bends the page behind it instead of
-   stacking another translucent tint on top of it. The shell keeps the outer
-   drop shadow that lifts the bar off the page. */
+   inside them, so the bar frosts the page behind it instead of stacking another
+   translucent tint on top of it. The shell keeps the outer drop shadow that
+   lifts the bar off the page. */
 .liquid-glass-nav {
   border-radius: 999px;
   padding: 6px;

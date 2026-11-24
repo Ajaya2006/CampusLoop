@@ -439,18 +439,6 @@
     0 10px 24px -14px rgb(var(--auth-glow) / 0.9);
 }
 
-/* Dashed demo-account block. */
-.auth-note {
-  border-radius: 16px;
-  border: 1px dashed rgb(var(--line));
-  background: rgb(var(--canvas) / 0.65);
-  padding: 0.85rem 0.95rem;
-}
-
-.dark .auth-note {
-  background: rgb(var(--elevated) / 0.7);
-}
-
 /* Short desktop windows: trim the decorative rows so the whole form still
    fits without a scrollbar. */
 @media (min-width: 1024px) and (max-height: 1000px) {

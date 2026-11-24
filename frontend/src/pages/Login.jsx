@@ -52,14 +52,6 @@ export default function Login() {
     }
   };
 
-  const useDemo = (role) => {
-    setForm(
-      role === 'admin'
-        ? { email: 'admin@campusloop.app', password: 'Admin@12345' }
-        : { email: 'ananya@student.edu', password: 'Student@123' },
-    );
-  };
-
   return (
     <div>
       <h1 className="font-display text-[25px] font-extrabold leading-tight tracking-tight text-ink">
@@ -128,31 +120,6 @@ export default function Login() {
           Sign in
         </Button>
       </form>
-
-      <div className="auth-note mt-4">
-        <p className="flex items-center gap-1.5 text-[11.5px] font-semibold text-ink">
-          <Mail size={12} /> Demo accounts (seeded)
-        </p>
-        <p className="mt-0.5 text-[10.5px] text-muted">
-          For evaluation only. These exist in the local seeded database.
-        </p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => useDemo('student')}
-            className="rounded-[9px] border border-line bg-surface px-2.5 py-1 text-[10.5px] font-medium text-ink transition hover:border-brand-300 hover:text-brand-600 active:scale-[0.98]"
-          >
-            Student · ananya@student.edu
-          </button>
-          <button
-            type="button"
-            onClick={() => useDemo('admin')}
-            className="rounded-[9px] border border-line bg-surface px-2.5 py-1 text-[10.5px] font-medium text-ink transition hover:border-brand-300 hover:text-brand-600 active:scale-[0.98]"
-          >
-            Admin · admin@campusloop.app
-          </button>
-        </div>
-      </div>
     </div>
   );
 }

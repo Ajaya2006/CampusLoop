@@ -72,15 +72,9 @@ export default function LiquidActiveIndicator({ containerRef, index, dependencie
         opacity: box.ready ? 1 : 0,
       }}
     >
-      {/* The capsule carries the same refracting glass as the bar it sits in, so
-          the highlight reads as a second piece of liquid rather than a flat tile. */}
-      <GlassBackdrop
-        blur={5}
-        displace={0.3}
-        distortionScale={-150}
-        backgroundOpacity={0.32}
-        borderWidth={0.05}
-      />
+      {/* The capsule carries the same glass as the bar it sits in, so the
+          highlight reads as a second piece of liquid rather than a flat tile. */}
+      <GlassBackdrop blur={5} />
     </div>
   );
 }

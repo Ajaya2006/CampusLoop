@@ -12,14 +12,14 @@ import './GlassSurface.css';
  * iOS-native module (it needs `react-native` and only ships `.ios.js` views), so
  * it cannot be installed in this Vite app. The native view's variants
  * (`tintColor`, `colorScheme`, `interactive`, `effect`) have no call site here,
- * so the material is fixed and only the size, radius and frost intensity are
- * per-surface.
+ * so the material is fixed: only the size, radius, frost intensity, saturation
+ * and blur are per-surface.
  *
  * The previous version bent the backdrop with an SVG `feDisplacementMap` chain
  * (and a WebGL fallback). That reads as real refraction, but it forces a
  * full-frame filter on every glass element, on every scroll and every hover —
- * which is what made the app feel laggy. The refraction-only props below are
- * still accepted so existing call sites keep working; they are simply unused.
+ * which is what made the app feel laggy. The props that fed it (displacement,
+ * channel offsets, renderer, blend mode) are gone; nothing used them.
  */
 
 const GlassSurface = ({
@@ -32,22 +32,6 @@ const GlassSurface = ({
   blur = 8,
   className = '',
   style = {},
-  // Accepted for API compatibility, not used by the CSS material.
-  borderWidth: _borderWidth,
-  brightness: _brightness,
-  opacity: _opacity,
-  displace: _displace,
-  distortionScale: _distortionScale,
-  redOffset: _redOffset,
-  greenOffset: _greenOffset,
-  blueOffset: _blueOffset,
-  xChannel: _xChannel,
-  yChannel: _yChannel,
-  mixBlendMode: _mixBlendMode,
-  refraction: _refraction,
-  renderer: _renderer,
-  backdrop: _backdrop,
-  shape: _shape,
 }) => {
   // The old `blur` was a gaussian stdDeviation on the displacement map, so it
   // was much smaller than a backdrop blur radius. Scale it into a 10–20px band:

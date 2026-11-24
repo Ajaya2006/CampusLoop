@@ -9,7 +9,7 @@ export default function LiquidNavigationMobile({ items, activeIndex }) {
 
   return (
     <nav className="liquid-nav-mobile liquid-glass-nav" aria-label="Primary">
-      <GlassBackdrop blur={7} displace={0.45} backgroundOpacity={0.08} />
+      <GlassBackdrop blur={7} />
       <div className="liquid-nav" ref={containerRef}>
         <LiquidActiveIndicator
           containerRef={containerRef}
