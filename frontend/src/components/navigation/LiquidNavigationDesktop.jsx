@@ -12,7 +12,8 @@ export default function LiquidNavigationDesktop({ items, activeIndex }) {
 
   return (
     <nav className="liquid-nav-desktop liquid-glass-nav" aria-label="Main navigation">
-      <GlassBackdrop blur={7} displace={0.45} backgroundOpacity={0.08} />
+      {/* Floating chrome over live page content: the reference's `regular` glass. */}
+      <GlassBackdrop blur={7} displace={0.45} backgroundOpacity={0.08} effect="regular" />
       <div className="liquid-nav" ref={containerRef}>
         <LiquidActiveIndicator
           containerRef={containerRef}

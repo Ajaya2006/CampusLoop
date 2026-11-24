@@ -5,14 +5,39 @@
    rim, one soft specular highlight and two layers of shadow. Nothing animates
    except colours and shadows, and no filter chain is rebuilt while scrolling.
 
-   `color-scheme` is scoped to the surface so light-dark() resolves from the
-   surface's own theme (the app toggles `.dark` on <html>) instead of leaking.
+   Every painted value comes from a local custom property so an `effect`
+   variant can retune a surface without a second copy of the material. The
+   defaults reproduce the original material pixel for pixel.
+
+   The theme follows the app (`.dark` on <html>), so `color-scheme` is scoped to
+   the surface and light-dark() resolves from there instead of leaking.
    ------------------------------------------------------------------ */
 
 .glass-surface {
   --glass-blur: 18px;
   --glass-frost: 0.1;
   --glass-saturation: 1.4;
+
+  /* Material knobs. 1 / 1 / 1 is the untouched default. */
+  --gs-blur-scale: 1;
+  --gs-sheen-opacity: 1;
+  --gs-rim-opacity: 1;
+
+  /* Painted values, light scheme. */
+  --gs-fill: hsl(0 0% 100% / calc(0.1 + var(--glass-frost) * 0.55));
+  --gs-border: hsl(0 0% 100% / 0.55);
+  --gs-shadow:
+    inset 0 1px 0 0 hsl(0 0% 100% / 0.6),
+    inset 0 -1px 0 0 hsl(0 0% 100% / 0.14),
+    0 2px 6px -2px rgb(17 24 39 / 0.18),
+    0 14px 30px -18px rgb(17 24 39 / 0.42),
+    0 32px 64px -40px rgb(17 24 39 / 0.5);
+  --gs-sheen:
+    radial-gradient(120% 90% at 12% -10%, hsl(0 0% 100% / 0.34) 0%, hsl(0 0% 100% / 0) 58%),
+    linear-gradient(140deg, hsl(0 0% 100% / 0.2) 0%, hsl(0 0% 100% / 0) 44%, hsl(0 0% 100% / 0) 62%, hsl(0 0% 100% / 0.07) 100%);
+  --gs-rim-shadow:
+    inset 0 0 0 1px hsl(0 0% 100% / 0.16),
+    inset 0 1px 0 0 hsl(0 0% 100% / 0.5);
 
   position: relative;
   isolation: isolate;
@@ -22,33 +47,54 @@
   overflow: hidden;
   color-scheme: light;
 
-  background: hsl(0 0% 100% / calc(0.1 + var(--glass-frost) * 0.55));
-  border: 1px solid hsl(0 0% 100% / 0.55);
-  box-shadow:
-    /* light catching the top edge, and a faint bounce along the bottom */
-    inset 0 1px 0 0 hsl(0 0% 100% / 0.6),
-    inset 0 -1px 0 0 hsl(0 0% 100% / 0.14),
-    /* the pane sitting above the page */
-    0 2px 6px -2px rgb(17 24 39 / 0.18),
-    0 14px 30px -18px rgb(17 24 39 / 0.42),
-    0 32px 64px -40px rgb(17 24 39 / 0.5);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(calc(var(--glass-saturation) * 1.4)) brightness(1.04);
-  backdrop-filter: blur(var(--glass-blur)) saturate(calc(var(--glass-saturation) * 1.4)) brightness(1.04);
+  background-color: var(--gs-fill);
+  border: 1px solid var(--gs-border);
+  box-shadow: var(--gs-shadow);
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) * var(--gs-blur-scale)))
+    saturate(calc(var(--glass-saturation) * 1.4)) brightness(1.04);
+  backdrop-filter: blur(calc(var(--glass-blur) * var(--gs-blur-scale)))
+    saturate(calc(var(--glass-saturation) * 1.4)) brightness(1.04);
   transition:
     background-color var(--motion-base) var(--motion-standard),
     box-shadow var(--motion-base) var(--motion-standard);
 }
 
+/* Night scheme: the same shapes, lit from inside instead of by the page. */
 .dark .glass-surface {
   color-scheme: dark;
-  background: hsl(0 0% 100% / calc(0.04 + var(--glass-frost) * 0.5));
-  border-color: hsl(0 0% 100% / 0.14);
-  box-shadow:
+  --gs-fill: hsl(0 0% 100% / calc(0.04 + var(--glass-frost) * 0.5));
+  --gs-border: hsl(0 0% 100% / 0.14);
+  --gs-shadow:
     inset 0 1px 0 0 hsl(0 0% 100% / 0.2),
     inset 0 -1px 0 0 hsl(0 0% 100% / 0.04),
     0 2px 6px -2px rgb(0 0 0 / 0.4),
     0 16px 34px -20px rgb(0 0 0 / 0.65),
     0 34px 68px -42px rgb(0 0 0 / 0.7);
+  --gs-sheen:
+    radial-gradient(120% 90% at 12% -10%, hsl(0 0% 100% / 0.16) 0%, hsl(0 0% 100% / 0) 56%),
+    linear-gradient(140deg, hsl(0 0% 100% / 0.08) 0%, hsl(0 0% 100% / 0) 46%, hsl(0 0% 100% / 0.04) 100%);
+  --gs-rim-shadow:
+    inset 0 0 0 1px hsl(0 0% 100% / 0.06),
+    inset 0 1px 0 0 hsl(0 0% 100% / 0.18);
+}
+
+/* `effect="clear"`: the reference's more transparent glass. Thinner frost, a
+   softer rim and a quieter sheen, so what sits behind it stays visible. */
+.glass-surface[data-glass-effect='clear'] {
+  --gs-blur-scale: 0.7;
+  --gs-sheen-opacity: 0.6;
+  --gs-rim-opacity: 0.65;
+}
+
+/* `effect="none"`: the box stays, the material goes. */
+.glass-surface[data-glass-effect='none'] {
+  --gs-fill: transparent;
+  --gs-border: transparent;
+  --gs-shadow: none;
+  --gs-sheen-opacity: 0;
+  --gs-rim-opacity: 0;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 .glass-surface__content {
@@ -71,56 +117,43 @@
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
+  transition: opacity var(--motion-base) var(--motion-standard);
 }
 
 .glass-surface__sheen {
-  background:
-    radial-gradient(120% 90% at 12% -10%, hsl(0 0% 100% / 0.34) 0%, hsl(0 0% 100% / 0) 58%),
-    linear-gradient(140deg, hsl(0 0% 100% / 0.2) 0%, hsl(0 0% 100% / 0) 44%, hsl(0 0% 100% / 0) 62%, hsl(0 0% 100% / 0.07) 100%);
-}
-
-.dark .glass-surface__sheen {
-  background:
-    radial-gradient(120% 90% at 12% -10%, hsl(0 0% 100% / 0.16) 0%, hsl(0 0% 100% / 0) 56%),
-    linear-gradient(140deg, hsl(0 0% 100% / 0.08) 0%, hsl(0 0% 100% / 0) 46%, hsl(0 0% 100% / 0.04) 100%);
+  background: var(--gs-sheen);
+  opacity: var(--gs-sheen-opacity);
 }
 
 /* The rim is the edge of the material: a 1px inset ring, brightest at the top
    and thinning towards the bottom, so the glass has a silhouette on any
    background without a heavy border. */
 .glass-surface__rim {
-  box-shadow:
-    inset 0 0 0 1px hsl(0 0% 100% / 0.16),
-    inset 0 1px 0 0 hsl(0 0% 100% / 0.5);
-}
-
-.dark .glass-surface__rim {
-  box-shadow:
-    inset 0 0 0 1px hsl(0 0% 100% / 0.06),
-    inset 0 1px 0 0 hsl(0 0% 100% / 0.18);
+  box-shadow: var(--gs-rim-shadow);
+  opacity: var(--gs-rim-opacity);
 }
 
 /* Where frost is unavailable (or the user asked the OS for less blur), lean on
    a denser tint instead of going see-through. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass-surface {
-    background: hsl(0 0% 100% / 0.86);
+    background-color: hsl(0 0% 100% / 0.86);
   }
 
   .dark .glass-surface {
-    background: hsl(220 22% 12% / 0.9);
+    background-color: hsl(220 22% 12% / 0.9);
   }
 }
 
 @media (prefers-reduced-transparency: reduce) {
   .glass-surface {
-    background: hsl(0 0% 100% / 0.94);
+    background-color: hsl(0 0% 100% / 0.94);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
 
   .dark .glass-surface {
-    background: hsl(220 22% 12% / 0.96);
+    background-color: hsl(220 22% 12% / 0.96);
   }
 }
 
@@ -130,7 +163,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .glass-surface {
+  .glass-surface,
+  .glass-surface__sheen,
+  .glass-surface__rim {
     transition: none;
   }
 }
