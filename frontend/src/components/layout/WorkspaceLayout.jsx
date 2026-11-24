@@ -89,13 +89,7 @@ export default function WorkspaceLayout() {
 
           <div className="ml-auto flex shrink-0 items-center gap-2 xl:ml-0">
             <div className="liquid-control-cluster">
-              <GlassBackdrop
-                blur={6}
-                displace={0.3}
-                distortionScale={-150}
-                backgroundOpacity={0.12}
-                effect="regular"
-              />
+              <GlassBackdrop blur={6} displace={0.3} distortionScale={-150} backgroundOpacity={0.12} />
               <button
                 type="button"
                 onClick={toggle}

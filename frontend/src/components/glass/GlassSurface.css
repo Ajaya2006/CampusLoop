@@ -5,9 +5,9 @@
    rim, one soft specular highlight and two layers of shadow. Nothing animates
    except colours and shadows, and no filter chain is rebuilt while scrolling.
 
-   Every painted value comes from a local custom property so an `effect`
-   variant can retune a surface without a second copy of the material. The
-   defaults reproduce the original material pixel for pixel.
+   Per-surface knobs are limited to `--glass-blur`, `--glass-frost` and
+   `--glass-saturation`, which the component sets inline. The painted values
+   come from local custom properties so the theme can swap them in one place.
 
    The theme follows the app (`.dark` on <html>), so `color-scheme` is scoped to
    the surface and light-dark() resolves from there instead of leaking.
@@ -17,11 +17,6 @@
   --glass-blur: 18px;
   --glass-frost: 0.1;
   --glass-saturation: 1.4;
-
-  /* Material knobs. 1 / 1 / 1 is the untouched default. */
-  --gs-blur-scale: 1;
-  --gs-sheen-opacity: 1;
-  --gs-rim-opacity: 1;
 
   /* Painted values, light scheme. */
   --gs-fill: hsl(0 0% 100% / calc(0.1 + var(--glass-frost) * 0.55));
@@ -50,10 +45,8 @@
   background-color: var(--gs-fill);
   border: 1px solid var(--gs-border);
   box-shadow: var(--gs-shadow);
-  -webkit-backdrop-filter: blur(calc(var(--glass-blur) * var(--gs-blur-scale)))
-    saturate(calc(var(--glass-saturation) * 1.4)) brightness(1.04);
-  backdrop-filter: blur(calc(var(--glass-blur) * var(--gs-blur-scale)))
-    saturate(calc(var(--glass-saturation) * 1.4)) brightness(1.04);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(calc(var(--glass-saturation) * 1.4)) brightness(1.04);
+  backdrop-filter: blur(var(--glass-blur)) saturate(calc(var(--glass-saturation) * 1.4)) brightness(1.04);
   transition:
     background-color var(--motion-base) var(--motion-standard),
     box-shadow var(--motion-base) var(--motion-standard);
@@ -78,25 +71,6 @@
     inset 0 1px 0 0 hsl(0 0% 100% / 0.18);
 }
 
-/* `effect="clear"`: the reference's more transparent glass. Thinner frost, a
-   softer rim and a quieter sheen, so what sits behind it stays visible. */
-.glass-surface[data-glass-effect='clear'] {
-  --gs-blur-scale: 0.7;
-  --gs-sheen-opacity: 0.6;
-  --gs-rim-opacity: 0.65;
-}
-
-/* `effect="none"`: the box stays, the material goes. */
-.glass-surface[data-glass-effect='none'] {
-  --gs-fill: transparent;
-  --gs-border: transparent;
-  --gs-shadow: none;
-  --gs-sheen-opacity: 0;
-  --gs-rim-opacity: 0;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
-
 .glass-surface__content {
   position: relative;
   z-index: 1;
@@ -117,12 +91,10 @@
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  transition: opacity var(--motion-base) var(--motion-standard);
 }
 
 .glass-surface__sheen {
   background: var(--gs-sheen);
-  opacity: var(--gs-sheen-opacity);
 }
 
 /* The rim is the edge of the material: a 1px inset ring, brightest at the top
@@ -130,7 +102,6 @@
    background without a heavy border. */
 .glass-surface__rim {
   box-shadow: var(--gs-rim-shadow);
-  opacity: var(--gs-rim-opacity);
 }
 
 /* Where frost is unavailable (or the user asked the OS for less blur), lean on
@@ -163,9 +134,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .glass-surface,
-  .glass-surface__sheen,
-  .glass-surface__rim {
+  .glass-surface {
     transition: none;
   }
 }

@@ -110,9 +110,7 @@ export default function Home() {
         <div className="home-hero__inner">
           <div className="home-hero__copy">
             <span className="home-badge">
-              {/* Decorative glass over the hero art. It sits on a bright bloom
-                  and carries a 12px label, so it keeps the full material
-                  instead of the lighter `clear` glass. */}
+              {/* Decorative glass over the hero art, sized to sit under the label. */}
               <GlassBackdrop blur={6} displace={0.35} backgroundOpacity={0.12} />
               <Sparkles size={13} />
               <span>Verified students · zero commission</span>

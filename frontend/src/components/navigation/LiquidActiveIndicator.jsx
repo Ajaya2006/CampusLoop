@@ -80,7 +80,6 @@ export default function LiquidActiveIndicator({ containerRef, index, dependencie
         distortionScale={-150}
         backgroundOpacity={0.32}
         borderWidth={0.05}
-        effect="regular"
       />
     </div>
   );
